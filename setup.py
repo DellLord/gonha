@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="gonha",
-    version=version,
+    version="0.1.0",
     author="Fred Cox",
     author_email="fredcox@gmail.com",
     description="Light-weight system monitor for Linux",
