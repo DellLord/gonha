@@ -139,14 +139,14 @@
         <rect>
          <x>10</x>
          <y>290</y>
-         <width>441</width>
+         <width>421</width>
          <height>71</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>28</pointsize>
+         <pointsize>24</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -156,6 +156,9 @@
        </property>
        <property name="text">
         <string>Monday, June 1 2020</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="hddLabel">

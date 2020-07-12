@@ -10,14 +10,21 @@ resource_path = os.path.join(os.path.split(__file__)[0], './')
 
 
 class ThreadClass(QtCore.QThread):
-    signal = QtCore.pyqtSignal(str, name='ThreadFinish')
+    signal = QtCore.pyqtSignal(dict, name='ThreadFinish')
 
     def __init__(self, parent=None):
         super(ThreadClass, self).__init__(parent)
 
     def run(self):
-        time.sleep(2)
-        self.signal.emit('Test')
+        message = dict()
+        now = datetime.now()
+        message['hourLabel'] = now.strftime('%I')
+        message['minuteLabel'] = now.strftime('%M')
+        message['secondsLabel'] = now.strftime('%S')
+        message['dateLabel'] = now.strftime("%A, %d %B %Y")
+        message['ampmLabel'] = now.strftime('%p')
+        time.sleep(1)
+        self.signal.emit(message)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -33,6 +40,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Find Childs
         self.hourLabel = self.findChild(QtWidgets.QLabel, 'hourLabel')
         self.minuteLabel = self.findChild(QtWidgets.QLabel, 'minuteLabel')
+        self.ampmLabel = self.findChild(QtWidgets.QLabel, 'ampmLabel')
         self.dateLabel = self.findChild(QtWidgets.QLabel, 'dateLabel')
         self.hddValueLabel = self.findChild(QtWidgets.QLabel, 'hddValueLabel')
         self.memValueLabel = self.findChild(QtWidgets.QLabel, 'memValueLabel')
@@ -66,9 +74,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # move window to top right
         win = self.geometry()
         print(f'mainwindow size {win.width()} x {win.height()}')
-        self.move(rect.width() - win.width(), 0)
+        self.move((rect.width() - 10) - win.width(), 0)
 
-    def receiveThreadfinish(self, val):
-        print(f'Value = {val}')
-        print('Starting a new Thread')
+    def receiveThreadfinish(self, message):
+        self.hourLabel.setText(message['hourLabel'])
+        self.minuteLabel.setText(message['minuteLabel'])
+        self.ampmLabel.setText(message['ampmLabel'])
+        self.dateLabel.setText(message['dateLabel'])
+        print(message)
         self.thread.start()
