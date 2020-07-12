@@ -6,6 +6,7 @@ import gonha
 print('Starting...')
 
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
+    #app = QtWidgets.QApplication(sys.argv)
+    app = gonha.app
     window = gonha.MainWindow()
     app.exec_()
