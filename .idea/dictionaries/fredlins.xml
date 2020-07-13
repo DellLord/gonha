@@ -8,6 +8,7 @@
       <w>distro</w>
       <w>ewmh</w>
       <w>fastfinish</w>
+      <w>fira</w>
       <w>gonha</w>
       <w>humanfriendly</w>
       <w>lsbconfig</w>
@@ -17,6 +18,7 @@
       <w>mountpoints</w>
       <w>psutil</w>
       <w>threadfinish</w>
+      <w>threadslow</w>
     </words>
   </dictionary>
 </component>

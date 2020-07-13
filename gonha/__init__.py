@@ -41,7 +41,8 @@ class ThreadSlow(QtCore.QThread):
         return msg
 
     def run(self):
-        pass
+        time.sleep(10)
+        self.signal.emit(self.getPartitions())
 
 
 class ThreadFast(QtCore.QThread):
@@ -94,8 +95,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # -------------------------------------------------------------
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        # Connect Thread Signal
+        # Connect Threads Signals
         self.threadFast.signal.connect(self.receiveThreadFastfinish)
+        self.threadSlow.signal.connect(self.receiveThreadSlowFinish)
         self.moveTopRight()
         self.show()
         # Show in all workspaces
@@ -108,6 +110,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         ew.display.flush()
         self.threadFast.start()
+        self.threadSlow.start()
         self.loadConfigs()
         self.displayPartitions()
 
@@ -209,7 +212,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.move(rect.width() - win.width(), 0)
 
     def receiveThreadSlowFinish(self, message):
-        print('Receiving msg of the threadslow', message)
+        print(message)
+        for i, partLabel in enumerate(self.partitionsLabels):
+            print(f'index = {i} label => {partLabel.text()}')
+
+        self.threadSlow.start()
 
     def receiveThreadFastfinish(self, message):
         self.hourLabel.setText(message['hourLabel'])
