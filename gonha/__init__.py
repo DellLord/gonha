@@ -5,9 +5,11 @@ from ewmh import EWMH
 import time
 from datetime import datetime
 import psutil
+import configparser
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.join(os.path.split(__file__)[0], './')
+cfgFile = f'{resource_path}/config.ini'
 
 
 class ThreadClass(QtCore.QThread):
@@ -36,7 +38,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        uic.loadUi(f'{resource_path}./mainwindow.ui', self)
+        uic.loadUi(f'{resource_path}/mainwindow.ui', self)
         flags = QtCore.Qt.FramelessWindowHint
         flags |= QtCore.Qt.WindowStaysOnBottomHint
         flags |= QtCore.Qt.Tool
@@ -66,23 +68,42 @@ class MainWindow(QtWidgets.QMainWindow):
 
         ew.display.flush()
         self.thread.start()
+        self.loadConfigs()
+
+    def loadConfigs(self):
+        config = configparser.ConfigParser()
+        config.read(cfgFile)
+        print(config['DEFAULT']['position'])
+        if config['DEFAULT']['position'] == 'topLeft':
+            self.moveTopLeft()
+        else:
+            self.moveTopRight()
+
+    @staticmethod
+    def writeConfig(cfg):
+        config = configparser.ConfigParser()
+        config['DEFAULT'] = cfg
+        with open(cfgFile, 'w') as configfile:
+            config.write(configfile)
 
     def contextMenuEvent(self, event: QtGui.QContextMenuEvent):
         contextMenu = QtWidgets.QMenu(self)
-        leftAction = contextMenu.addAction('&Left')
-        rightAction = contextMenu.addAction('&Right')
+        topLeftAction = contextMenu.addAction('Top Left')
+        topRightAction = contextMenu.addAction('Top Right')
         aboutAction = contextMenu.addAction('A&bout')
         quitAction = contextMenu.addAction('&Quit')
         action = contextMenu.exec_(self.mapToGlobal(event.pos()))
-        if action == leftAction:
+        if action == topLeftAction:
+            self.writeConfig({'position': 'topLeft'})
             self.moveTopLeft()
-        elif action == rightAction:
+        elif action == topRightAction:
+            self.writeConfig({'position': 'topRight'})
             self.moveTopRight()
         elif action == quitAction:
             sys.exit()
 
     def moveTopLeft(self):
-        self.move(0, 0)
+        self.move(0, 10)
 
     def moveTopRight(self):
         screen = app.primaryScreen()
