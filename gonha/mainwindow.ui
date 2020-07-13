@@ -164,7 +164,7 @@
       <widget class="QLabel" name="hddLabel">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>0</x>
          <y>350</y>
          <width>61</width>
          <height>41</height>
@@ -173,7 +173,7 @@
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>18</pointsize>
+         <pointsize>16</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -182,22 +182,22 @@
         <string notr="true">color: rgb(252, 126, 0);</string>
        </property>
        <property name="text">
-        <string>hdd:</string>
+        <string>ssd:</string>
        </property>
       </widget>
       <widget class="QLabel" name="hddValueLabel">
        <property name="geometry">
         <rect>
-         <x>90</x>
+         <x>50</x>
          <y>350</y>
-         <width>61</width>
+         <width>81</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>18</pointsize>
+         <pointsize>16</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -207,21 +207,24 @@
        </property>
        <property name="text">
         <string>100%</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="memValueLabel">
        <property name="geometry">
         <rect>
-         <x>230</x>
+         <x>210</x>
          <y>350</y>
-         <width>61</width>
+         <width>71</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>18</pointsize>
+         <pointsize>16</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -232,11 +235,14 @@
        <property name="text">
         <string>100%</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
       </widget>
       <widget class="QLabel" name="memLabel">
        <property name="geometry">
         <rect>
-         <x>160</x>
+         <x>150</x>
          <y>350</y>
          <width>61</width>
          <height>41</height>
@@ -245,7 +251,7 @@
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>18</pointsize>
+         <pointsize>16</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -262,14 +268,14 @@
         <rect>
          <x>360</x>
          <y>350</y>
-         <width>61</width>
+         <width>71</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>18</pointsize>
+         <pointsize>16</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -279,6 +285,9 @@
        </property>
        <property name="text">
         <string>100%</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="cpuLabel">
@@ -293,7 +302,7 @@
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>18</pointsize>
+         <pointsize>16</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -305,6 +314,16 @@
         <string>cpu:</string>
        </property>
       </widget>
+      <zorder>minuteLabel</zorder>
+      <zorder>hourLabel</zorder>
+      <zorder>ampmLabel</zorder>
+      <zorder>dateLabel</zorder>
+      <zorder>hddLabel</zorder>
+      <zorder>hddValueLabel</zorder>
+      <zorder>memValueLabel</zorder>
+      <zorder>memLabel</zorder>
+      <zorder>cpuValueLabel</zorder>
+      <zorder>cpuLabel</zorder>
      </widget>
     </item>
    </layout>

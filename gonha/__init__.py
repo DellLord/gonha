@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from ewmh import EWMH
 import time
 from datetime import datetime
+import psutil
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.join(os.path.split(__file__)[0], './')
@@ -23,7 +24,10 @@ class ThreadClass(QtCore.QThread):
         message['secondsLabel'] = now.strftime('%S')
         message['dateLabel'] = now.strftime("%A, %d %B %Y")
         message['ampmLabel'] = now.strftime('%p')
-        time.sleep(1)
+        message['hddValueLabel'] = f"{psutil.disk_usage('/').percent}%"
+        message['cpuValueLabel'] = f"{psutil.cpu_percent()}%"
+        message['memValueLabel'] = f"{psutil.virtual_memory().percent}%"
+        time.sleep(2)
         self.signal.emit(message)
 
 
@@ -81,5 +85,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.minuteLabel.setText(message['minuteLabel'])
         self.ampmLabel.setText(message['ampmLabel'])
         self.dateLabel.setText(message['dateLabel'])
+        self.hddValueLabel.setText(message['hddValueLabel'])
+        self.memValueLabel.setText(message['memValueLabel'])
+        self.cpuValueLabel.setText(message['cpuValueLabel'])
         print(message)
         self.thread.start()
