@@ -22,7 +22,9 @@ setuptools.setup(
     scripts=['bin/gonha'],
 
     install_requires=[
-        'PyQt5'
+        'PyQt5',
+        'ewmh',
+        'psutil'
     ],
     include_package_data=True,
     zip_safe=False,

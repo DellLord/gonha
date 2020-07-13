@@ -2,8 +2,10 @@
   <dictionary name="fredlins">
     <words>
       <w>childs</w>
+      <w>ewmh</w>
       <w>gonha</w>
       <w>mainwindow</w>
+      <w>psutil</w>
       <w>threadfinish</w>
     </words>
   </dictionary>

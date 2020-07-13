@@ -54,8 +54,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         # Connect Thread Signal
         self.thread.signal.connect(self.receiveThreadfinish)
-        # self.move(2400, 0)
-        self.topRight()
+        self.moveTopRight()
         self.show()
         # Show in all workspaces
         ew = EWMH()
@@ -68,7 +67,24 @@ class MainWindow(QtWidgets.QMainWindow):
         ew.display.flush()
         self.thread.start()
 
-    def topRight(self):
+    def contextMenuEvent(self, event: QtGui.QContextMenuEvent):
+        contextMenu = QtWidgets.QMenu(self)
+        leftAction = contextMenu.addAction('&Left')
+        rightAction = contextMenu.addAction('&Right')
+        aboutAction = contextMenu.addAction('A&bout')
+        quitAction = contextMenu.addAction('&Quit')
+        action = contextMenu.exec_(self.mapToGlobal(event.pos()))
+        if action == leftAction:
+            self.moveTopLeft()
+        elif action == rightAction:
+            self.moveTopRight()
+        elif action == quitAction:
+            sys.exit()
+
+    def moveTopLeft(self):
+        self.move(0, 0)
+
+    def moveTopRight(self):
         screen = app.primaryScreen()
         print('Screen: %s' % screen.name())
         size = screen.size()
