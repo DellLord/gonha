@@ -24,7 +24,8 @@ setuptools.setup(
     install_requires=[
         'PyQt5',
         'ewmh',
-        'psutil'
+        'psutil',
+        'humanfriendly'
     ],
     include_package_data=True,
     zip_safe=False,

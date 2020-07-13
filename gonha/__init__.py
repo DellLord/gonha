@@ -7,12 +7,11 @@ from datetime import datetime
 import psutil
 import configparser
 import lsb_release
-import re
+import humanfriendly
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.join(os.path.split(__file__)[0], './')
 cfgFile = f'{resource_path}/config.ini'
-diskExcludePatterns = ['snap', 'efi', 'boot']
 
 
 class ThreadClass(QtCore.QThread):
@@ -39,10 +38,22 @@ class ThreadClass(QtCore.QThread):
             break
 
         partitions = psutil.disk_partitions()
+        message['partitions'] = []
         for partition in partitions:
-            if not re.match(r'/snap.*', partition.mountpoint):
-                print(f'Encontrei uma particao NÃO snap {partition.mountpoint}')
+            # verify if exclude partitions
+            if (not ('boot' in partition.mountpoint)) and (not ('snap' in partition.mountpoint)):
+                disk_usage = psutil.disk_usage(partition.mountpoint)
+                message['partitions'].append(
+                    {
+                        'mountpoint': partition.mountpoint,
+                        'total': humanfriendly.format_size(disk_usage.total),
+                        'used': humanfriendly.format_size(disk_usage.used),
+                        'free': humanfriendly.format_size(disk_usage.free),
+                        'percent': f'{disk_usage.percent}%'
+                    }
+                )
 
+        print(message['partitions'])
         time.sleep(2)
         self.signal.emit(message)
 
