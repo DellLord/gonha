@@ -29,6 +29,14 @@ class ThreadClass(QtCore.QThread):
         message['hddValueLabel'] = f"{psutil.disk_usage('/').percent}%"
         message['cpuValueLabel'] = f"{psutil.cpu_percent()}%"
         message['memValueLabel'] = f"{psutil.virtual_memory().percent}%"
+        sensors = psutil.sensors_temperatures()
+        for key in sensors:
+            # print(key, '->', sensors[key])
+            message['cpuTempLabel'] = f'{sensors[key][0].current}°'
+            print(f"cpuTemp => {message['cpuTempLabel']}")
+            break
+
+        print(os.uname())
         time.sleep(2)
         self.signal.emit(message)
 
@@ -115,7 +123,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # move window to top right
         win = self.geometry()
         print(f'mainwindow size {win.width()} x {win.height()}')
-        self.move((rect.width() - 10) - win.width(), 0)
+        self.move(rect.width() - win.width(), 0)
 
     def receiveThreadfinish(self, message):
         self.hourLabel.setText(message['hourLabel'])
@@ -125,5 +133,5 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hddValueLabel.setText(message['hddValueLabel'])
         self.memValueLabel.setText(message['memValueLabel'])
         self.cpuValueLabel.setText(message['cpuValueLabel'])
-        print(message)
+        # print(message)
         self.thread.start()
