@@ -124,39 +124,43 @@ class MainWindow(QtWidgets.QMainWindow):
             mountpointValueLabel = QtWidgets.QLabel(f"{mntPoint['mountpoint']}")
             mountpointValueLabel.setFont(font)
             horizontalLayout.addWidget(mountpointValueLabel)
-            self.partitionsLabels.append(mountpointValueLabel)
 
             usedLabel = QtWidgets.QLabel(f"used:")
             usedLabel.setStyleSheet(styleSheet)
             usedLabel.setFont(font)
             horizontalLayout.addWidget(usedLabel)
-            self.partitionsLabels.append(usedLabel)
 
             usedValueLabel = QtWidgets.QLabel(f"{mntPoint['used']}")
             usedValueLabel.setFont(font)
             horizontalLayout.addWidget(usedValueLabel)
-            self.partitionsLabels.append(usedValueLabel)
 
             totalLabel = QtWidgets.QLabel(f"total: ")
             totalLabel.setStyleSheet(styleSheet)
             horizontalLayout.addWidget(totalLabel)
-            self.partitionsLabels.append(totalLabel)
 
             totalValueLabel = QtWidgets.QLabel(f"{mntPoint['total']}")
             totalValueLabel.setFont(font)
             horizontalLayout.addWidget(totalValueLabel)
-            self.partitionsLabels.append(totalValueLabel)
 
             percentLabel = QtWidgets.QLabel(f"percent:")
             percentLabel.setStyleSheet(styleSheet)
             percentLabel.setFont(font)
             horizontalLayout.addWidget(percentLabel)
-            self.partitionsLabels.append(percentLabel)
 
             percentValueLabel = QtWidgets.QLabel(f"{mntPoint['percent']}")
             percentValueLabel.setFont(font)
             horizontalLayout.addWidget(percentValueLabel)
-            self.partitionsLabels.append(percentValueLabel)
+
+            self.partitionsLabels.append(
+                {
+                    'mountpointValueLabel': mountpointValueLabel,
+                    'usedValueLabel': usedValueLabel,
+                    'totalValueLabel': totalValueLabel,
+                    'percentValueLabel': percentValueLabel
+                }
+            )
+
+            print(self.partitionsLabels)
 
             self.fsVerticalLayout.addLayout(horizontalLayout)
 
@@ -213,8 +217,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def receiveThreadSlowFinish(self, message):
         print(message)
-        for i, partLabel in enumerate(self.partitionsLabels):
-            print(f'index = {i} label => {partLabel.text()}')
+        for i, label in enumerate(self.partitionsLabels):
+            print(f"index = {i} {label['mountpointValueLabel'].text()}")
+
 
         self.threadSlow.start()
 
