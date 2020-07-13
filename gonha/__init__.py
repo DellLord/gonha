@@ -6,10 +6,13 @@ import time
 from datetime import datetime
 import psutil
 import configparser
+import lsb_release
+import re
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.join(os.path.split(__file__)[0], './')
 cfgFile = f'{resource_path}/config.ini'
+diskExcludePatterns = ['snap', 'efi', 'boot']
 
 
 class ThreadClass(QtCore.QThread):
@@ -32,11 +35,14 @@ class ThreadClass(QtCore.QThread):
         sensors = psutil.sensors_temperatures()
         for key in sensors:
             # print(key, '->', sensors[key])
-            message['cpuTempLabel'] = f'{sensors[key][0].current}°'
-            print(f"cpuTemp => {message['cpuTempLabel']}")
+            message['temperatureValueLabel'] = f'{int(sensors[key][0].current)}°'
             break
 
-        print(os.uname())
+        partitions = psutil.disk_partitions()
+        for partition in partitions:
+            if not re.match(r'/snap.*', partition.mountpoint):
+                print(f'Encontrei uma particao NÃO snap {partition.mountpoint}')
+
         time.sleep(2)
         self.signal.emit(message)
 
@@ -59,6 +65,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hddValueLabel = self.findChild(QtWidgets.QLabel, 'hddValueLabel')
         self.memValueLabel = self.findChild(QtWidgets.QLabel, 'memValueLabel')
         self.cpuValueLabel = self.findChild(QtWidgets.QLabel, 'cpuValueLabel')
+        self.lsbreleaseLabel = self.findChild(QtWidgets.QLabel, 'lsbreleaseLabel')
+        self.temperatureValueLabel = self.findChild(QtWidgets.QLabel, 'temperatureValueLabel')
         # -------------------------------------------------------------
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
@@ -86,6 +94,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.moveTopLeft()
         else:
             self.moveTopRight()
+
+        distroInfo = lsb_release.get_distro_information()
+        self.lsbreleaseLabel.setText(
+            f"{distroInfo['DESCRIPTION']} codename {distroInfo['CODENAME']}")
 
     @staticmethod
     def writeConfig(cfg):
@@ -133,5 +145,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hddValueLabel.setText(message['hddValueLabel'])
         self.memValueLabel.setText(message['memValueLabel'])
         self.cpuValueLabel.setText(message['cpuValueLabel'])
+        self.temperatureValueLabel.setText(message['temperatureValueLabel'])
         # print(message)
         self.thread.start()

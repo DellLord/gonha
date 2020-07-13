@@ -3,9 +3,14 @@
     <words>
       <w>ampm</w>
       <w>childs</w>
+      <w>distrib</w>
+      <w>distro</w>
       <w>ewmh</w>
       <w>gonha</w>
+      <w>lsbconfig</w>
+      <w>lsbrelease</w>
       <w>mainwindow</w>
+      <w>mountpoint</w>
       <w>psutil</w>
       <w>threadfinish</w>
     </words>

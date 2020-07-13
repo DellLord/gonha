@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>460</width>
-    <height>417</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,13 +19,13 @@
   <property name="minimumSize">
    <size>
     <width>460</width>
-    <height>417</height>
+    <height>700</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>460</width>
-    <height>417</height>
+    <height>700</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -54,16 +54,16 @@
         <font>
          <family>Fira Code</family>
          <pointsize>172</pointsize>
-         <weight>75</weight>
+         <weight>50</weight>
          <italic>false</italic>
-         <bold>true</bold>
+         <bold>false</bold>
         </font>
        </property>
        <property name="cursor">
         <cursorShape>ArrowCursor</cursorShape>
        </property>
        <property name="styleSheet">
-        <string notr="true"/>
+        <string notr="true">color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>08</string>
@@ -85,9 +85,9 @@
         <font>
          <family>Fira Code</family>
          <pointsize>172</pointsize>
-         <weight>75</weight>
+         <weight>50</weight>
          <italic>false</italic>
-         <bold>true</bold>
+         <bold>false</bold>
         </font>
        </property>
        <property name="cursor">
@@ -116,16 +116,16 @@
         <font>
          <family>Fira Code</family>
          <pointsize>48</pointsize>
-         <weight>75</weight>
+         <weight>50</weight>
          <italic>false</italic>
-         <bold>true</bold>
+         <bold>false</bold>
         </font>
        </property>
        <property name="cursor">
         <cursorShape>ArrowCursor</cursorShape>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(25, 255, 240);</string>
+        <string notr="true">color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>am</string>
@@ -137,9 +137,9 @@
       <widget class="QLabel" name="dateLabel">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>0</x>
          <y>290</y>
-         <width>421</width>
+         <width>431</width>
          <height>71</height>
         </rect>
        </property>
@@ -147,8 +147,8 @@
         <font>
          <family>Fira Code</family>
          <pointsize>24</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -174,8 +174,8 @@
         <font>
          <family>Fira Code</family>
          <pointsize>16</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -198,8 +198,8 @@
         <font>
          <family>Fira Code</family>
          <pointsize>16</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -225,8 +225,8 @@
         <font>
          <family>Fira Code</family>
          <pointsize>16</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -252,8 +252,8 @@
         <font>
          <family>Fira Code</family>
          <pointsize>16</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -276,8 +276,8 @@
         <font>
          <family>Fira Code</family>
          <pointsize>16</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -303,8 +303,8 @@
         <font>
          <family>Fira Code</family>
          <pointsize>16</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -312,6 +312,87 @@
        </property>
        <property name="text">
         <string>cpu:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lsbreleaseLabel">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>380</y>
+         <width>431</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>16</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(252, 126, 0);</string>
+       </property>
+       <property name="text">
+        <string>lsbrelease</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="temperatureLabel">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>410</y>
+         <width>171</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>16</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(252, 126, 0);</string>
+       </property>
+       <property name="text">
+        <string>Temperature:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="temperatureValueLabel">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>410</y>
+         <width>101</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>16</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string>40</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
       </widget>
       <zorder>minuteLabel</zorder>
@@ -324,6 +405,9 @@
       <zorder>memLabel</zorder>
       <zorder>cpuValueLabel</zorder>
       <zorder>cpuLabel</zorder>
+      <zorder>lsbreleaseLabel</zorder>
+      <zorder>temperatureLabel</zorder>
+      <zorder>temperatureValueLabel</zorder>
      </widget>
     </item>
    </layout>
