@@ -44,7 +44,7 @@
       <widget class="QLabel" name="hourLabel">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>20</x>
          <y>0</y>
          <width>321</width>
          <height>251</height>
@@ -75,7 +75,7 @@
       <widget class="QLabel" name="minuteLabel">
        <property name="geometry">
         <rect>
-         <x>90</x>
+         <x>100</x>
          <y>90</y>
          <width>321</width>
          <height>251</height>
@@ -106,7 +106,7 @@
       <widget class="QLabel" name="ampmLabel">
        <property name="geometry">
         <rect>
-         <x>310</x>
+         <x>320</x>
          <y>30</y>
          <width>131</width>
          <height>81</height>
@@ -137,7 +137,7 @@
       <widget class="QLabel" name="dateLabel">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>10</x>
          <y>290</y>
          <width>431</width>
          <height>71</height>
@@ -164,7 +164,7 @@
       <widget class="QLabel" name="memValueLabel">
        <property name="geometry">
         <rect>
-         <x>230</x>
+         <x>240</x>
          <y>350</y>
          <width>71</width>
          <height>41</height>
@@ -191,7 +191,7 @@
       <widget class="QLabel" name="memLabel">
        <property name="geometry">
         <rect>
-         <x>170</x>
+         <x>180</x>
          <y>350</y>
          <width>61</width>
          <height>41</height>
@@ -215,7 +215,7 @@
       <widget class="QLabel" name="cpuValueLabel">
        <property name="geometry">
         <rect>
-         <x>60</x>
+         <x>70</x>
          <y>350</y>
          <width>71</width>
          <height>41</height>
@@ -242,7 +242,7 @@
       <widget class="QLabel" name="cpuLabel">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>10</x>
          <y>350</y>
          <width>61</width>
          <height>41</height>
@@ -293,7 +293,7 @@
       <widget class="QLabel" name="temperatureLabel">
        <property name="geometry">
         <rect>
-         <x>320</x>
+         <x>330</x>
          <y>350</y>
          <width>81</width>
          <height>41</height>
@@ -320,9 +320,9 @@
       <widget class="QLabel" name="temperatureValueLabel">
        <property name="geometry">
         <rect>
-         <x>400</x>
+         <x>410</x>
          <y>350</y>
-         <width>71</width>
+         <width>51</width>
          <height>41</height>
         </rect>
        </property>

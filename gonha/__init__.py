@@ -218,8 +218,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def receiveThreadSlowFinish(self, message):
         print(message)
         for i, label in enumerate(self.partitionsLabels):
-            print(f"index = {i} {label['mountpointValueLabel'].text()}")
-
+            # print(f"index = {i} {label['mountpointValueLabel'].text()}")
+            label['mountpointValueLabel'].setText(message['partitions'][i]['mountpoint'])
+            label['usedValueLabel'].setText(message['partitions'][i]['used'])
+            label['totalValueLabel'].setText(message['partitions'][i]['total'])
+            label['percentValueLabel'].setText(message['partitions'][i]['percent'])
 
         self.threadSlow.start()
 
