@@ -161,57 +161,6 @@
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel" name="hddLabel">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>350</y>
-         <width>61</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Fira Code</family>
-         <pointsize>16</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(252, 126, 0);</string>
-       </property>
-       <property name="text">
-        <string>ssd:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="hddValueLabel">
-       <property name="geometry">
-        <rect>
-         <x>50</x>
-         <y>350</y>
-         <width>81</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Fira Code</family>
-         <pointsize>16</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>100%</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
       <widget class="QLabel" name="memValueLabel">
        <property name="geometry">
         <rect>
@@ -266,7 +215,7 @@
       <widget class="QLabel" name="cpuValueLabel">
        <property name="geometry">
         <rect>
-         <x>360</x>
+         <x>60</x>
          <y>350</y>
          <width>71</width>
          <height>41</height>
@@ -293,7 +242,7 @@
       <widget class="QLabel" name="cpuLabel">
        <property name="geometry">
         <rect>
-         <x>300</x>
+         <x>0</x>
          <y>350</y>
          <width>61</width>
          <height>41</height>
@@ -332,7 +281,7 @@
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(252, 126, 0);</string>
+        <string notr="true">color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>lsbrelease</string>
@@ -344,9 +293,9 @@
       <widget class="QLabel" name="temperatureLabel">
        <property name="geometry">
         <rect>
-         <x>110</x>
-         <y>410</y>
-         <width>171</width>
+         <x>290</x>
+         <y>350</y>
+         <width>81</width>
          <height>41</height>
         </rect>
        </property>
@@ -362,7 +311,7 @@
         <string notr="true">color: rgb(252, 126, 0);</string>
        </property>
        <property name="text">
-        <string>Temperature:</string>
+        <string>temp:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -371,9 +320,9 @@
       <widget class="QLabel" name="temperatureValueLabel">
        <property name="geometry">
         <rect>
-         <x>280</x>
-         <y>410</y>
-         <width>101</width>
+         <x>370</x>
+         <y>350</y>
+         <width>71</width>
          <height>41</height>
         </rect>
        </property>
@@ -395,12 +344,52 @@
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
       </widget>
+      <widget class="QWidget" name="verticalLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>450</y>
+         <width>441</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="fsVerticalLayout">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetDefaultConstraint</enum>
+        </property>
+       </layout>
+      </widget>
+      <widget class="QLabel" name="filesystemLabel">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>410</y>
+         <width>431</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>16</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(252, 126, 0);</string>
+       </property>
+       <property name="text">
+        <string>::Filesystem::</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
       <zorder>minuteLabel</zorder>
       <zorder>hourLabel</zorder>
       <zorder>ampmLabel</zorder>
       <zorder>dateLabel</zorder>
-      <zorder>hddLabel</zorder>
-      <zorder>hddValueLabel</zorder>
       <zorder>memValueLabel</zorder>
       <zorder>memLabel</zorder>
       <zorder>cpuValueLabel</zorder>
@@ -408,6 +397,8 @@
       <zorder>lsbreleaseLabel</zorder>
       <zorder>temperatureLabel</zorder>
       <zorder>temperatureValueLabel</zorder>
+      <zorder>verticalLayoutWidget</zorder>
+      <zorder>filesystemLabel</zorder>
      </widget>
     </item>
    </layout>

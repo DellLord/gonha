@@ -14,36 +14,21 @@ resource_path = os.path.join(os.path.split(__file__)[0], './')
 cfgFile = f'{resource_path}/config.ini'
 
 
-class ThreadClass(QtCore.QThread):
-    signal = QtCore.pyqtSignal(dict, name='ThreadFinish')
+class ThreadSlow(QtCore.QThread):
+    signal = QtCore.pyqtSignal(dict, name='ThreadSlowFinish')
 
     def __init__(self, parent=None):
-        super(ThreadClass, self).__init__(parent)
+        super(ThreadSlow, self).__init__(parent)
 
-    def run(self):
-        message = dict()
-        now = datetime.now()
-        message['hourLabel'] = now.strftime('%I')
-        message['minuteLabel'] = now.strftime('%M')
-        message['secondsLabel'] = now.strftime('%S')
-        message['dateLabel'] = now.strftime("%A, %d %B %Y")
-        message['ampmLabel'] = now.strftime('%p')
-        message['hddValueLabel'] = f"{psutil.disk_usage('/').percent}%"
-        message['cpuValueLabel'] = f"{psutil.cpu_percent()}%"
-        message['memValueLabel'] = f"{psutil.virtual_memory().percent}%"
-        sensors = psutil.sensors_temperatures()
-        for key in sensors:
-            # print(key, '->', sensors[key])
-            message['temperatureValueLabel'] = f'{int(sensors[key][0].current)}°'
-            break
-
+    @staticmethod
+    def getPartitions():
+        msg = dict()
         partitions = psutil.disk_partitions()
-        message['partitions'] = []
+        msg['partitions'] = []
         for partition in partitions:
-            # verify if exclude partitions
             if (not ('boot' in partition.mountpoint)) and (not ('snap' in partition.mountpoint)):
                 disk_usage = psutil.disk_usage(partition.mountpoint)
-                message['partitions'].append(
+                msg['partitions'].append(
                     {
                         'mountpoint': partition.mountpoint,
                         'total': humanfriendly.format_size(disk_usage.total),
@@ -53,13 +38,41 @@ class ThreadClass(QtCore.QThread):
                     }
                 )
 
-        print(message['partitions'])
+        return msg
+
+    def run(self):
+        pass
+
+
+class ThreadFast(QtCore.QThread):
+    signal = QtCore.pyqtSignal(dict, name='ThreadFastFinish')
+    message = dict()
+
+    def __init__(self, parent=None):
+        super(ThreadFast, self).__init__(parent)
+
+    def run(self):
+        now = datetime.now()
+        self.message['hourLabel'] = now.strftime('%I')
+        self.message['minuteLabel'] = now.strftime('%M')
+        self.message['secondsLabel'] = now.strftime('%S')
+        self.message['dateLabel'] = now.strftime("%A, %d %B %Y")
+        self.message['ampmLabel'] = now.strftime('%p')
+        self.message['cpuValueLabel'] = f"{psutil.cpu_percent()}%"
+        self.message['memValueLabel'] = f"{psutil.virtual_memory().percent}%"
+        sensors = psutil.sensors_temperatures()
+        for key in sensors:
+            self.message['temperatureValueLabel'] = f'{int(sensors[key][0].current)}°'
+            break
+
         time.sleep(2)
-        self.signal.emit(message)
+        self.signal.emit(self.message)
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    thread = ThreadClass()
+    threadFast = ThreadFast()
+    threadSlow = ThreadSlow()
+    partitionsLabels = []
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -73,16 +86,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.minuteLabel = self.findChild(QtWidgets.QLabel, 'minuteLabel')
         self.ampmLabel = self.findChild(QtWidgets.QLabel, 'ampmLabel')
         self.dateLabel = self.findChild(QtWidgets.QLabel, 'dateLabel')
-        self.hddValueLabel = self.findChild(QtWidgets.QLabel, 'hddValueLabel')
         self.memValueLabel = self.findChild(QtWidgets.QLabel, 'memValueLabel')
         self.cpuValueLabel = self.findChild(QtWidgets.QLabel, 'cpuValueLabel')
         self.lsbreleaseLabel = self.findChild(QtWidgets.QLabel, 'lsbreleaseLabel')
         self.temperatureValueLabel = self.findChild(QtWidgets.QLabel, 'temperatureValueLabel')
+        self.fsVerticalLayout = self.findChild(QtWidgets.QVBoxLayout, 'fsVerticalLayout')
         # -------------------------------------------------------------
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         # Connect Thread Signal
-        self.thread.signal.connect(self.receiveThreadfinish)
+        self.threadFast.signal.connect(self.receiveThreadFastfinish)
         self.moveTopRight()
         self.show()
         # Show in all workspaces
@@ -94,8 +107,55 @@ class MainWindow(QtWidgets.QMainWindow):
             ew.setWmDesktop(w, 0xffffffff)
 
         ew.display.flush()
-        self.thread.start()
+        self.threadFast.start()
         self.loadConfigs()
+        self.displayPartitions()
+
+    def displayPartitions(self):
+        mntPoints = self.threadSlow.getPartitions()
+        font = QtGui.QFont('Fira Code', 11)
+        styleSheet = 'color: rgb(252, 126, 0);'
+        for i, mntPoint in enumerate(mntPoints['partitions']):
+            horizontalLayout = QtWidgets.QHBoxLayout()
+
+            mountpointValueLabel = QtWidgets.QLabel(f"{mntPoint['mountpoint']}")
+            mountpointValueLabel.setFont(font)
+            horizontalLayout.addWidget(mountpointValueLabel)
+            self.partitionsLabels.append(mountpointValueLabel)
+
+            usedLabel = QtWidgets.QLabel(f"used:")
+            usedLabel.setStyleSheet(styleSheet)
+            usedLabel.setFont(font)
+            horizontalLayout.addWidget(usedLabel)
+            self.partitionsLabels.append(usedLabel)
+
+            usedValueLabel = QtWidgets.QLabel(f"{mntPoint['used']}")
+            usedValueLabel.setFont(font)
+            horizontalLayout.addWidget(usedValueLabel)
+            self.partitionsLabels.append(usedValueLabel)
+
+            totalLabel = QtWidgets.QLabel(f"total: ")
+            totalLabel.setStyleSheet(styleSheet)
+            horizontalLayout.addWidget(totalLabel)
+            self.partitionsLabels.append(totalLabel)
+
+            totalValueLabel = QtWidgets.QLabel(f"{mntPoint['total']}")
+            totalValueLabel.setFont(font)
+            horizontalLayout.addWidget(totalValueLabel)
+            self.partitionsLabels.append(totalValueLabel)
+
+            percentLabel = QtWidgets.QLabel(f"percent:")
+            percentLabel.setStyleSheet(styleSheet)
+            percentLabel.setFont(font)
+            horizontalLayout.addWidget(percentLabel)
+            self.partitionsLabels.append(percentLabel)
+
+            percentValueLabel = QtWidgets.QLabel(f"{mntPoint['percent']}")
+            percentValueLabel.setFont(font)
+            horizontalLayout.addWidget(percentValueLabel)
+            self.partitionsLabels.append(percentValueLabel)
+
+            self.fsVerticalLayout.addLayout(horizontalLayout)
 
     def loadConfigs(self):
         config = configparser.ConfigParser()
@@ -148,14 +208,15 @@ class MainWindow(QtWidgets.QMainWindow):
         print(f'mainwindow size {win.width()} x {win.height()}')
         self.move(rect.width() - win.width(), 0)
 
-    def receiveThreadfinish(self, message):
+    def receiveThreadSlowFinish(self, message):
+        print('Receiving msg of the threadslow', message)
+
+    def receiveThreadFastfinish(self, message):
         self.hourLabel.setText(message['hourLabel'])
         self.minuteLabel.setText(message['minuteLabel'])
         self.ampmLabel.setText(message['ampmLabel'])
         self.dateLabel.setText(message['dateLabel'])
-        self.hddValueLabel.setText(message['hddValueLabel'])
         self.memValueLabel.setText(message['memValueLabel'])
         self.cpuValueLabel.setText(message['cpuValueLabel'])
         self.temperatureValueLabel.setText(message['temperatureValueLabel'])
-        # print(message)
-        self.thread.start()
+        self.threadFast.start()
