@@ -11,6 +11,8 @@
 
 ## About
 
+![Gonha - Logo](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/shot1.png)
+
 Gonha is a simple light-weight system monitor for Linux
 
 ## Dependencies
