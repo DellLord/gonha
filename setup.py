@@ -1,5 +1,6 @@
 import setuptools
 import re
+import shutil
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -19,6 +20,11 @@ with open(dialog_filename, 'r') as f:
 with open(dialog_filename, 'w') as f:
     for line in newlines:
         f.write(line)
+
+# Delete all releases
+shutil.rmtree('./dist')
+shutil.rmtree('./build')
+
 
 setuptools.setup(
     name="gonha",
