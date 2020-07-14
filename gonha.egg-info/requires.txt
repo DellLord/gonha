@@ -3,3 +3,4 @@ ewmh
 psutil
 humanfriendly
 pathlib
+configobj

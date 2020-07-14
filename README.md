@@ -51,6 +51,13 @@ iface = enp5s0
 By the way, if you want gonha display in ***top left*** section in your screen, please 
 ***right click*** and switch the position.
 
+In your window manager (Kde, Cinammon, Gnome, Mate, Xfce) settings for startup application specify delay of 5 seconds,
+this is necessary for ***gonha*** stay visible in all workspaces.
+
+See the example above in Cinammon Startup Applications Settings
+
+![Gonha - Startup Applications]()
+
 ## Screenshot
 
 This is my desktop with Linux Mint 20 and Gonha is top right on the screen.

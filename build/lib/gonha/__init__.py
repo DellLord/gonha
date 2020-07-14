@@ -6,9 +6,9 @@ import time
 from datetime import datetime
 import psutil
 import configparser
-import lsb_release
 import humanfriendly
 from pathlib import Path
+from configobj import ConfigObj
 
 cfgFile = f'{Path.home()}/.config/gonha/config.ini'
 
@@ -181,15 +181,13 @@ class MainWindow(QtWidgets.QMainWindow):
             print(w)
             ew.setWmDesktop(w, 0xffffffff)
 
-        print(':: Gonha version {} ::'.format(self.version))
-        print('Please, wait 5 seconds....')
-        time.sleep(5)
         ew.display.flush()
         self.threadFast.start()
         self.threadSlow.start()
         self.threadNetworkStats.start()
         self.loadConfigs()
         self.displayPartitions()
+        print(':: Gonha version {} ::'.format(self.version))
 
     def quitAboutDialog(self):
         self.aboutDialog.hide()
@@ -265,9 +263,11 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.moveTopRight()
 
-        distroInfo = lsb_release.get_distro_information()
+        # lsbParser
+        distroInfo = ConfigObj('/etc/lsb-release')
         self.lsbreleaseLabel.setText(
-            f"{distroInfo['DESCRIPTION']} codename {distroInfo['CODENAME']}")
+            f"{distroInfo['DISTRIB_DESCRIPTION']}"
+        )
 
     @staticmethod
     def writeConfig(cfg):
