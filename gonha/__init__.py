@@ -158,6 +158,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ifaceValueLabel = self.findChild(QtWidgets.QLabel, 'ifaceValueLabel')
         self.downloadValueLabel = self.findChild(QtWidgets.QLabel, 'downloadValueLabel')
         self.uploadValueLabel = self.findChild(QtWidgets.QLabel, 'uploadValueLabel')
+        # aboutdialog
+        self.aboutDialog = QtWidgets.QDialog()
+        uic.loadUi(f'{resource_path}/aboutdialog.ui', self.aboutDialog)
+        self.aboutDialog.okPushButton = self.aboutDialog.findChild(QtWidgets.QPushButton, 'okPushButton')
+        self.aboutDialog.okPushButton.clicked.connect(self.quitAboutDialog)
+        self.version = self.aboutDialog.findChild(QtWidgets.QLabel, 'versionLabel').text()
         # -------------------------------------------------------------
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
@@ -181,6 +187,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadNetworkStats.start()
         self.loadConfigs()
         self.displayPartitions()
+
+    def quitAboutDialog(self):
+        self.aboutDialog.hide()
 
     def receiveThreadNetworkStats(self, message):
         # print(message)
@@ -277,6 +286,8 @@ class MainWindow(QtWidgets.QMainWindow):
         elif action == topRightAction:
             self.writeConfig({'position': 'topRight'})
             self.moveTopRight()
+        elif action == aboutAction:
+            self.aboutDialog.exec_()
         elif action == quitAction:
             sys.exit()
 
