@@ -19,4 +19,5 @@ gonha/images/logo.png
 gonha/images/logo.xcf
 gonha/images/screenshot.png
 gonha/images/shot1.png
+gonha/images/startupdelay.png
 gonha/images/upload.png

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gonha
-Version: 0.1.8
+Version: 0.1.12
 Summary: Light-weight system monitor for Linux
 Home-page: https://github.com/fredcox/gonha
 Author: Fred Cox
@@ -58,6 +58,13 @@ Description: # Gonha
         ```
         By the way, if you want gonha display in ***top left*** section in your screen, please 
         ***right click*** and switch the position.
+        
+        In your window manager (Kde, Cinammon, Gnome, Mate, Xfce) settings for startup application specify delay minimun
+        of ***5 seconds***, this is necessary for ***gonha*** become visible in all workspaces.
+        
+        See the example above in Cinammon Startup Applications Settings
+        
+        ![Gonha - Startup Applications](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/startupdelay.png)
         
         ## Screenshot
         

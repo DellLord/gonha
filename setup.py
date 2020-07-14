@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 # update aboutdialog.ui with correct version
-version = '0.1.8'
+version = '0.1.12'
 pattern = "([0-9]+.[0-9]+.[0-9]+)"
 newlines = []
 dialog_filename = 'gonha/aboutdialog.ui'
