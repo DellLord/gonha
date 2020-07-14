@@ -21,6 +21,10 @@ class ThreadNetworkStats(QtCore.QThread):
 
     def __init__(self, parent=None):
         super(ThreadNetworkStats, self).__init__(parent)
+        self.finished.connect(self.threadFinished)
+
+    def threadFinished(self):
+        self.start()
 
     def run(self):
         counter1 = psutil.net_io_counters(pernic=True)[iface]
@@ -37,6 +41,10 @@ class ThreadSlow(QtCore.QThread):
 
     def __init__(self, parent=None):
         super(ThreadSlow, self).__init__(parent)
+        self.finished.connect(self.threadFinished)
+
+    def threadFinished(self):
+        self.start()
 
     @staticmethod
     def getPartitions():
@@ -69,6 +77,11 @@ class ThreadFast(QtCore.QThread):
 
     def __init__(self, parent=None):
         super(ThreadFast, self).__init__(parent)
+        self.finished.connect(self.threadFinished)
+
+    def threadFinished(self):
+        # print('Thread Fast Finished')
+        self.start()
 
     def run(self):
         now = datetime.now()
@@ -159,11 +172,10 @@ class MainWindow(QtWidgets.QMainWindow):
             file.close()
 
     def receiveThreadNetworkStats(self, message):
-        print(message)
+        # print(message)
         self.ifaceValueLabel.setText(iface)
         self.downloadValueLabel.setText(message['downSpeed'])
         self.uploadValueLabel.setText(message['upSpeed'])
-        self.threadNetworkStats.start()
 
     def displayPartitions(self):
         mntPoints = self.threadSlow.getPartitions()
@@ -279,8 +291,6 @@ class MainWindow(QtWidgets.QMainWindow):
             label['totalValueLabel'].setText(message['partitions'][i]['total'])
             label['percentValueLabel'].setText(message['partitions'][i]['percent'])
 
-        self.threadSlow.start()
-
     def receiveThreadFastfinish(self, message):
         self.hourLabel.setText(message['hourLabel'])
         self.minuteLabel.setText(message['minuteLabel'])
@@ -289,4 +299,4 @@ class MainWindow(QtWidgets.QMainWindow):
         self.memValueLabel.setText(message['memValueLabel'])
         self.cpuValueLabel.setText(message['cpuValueLabel'])
         self.temperatureValueLabel.setText(message['temperatureValueLabel'])
-        self.threadFast.start()
+
