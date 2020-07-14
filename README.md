@@ -38,6 +38,19 @@ Remember, ***$HOME/.local/bin*** must be in included in your PATH variable!
 $ pip3 install gonha
 $ gonha
 ```
+ps: If you got the following error:
+```
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: eglfs, linuxfb, minimal, minimalegl, offscreen, vnc, wayland-egl, wayland, wayland-xcomposite-egl, wayland-xcomposite-glx, webgl, xcb.
+
+Aborted (core dumped)
+```
+Don´t worry, install libxcb-xinerama in your system:
+```bash
+$ sudo apt install libxcb-xinerama0
+```
 
 ## Config
 
