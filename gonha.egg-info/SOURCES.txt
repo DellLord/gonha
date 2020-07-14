@@ -15,6 +15,8 @@ gonha.egg-info/top_level.txt
 gonha/images/directoryicon.png
 gonha/images/download.png
 gonha/images/gonhascreenshot.png
+gonha/images/icon.png
+gonha/images/icon.xcf
 gonha/images/logo.png
 gonha/images/logo.xcf
 gonha/images/screenshot.png

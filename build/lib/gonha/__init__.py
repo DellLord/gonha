@@ -174,14 +174,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.moveTopRight()
         self.show()
         # Show in all workspaces
-        ew = EWMH()
-        all_wins = ew.getClientList()
-        wins = filter(lambda w: w.get_wm_class()[1] == 'gonha', all_wins)
-        for w in wins:
+        self.ew = EWMH()
+        self.all_wins = self.ew.getClientList()
+        self.wins = filter(lambda w: w.get_wm_class()[1] == 'gonha', self.all_wins)
+        for w in self.wins:
             print(w)
-            ew.setWmDesktop(w, 0xffffffff)
+            self.ew.setWmDesktop(w, 0xffffffff)
 
-        ew.display.flush()
+        self.ew.display.flush()
         self.threadFast.start()
         self.threadSlow.start()
         self.threadNetworkStats.start()
