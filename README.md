@@ -13,15 +13,26 @@
 
 ![Gonha - Logo](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/shot1.png)
 
-Gonha is a simple light-weight system monitor for Linux
+***Gonha*** is a simple light-weight system monitor for Linux
 
 ## Dependencies
 
 1. Pyhton 3.8 or later
+2. Fira Code Font
+
+### Installing Fira Code Font
+
+```bash
+$ wget https://github.com/tonsky/FiraCode/releases/download/5.2/Fira_Code_v5.2.zip
+$ unzip Fira_Code_v5.2.zip -d Fira_Code
+$ cd Fira_Code/
+$ cp ttf/* ~/.local/share/fonts/
+$ fc-cache -v
+```
 
 ## Install
 
-Remember, $HOME/.local/bin must be in included in your PATH variable!
+Remember, ***$HOME/.local/bin*** must be in included in your PATH variable!
 
 ```bash
 $ pip3 install gonha
@@ -30,7 +41,7 @@ $ gonha
 
 ## Config
 
-After execute gonha for first time, the ***$HOME/.config/gonha/config.ini*** is created and
+After execute gonha for first time the ***$HOME/.config/gonha/config.ini*** is created and
  you need edit to match with network interface in your system. eg
 
 ```bash
