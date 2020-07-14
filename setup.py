@@ -25,7 +25,8 @@ setuptools.setup(
         'PyQt5',
         'ewmh',
         'psutil',
-        'humanfriendly'
+        'humanfriendly',
+        'pathlib'
     ],
     include_package_data=True,
     zip_safe=False,

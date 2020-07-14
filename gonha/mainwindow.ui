@@ -386,6 +386,171 @@
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
+      <widget class="QLabel" name="networkLabel">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>500</y>
+         <width>471</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>16</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(252, 126, 0);</string>
+       </property>
+       <property name="text">
+        <string>::Network::</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="ifaceLabel">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>540</y>
+         <width>58</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(252, 126, 0);</string>
+       </property>
+       <property name="text">
+        <string>iface:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="ifaceValueLabel">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>540</y>
+         <width>71</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string>enp5s0</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="downloadLabel">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>530</y>
+         <width>41</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(252, 126, 0);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap>images/download.png</pixmap>
+       </property>
+      </widget>
+      <widget class="QLabel" name="downloadValueLabel">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>540</y>
+         <width>101</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string>899 Kb/s</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="uploadValueLabel">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>540</y>
+         <width>111</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string>899 Kb/s</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="uploadLabel">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>530</y>
+         <width>41</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(252, 126, 0);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap>images/upload.png</pixmap>
+       </property>
+      </widget>
       <zorder>minuteLabel</zorder>
       <zorder>hourLabel</zorder>
       <zorder>ampmLabel</zorder>
@@ -399,6 +564,13 @@
       <zorder>temperatureValueLabel</zorder>
       <zorder>verticalLayoutWidget</zorder>
       <zorder>filesystemLabel</zorder>
+      <zorder>networkLabel</zorder>
+      <zorder>ifaceLabel</zorder>
+      <zorder>ifaceValueLabel</zorder>
+      <zorder>downloadLabel</zorder>
+      <zorder>downloadValueLabel</zorder>
+      <zorder>uploadValueLabel</zorder>
+      <zorder>uploadLabel</zorder>
      </widget>
     </item>
    </layout>

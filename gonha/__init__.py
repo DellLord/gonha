@@ -13,7 +13,7 @@ from pathlib import Path
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.join(os.path.split(__file__)[0], './')
 cfgFile = f'{Path.home()}/.config/gonha/config.ini'
-net_iface = 'enp5s0'
+iface = 'enp5s0'
 
 
 class ThreadNetworkStats(QtCore.QThread):
@@ -23,9 +23,9 @@ class ThreadNetworkStats(QtCore.QThread):
         super(ThreadNetworkStats, self).__init__(parent)
 
     def run(self):
-        counter1 = psutil.net_io_counters(pernic=True)[net_iface]
+        counter1 = psutil.net_io_counters(pernic=True)[iface]
         time.sleep(1)
-        counter2 = psutil.net_io_counters(pernic=True)[net_iface]
+        counter2 = psutil.net_io_counters(pernic=True)[iface]
         downSpeed = f'{humanfriendly.format_size(counter2.bytes_recv - counter1.bytes_recv)}/s'
 
         upSpeed = f'{humanfriendly.format_size(counter2.bytes_sent - counter1.bytes_sent)}/s'
@@ -111,6 +111,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.lsbreleaseLabel = self.findChild(QtWidgets.QLabel, 'lsbreleaseLabel')
         self.temperatureValueLabel = self.findChild(QtWidgets.QLabel, 'temperatureValueLabel')
         self.fsVerticalLayout = self.findChild(QtWidgets.QVBoxLayout, 'fsVerticalLayout')
+        self.ifaceValueLabel = self.findChild(QtWidgets.QLabel, 'ifaceValueLabel')
+        self.downloadValueLabel = self.findChild(QtWidgets.QLabel, 'downloadValueLabel')
+        self.uploadValueLabel = self.findChild(QtWidgets.QLabel, 'uploadValueLabel')
         # -------------------------------------------------------------
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
@@ -156,7 +159,10 @@ class MainWindow(QtWidgets.QMainWindow):
             file.close()
 
     def receiveThreadNetworkStats(self, message):
-        print('Recebendo mensagem da threadNetworkStats ===>', message)
+        print(message)
+        self.ifaceValueLabel.setText(iface)
+        self.downloadValueLabel.setText(message['downSpeed'])
+        self.uploadValueLabel.setText(message['upSpeed'])
         self.threadNetworkStats.start()
 
     def displayPartitions(self):
