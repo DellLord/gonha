@@ -1,5 +1,4 @@
-include crazydiskmark/README.me
-include crazydiskmark/LICENSE
-include crazydiskmark/*.ui
-include crazydiskmark/images/*
-include crazydiskmark/scripts/*
+include gonha/README.me
+include gonha/LICENSE
+include gonha/*.ui
+include gonha/images/*

@@ -11,7 +11,8 @@ import humanfriendly
 from pathlib import Path
 
 app = QtWidgets.QApplication(sys.argv)
-resource_path = os.path.join(os.path.split(__file__)[0], './')
+resource_path = os.path.dirname(__file__)
+print(resource_path)
 cfgFile = f'{Path.home()}/.config/gonha/config.ini'
 iface = 'enp5s0'
 
