@@ -8,10 +8,28 @@ import psutil
 import configparser
 import lsb_release
 import humanfriendly
+from pathlib import Path
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.join(os.path.split(__file__)[0], './')
-cfgFile = f'{resource_path}/config.ini'
+cfgFile = f'{Path.home()}/.config/gonha/config.ini'
+net_iface = 'enp5s0'
+
+
+class ThreadNetworkStats(QtCore.QThread):
+    signal = QtCore.pyqtSignal(dict, name='ThreadNetworkFinish')
+
+    def __init__(self, parent=None):
+        super(ThreadNetworkStats, self).__init__(parent)
+
+    def run(self):
+        counter1 = psutil.net_io_counters(pernic=True)[net_iface]
+        time.sleep(1)
+        counter2 = psutil.net_io_counters(pernic=True)[net_iface]
+        downSpeed = f'{humanfriendly.format_size(counter2.bytes_recv - counter1.bytes_recv)}/s'
+
+        upSpeed = f'{humanfriendly.format_size(counter2.bytes_sent - counter1.bytes_sent)}/s'
+        self.signal.emit({'downSpeed': downSpeed, 'upSpeed': upSpeed})
 
 
 class ThreadSlow(QtCore.QThread):
@@ -71,6 +89,7 @@ class ThreadFast(QtCore.QThread):
 
 
 class MainWindow(QtWidgets.QMainWindow):
+    threadNetworkStats = ThreadNetworkStats()
     threadFast = ThreadFast()
     threadSlow = ThreadSlow()
     partitionsLabels = []
@@ -98,6 +117,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Connect Threads Signals
         self.threadFast.signal.connect(self.receiveThreadFastfinish)
         self.threadSlow.signal.connect(self.receiveThreadSlowFinish)
+        self.threadNetworkStats.signal.connect(self.receiveThreadNetworkStats)
         self.moveTopRight()
         self.show()
         # Show in all workspaces
@@ -111,8 +131,33 @@ class MainWindow(QtWidgets.QMainWindow):
         ew.display.flush()
         self.threadFast.start()
         self.threadSlow.start()
+        self.threadNetworkStats.start()
+        # ----------------------------------
+        # verify if config file exists
+        # in $HOME/.config/gonha
+        self.startConfig()
+        # ----------------------------------
         self.loadConfigs()
         self.displayPartitions()
+
+    @staticmethod
+    def startConfig():
+        # verify if config file exists
+        if not (os.path.isfile(cfgFile)):
+            if not (os.path.isdir(f'{Path.home()}/.config/gonha')):
+                os.makedirs(f'{Path.home()}/.config/gonha')
+
+            file = open(cfgFile, 'w')
+            lines = [
+                "[DEFAULT]\n",
+                "position = topRight\n"
+            ]
+            file.writelines(lines)
+            file.close()
+
+    def receiveThreadNetworkStats(self, message):
+        print('Recebendo mensagem da threadNetworkStats ===>', message)
+        self.threadNetworkStats.start()
 
     def displayPartitions(self):
         mntPoints = self.threadSlow.getPartitions()
@@ -160,14 +205,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 }
             )
 
-            print(self.partitionsLabels)
+            # print(self.partitionsLabels)
 
             self.fsVerticalLayout.addLayout(horizontalLayout)
 
     def loadConfigs(self):
         config = configparser.ConfigParser()
         config.read(cfgFile)
-        print(config['DEFAULT']['position'])
+        # print(config['DEFAULT']['position'])
         if config['DEFAULT']['position'] == 'topLeft':
             self.moveTopLeft()
         else:
@@ -216,9 +261,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.move(rect.width() - win.width(), 0)
 
     def receiveThreadSlowFinish(self, message):
-        print(message)
         for i, label in enumerate(self.partitionsLabels):
-            # print(f"index = {i} {label['mountpointValueLabel'].text()}")
             label['mountpointValueLabel'].setText(message['partitions'][i]['mountpoint'])
             label['usedValueLabel'].setText(message['partitions'][i]['used'])
             label['totalValueLabel'].setText(message['partitions'][i]['total'])

@@ -1,6 +1,7 @@
 <component name="ProjectDictionaryState">
   <dictionary name="fredlins">
     <words>
+      <w>addrs</w>
       <w>ampm</w>
       <w>centralwidget</w>
       <w>childs</w>
@@ -11,12 +12,15 @@
       <w>fira</w>
       <w>gonha</w>
       <w>humanfriendly</w>
+      <w>iface</w>
       <w>lsbconfig</w>
       <w>lsbrelease</w>
       <w>mainwindow</w>
+      <w>mensagem</w>
       <w>mountpoint</w>
       <w>mountpoints</w>
       <w>psutil</w>
+      <w>recebendo</w>
       <w>threadfinish</w>
       <w>threadslow</w>
     </words>
