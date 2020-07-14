@@ -1,20 +1,30 @@
 # Gonha
 
+![Gonha - Logo](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/logo.png)
+
 * [About](#about)
 * [Dependencies](#dependencies)
 * [Install](#install)
 * [Buy me a Coffee](#buy-me-a-coffee)
 * [License](#license)
 
-
 ## About
 
+Gonha is a simple light-weight system monitor for Linux
 
 ## Dependencies
 
+1. Pyhton 3.8 or later
+
 ## Install
 
+```bash
+$ pip3 install gonha
+```
+
 ## Screenshot
+
+
 
 
 ## Buy me a Coffee
