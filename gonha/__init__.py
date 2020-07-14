@@ -181,15 +181,13 @@ class MainWindow(QtWidgets.QMainWindow):
             print(w)
             ew.setWmDesktop(w, 0xffffffff)
 
-        print(':: Gonha version {} ::'.format(self.version))
-        print('Please, wait 5 seconds....')
-        time.sleep(5)
         ew.display.flush()
         self.threadFast.start()
         self.threadSlow.start()
         self.threadNetworkStats.start()
         self.loadConfigs()
         self.displayPartitions()
+        print(':: Gonha version {} ::'.format(self.version))
 
     def quitAboutDialog(self):
         self.aboutDialog.hide()
