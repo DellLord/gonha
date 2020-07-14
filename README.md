@@ -21,6 +21,8 @@ Gonha is a simple light-weight system monitor for Linux
 
 ## Install
 
+Remember, $HOME/.local/bin must be in included in your PATH variable!
+
 ```bash
 $ pip3 install gonha
 $ gonha
