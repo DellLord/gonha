@@ -187,6 +187,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadNetworkStats.start()
         self.loadConfigs()
         self.displayPartitions()
+        print(':: Gonha version {} ::'.format(self.version))
 
     def quitAboutDialog(self):
         self.aboutDialog.hide()
