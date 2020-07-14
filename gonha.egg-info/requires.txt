@@ -1,0 +1,5 @@
+PyQt5
+ewmh
+psutil
+humanfriendly
+pathlib
