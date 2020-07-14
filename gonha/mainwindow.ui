@@ -425,7 +425,7 @@
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -447,14 +447,14 @@
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
         </font>
        </property>
        <property name="styleSheet">
         <string notr="true">color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>enp5s0</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="downloadLabel">
@@ -494,14 +494,14 @@
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
         </font>
        </property>
        <property name="styleSheet">
         <string notr="true">color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>899 Kb/s</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="uploadValueLabel">
@@ -516,14 +516,14 @@
        <property name="font">
         <font>
          <family>Fira Code</family>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
         </font>
        </property>
        <property name="styleSheet">
         <string notr="true">color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>899 Kb/s</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="uploadLabel">

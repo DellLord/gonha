@@ -10,10 +10,38 @@ import lsb_release
 import humanfriendly
 from pathlib import Path
 
+cfgFile = f'{Path.home()}/.config/gonha/config.ini'
+
+
+def startConfig():
+    # verify if config file exists
+    if not (os.path.isfile(cfgFile)):
+        if not (os.path.isdir(f'{Path.home()}/.config/gonha')):
+            os.makedirs(f'{Path.home()}/.config/gonha')
+
+        file = open(cfgFile, 'w')
+        lines = [
+            "[DEFAULT]\n",
+            "position = topRight\n",
+            "iface = \n"
+        ]
+        file.writelines(lines)
+        file.close()
+
+
+def getConfigParam(param):
+    config = configparser.ConfigParser()
+    config.read(cfgFile)
+    try:
+        return config['DEFAULT'][param]
+    except KeyError:
+        return ''
+
+
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)
-cfgFile = f'{Path.home()}/.config/gonha/config.ini'
-iface = 'enp5s0'
+startConfig()
+iface = getConfigParam('iface')
 
 
 class ThreadNetworkStats(QtCore.QThread):
@@ -27,13 +55,16 @@ class ThreadNetworkStats(QtCore.QThread):
         self.start()
 
     def run(self):
-        counter1 = psutil.net_io_counters(pernic=True)[iface]
-        time.sleep(1)
-        counter2 = psutil.net_io_counters(pernic=True)[iface]
-        downSpeed = f'{humanfriendly.format_size(counter2.bytes_recv - counter1.bytes_recv)}/s'
+        if iface != '':
+            counter1 = psutil.net_io_counters(pernic=True)[iface]
+            time.sleep(1)
+            counter2 = psutil.net_io_counters(pernic=True)[iface]
+            downSpeed = f'{humanfriendly.format_size(counter2.bytes_recv - counter1.bytes_recv)}/s'
 
-        upSpeed = f'{humanfriendly.format_size(counter2.bytes_sent - counter1.bytes_sent)}/s'
-        self.signal.emit({'downSpeed': downSpeed, 'upSpeed': upSpeed})
+            upSpeed = f'{humanfriendly.format_size(counter2.bytes_sent - counter1.bytes_sent)}/s'
+            self.signal.emit({'downSpeed': downSpeed, 'upSpeed': upSpeed})
+        else:
+            self.quit()
 
 
 class ThreadSlow(QtCore.QThread):
@@ -148,28 +179,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadFast.start()
         self.threadSlow.start()
         self.threadNetworkStats.start()
-        # ----------------------------------
-        # verify if config file exists
-        # in $HOME/.config/gonha
-        self.startConfig()
-        # ----------------------------------
         self.loadConfigs()
         self.displayPartitions()
-
-    @staticmethod
-    def startConfig():
-        # verify if config file exists
-        if not (os.path.isfile(cfgFile)):
-            if not (os.path.isdir(f'{Path.home()}/.config/gonha')):
-                os.makedirs(f'{Path.home()}/.config/gonha')
-
-            file = open(cfgFile, 'w')
-            lines = [
-                "[DEFAULT]\n",
-                "position = topRight\n"
-            ]
-            file.writelines(lines)
-            file.close()
 
     def receiveThreadNetworkStats(self, message):
         # print(message)
@@ -299,4 +310,3 @@ class MainWindow(QtWidgets.QMainWindow):
         self.memValueLabel.setText(message['memValueLabel'])
         self.cpuValueLabel.setText(message['cpuValueLabel'])
         self.temperatureValueLabel.setText(message['temperatureValueLabel'])
-
