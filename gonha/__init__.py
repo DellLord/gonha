@@ -6,9 +6,9 @@ import time
 from datetime import datetime
 import psutil
 import configparser
-import lsb_release
 import humanfriendly
 from pathlib import Path
+from configobj import ConfigObj
 
 cfgFile = f'{Path.home()}/.config/gonha/config.ini'
 
@@ -263,9 +263,11 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.moveTopRight()
 
-        distroInfo = lsb_release.get_distro_information()
+        # lsbParser
+        distroInfo = ConfigObj('/etc/lsb-release')
         self.lsbreleaseLabel.setText(
-            f"{distroInfo['DESCRIPTION']} codename {distroInfo['CODENAME']}")
+            f"{distroInfo['DISTRIB_DESCRIPTION']}"
+        )
 
     @staticmethod
     def writeConfig(cfg):

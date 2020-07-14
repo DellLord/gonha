@@ -43,7 +43,8 @@ setuptools.setup(
         'ewmh',
         'psutil',
         'humanfriendly',
-        'pathlib'
+        'pathlib',
+        'configobj'
     ],
     include_package_data=True,
     zip_safe=False,
