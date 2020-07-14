@@ -168,38 +168,44 @@ class MainWindow(QtWidgets.QMainWindow):
     def displayPartitions(self):
         mntPoints = self.threadSlow.getPartitions()
         font = QtGui.QFont('Fira Code', 11)
-        styleSheet = 'color: rgb(252, 126, 0);'
+        orange = 'color: rgb(252, 126, 0);'
+        white = 'color: rgb(255, 255, 255);'
         for i, mntPoint in enumerate(mntPoints['partitions']):
             horizontalLayout = QtWidgets.QHBoxLayout()
 
             mountpointValueLabel = QtWidgets.QLabel(f"{mntPoint['mountpoint']}")
             mountpointValueLabel.setFont(font)
+            mountpointValueLabel.setStyleSheet(white)
             horizontalLayout.addWidget(mountpointValueLabel)
 
             usedLabel = QtWidgets.QLabel(f"used:")
-            usedLabel.setStyleSheet(styleSheet)
+            usedLabel.setStyleSheet(orange)
             usedLabel.setFont(font)
+            usedLabel.setStyleSheet('color: rgb(252, 126, 0);')
             horizontalLayout.addWidget(usedLabel)
 
             usedValueLabel = QtWidgets.QLabel(f"{mntPoint['used']}")
             usedValueLabel.setFont(font)
+            usedValueLabel.setStyleSheet(white)
             horizontalLayout.addWidget(usedValueLabel)
 
             totalLabel = QtWidgets.QLabel(f"total: ")
-            totalLabel.setStyleSheet(styleSheet)
+            totalLabel.setStyleSheet(orange)
             horizontalLayout.addWidget(totalLabel)
 
             totalValueLabel = QtWidgets.QLabel(f"{mntPoint['total']}")
             totalValueLabel.setFont(font)
+            totalValueLabel.setStyleSheet(white)
             horizontalLayout.addWidget(totalValueLabel)
 
             percentLabel = QtWidgets.QLabel(f"percent:")
-            percentLabel.setStyleSheet(styleSheet)
+            percentLabel.setStyleSheet(orange)
             percentLabel.setFont(font)
             horizontalLayout.addWidget(percentLabel)
 
             percentValueLabel = QtWidgets.QLabel(f"{mntPoint['percent']}")
             percentValueLabel.setFont(font)
+            percentValueLabel.setStyleSheet(white)
             horizontalLayout.addWidget(percentValueLabel)
 
             self.partitionsLabels.append(
