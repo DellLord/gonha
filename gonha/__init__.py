@@ -365,6 +365,7 @@ class MainWindow(QtWidgets.QMainWindow):
             )
 
             self.fsVerticalLayout.addLayout(horizontalLayout)
+            self.fsVerticalLayout.setAlignment(QtCore.Qt.AlignTop)
 
     def loadConfigs(self):
         # Adjust initial position
