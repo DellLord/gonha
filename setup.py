@@ -1,12 +1,11 @@
 import setuptools
 import re
-import shutil
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 # update aboutdialog.ui with correct version
-version = '0.1.18'
+version = '0.1.20'
 pattern = "([0-9]+.[0-9]+.[0-9]+)"
 newlines = []
 dialog_filename = 'gonha/aboutdialog.ui'
@@ -20,10 +19,6 @@ with open(dialog_filename, 'r') as f:
 with open(dialog_filename, 'w') as f:
     for line in newlines:
         f.write(line)
-
-# Delete all releases
-shutil.rmtree('./dist')
-shutil.rmtree('./build')
 
 
 setuptools.setup(
@@ -50,7 +45,9 @@ setuptools.setup(
         'psutil',
         'humanfriendly',
         'pathlib',
-        'configobj'
+        'configobj',
+        'PyInquirer',
+        'colr'
     ],
     include_package_data=True,
     zip_safe=False,

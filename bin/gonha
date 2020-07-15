@@ -1,12 +1,55 @@
 #!/usr/bin/env python
-import sys
 from PyQt5 import QtWidgets
 import gonha
+from pathlib import Path
+import os
+import sys
+from colr import color
+import pkg_resources
+import re
+from PyInquirer import prompt, print_json
 
-print('Starting...')
+
+class Config:
+    def __init__(self):
+        # Config file
+        self.cfgFile = f'{Path.home()}/.config/gonha/config.json'
+        self.aboutdialogFile = pkg_resources.resource_filename('gonha', 'aboutdialog.ui')
+        self.version = self.getVersion()
+        print(color(':: ', fore=11), color(f'Gonha {self.version}', fore=14, back=0), color(' ::', fore=11))
+        print('Starting...')
+        if not os.path.isfile(self.cfgFile):
+            print(color('Config file not found in : ', fore=9), color(f'{self.cfgFile}', fore=11))
+            print(color('Starting Wizard...', fore=14))
+            dateFormatQuestions = [
+                {
+                    'type': 'list',
+                    'name': 'dateFormat',
+                    'message': 'Select time format',
+                    'choices': [
+                        '12 hours',
+                        '24 hours',
+                    ]
+                }
+            ]
+
+            response = prompt(dateFormatQuestions)
+            print(response)
+
+            # ----------------------------------------
+            sys.exit()
+
+    def getVersion(self):
+        pattern = "([0-9]+.[0-9]+.[0-9]+)"
+        with open(self.aboutdialogFile, 'r') as f:
+            for line in f.readlines():
+                if re.search(pattern, line):
+                    return re.search(pattern, line).group()
+
 
 if __name__ == '__main__':
-    #app = QtWidgets.QApplication(sys.argv)
+    # app = QtWidgets.QApplication(sys.argv)
+    Config()
     app = gonha.app
     window = gonha.MainWindow()
     app.exec_()
