@@ -5,43 +5,152 @@ from ewmh import EWMH
 import time
 from datetime import datetime
 import psutil
-import configparser
 import humanfriendly
 from pathlib import Path
+import pkg_resources
+from colr import color
+from PyInquirer import prompt, print_json
+import re
+import json
 from configobj import ConfigObj
-
-cfgFile = f'{Path.home()}/.config/gonha/config.ini'
-
-
-def startConfig():
-    # verify if config file exists
-    if not (os.path.isfile(cfgFile)):
-        if not (os.path.isdir(f'{Path.home()}/.config/gonha')):
-            os.makedirs(f'{Path.home()}/.config/gonha')
-
-        file = open(cfgFile, 'w')
-        lines = [
-            "[DEFAULT]\n",
-            "position = topRight\n",
-            "iface = \n"
-        ]
-        file.writelines(lines)
-        file.close()
-
-
-def getConfigParam(param):
-    config = configparser.ConfigParser()
-    config.read(cfgFile)
-    try:
-        return config['DEFAULT'][param]
-    except KeyError:
-        return ''
-
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)
-startConfig()
-iface = getConfigParam('iface')
+
+
+class Config:
+
+    def __init__(self):
+        # Config file
+        self.cfgFile = f'{Path.home()}/.config/gonha/config.json'
+        self.globalJSON = dict()
+        self.aboutdialogFile = pkg_resources.resource_filename('gonha', 'aboutdialog.ui')
+        self.version = self.getVersion()
+        if not os.path.isfile(self.cfgFile):
+            print(color('Config file not found in : ', fore=9), color(f'{self.cfgFile}', fore=11))
+            print(color('Starting Wizard...', fore=14))
+            print('')
+
+            # Position Question
+            positionQuestions = [
+                {
+                    'type': 'list',
+                    'name': 'position',
+                    'message': 'What position do you want on the screen?',
+                    'choices': [
+                        'Top Left',
+                        'Top Right',
+                    ],
+                }
+            ]
+            positionResponse = prompt(positionQuestions)
+            self.updateConfig(positionResponse)
+
+            # Date Format Question
+            dateFormatQuestions = [
+                {
+                    'type': 'list',
+                    'name': 'dateFormat',
+                    'message': 'Select time format',
+                    'choices': [
+                        '12 hours',
+                        '24 hours',
+                    ]
+                }
+            ]
+            dateFormatResponse = prompt(dateFormatQuestions)
+            self.updateConfig(dateFormatResponse)
+
+            # Temperature Question
+            sensors = psutil.sensors_temperatures()
+            tempUserChoices = []
+            for i, key in enumerate(sensors):
+                tempUserChoices.append(
+                    '{} - [{}] current temp: {:.2f}°'.format(i, key, float(sensors[key][i].current))
+                )
+
+            # Temperature Questions
+            tempQuestions = [
+                {
+                    'type': 'list',
+                    'name': 'temp',
+                    'message': 'Select what is temperature sensor you want gonha to show',
+                    'choices': tempUserChoices,
+                    'filter': lambda val: tempUserChoices.index(val)
+                }
+            ]
+            tempResponse = prompt(tempQuestions)
+            self.updateConfig(tempResponse)
+
+            partitionsChoices = []
+            # Filesystem sections
+            for partition in psutil.disk_partitions():
+                partitionsChoices.append(
+                    {
+                        'name': 'device: [{}] mountpoint: [{}] fstype: {}'.format(partition.device,
+                                                                                  partition.mountpoint,
+                                                                                  partition.fstype),
+                        'value': partition.mountpoint
+                    }
+                )
+
+            partitionQuestions = [
+                {
+                    'type': 'checkbox',
+                    'name': 'filesystems',
+                    'message': 'Select which partitions you want to display',
+                    'choices': partitionsChoices,
+                }
+            ]
+            partitionsResponse = prompt(partitionQuestions)
+            self.updateConfig(partitionsResponse)
+
+            # Interface Name
+            ifaceChoices = []
+            for net_if_addr in psutil.net_if_addrs():
+                ifaceChoices.append('{}'.format(net_if_addr))
+
+            ifaceQuestions = [
+                {
+                    'type': 'list',
+                    'name': 'iface',
+                    'message': 'Select the network interface to donwload e upload rate stats.',
+                    'choices': ifaceChoices
+                }
+            ]
+            ifaceResponse = prompt(ifaceQuestions)
+            self.updateConfig(ifaceResponse)
+
+            # Write json global
+            # print(self.globalJSON)
+            self.writeConfig()
+            # ----------------------------------------
+            sys.exit()
+
+    def getConfig(self, key):
+        with open(self.cfgFile, 'r') as openfile:
+            json_object = json.load(openfile)
+
+        return json_object[key]
+
+    def writeConfig(self):
+        if not os.path.isdir(os.path.dirname(self.cfgFile)):
+            os.makedirs(os.path.dirname(self.cfgFile))
+
+        # Serializing json
+        json_object = json.dumps(self.globalJSON, indent=4)
+        with open(self.cfgFile, 'w') as outfile:
+            outfile.write(json_object)
+
+    def updateConfig(self, data):
+        self.globalJSON.update(data)
+
+    def getVersion(self):
+        pattern = "([0-9]+.[0-9]+.[0-9]+)"
+        with open(self.aboutdialogFile, 'r') as f:
+            for line in f.readlines():
+                if re.search(pattern, line):
+                    return re.search(pattern, line).group()
 
 
 class ThreadNetworkStats(QtCore.QThread):
@@ -50,21 +159,20 @@ class ThreadNetworkStats(QtCore.QThread):
     def __init__(self, parent=None):
         super(ThreadNetworkStats, self).__init__(parent)
         self.finished.connect(self.threadFinished)
+        self.config = Config()
+        self.iface = self.config.getConfig('iface')
 
     def threadFinished(self):
         self.start()
 
     def run(self):
-        if iface != '':
-            counter1 = psutil.net_io_counters(pernic=True)[iface]
-            time.sleep(1)
-            counter2 = psutil.net_io_counters(pernic=True)[iface]
-            downSpeed = f'{humanfriendly.format_size(counter2.bytes_recv - counter1.bytes_recv)}/s'
+        counter1 = psutil.net_io_counters(pernic=True)[self.iface]
+        time.sleep(1)
+        counter2 = psutil.net_io_counters(pernic=True)[self.iface]
+        downSpeed = f'{humanfriendly.format_size(counter2.bytes_recv - counter1.bytes_recv)}/s'
 
-            upSpeed = f'{humanfriendly.format_size(counter2.bytes_sent - counter1.bytes_sent)}/s'
-            self.signal.emit({'downSpeed': downSpeed, 'upSpeed': upSpeed})
-        else:
-            self.quit()
+        upSpeed = f'{humanfriendly.format_size(counter2.bytes_sent - counter1.bytes_sent)}/s'
+        self.signal.emit({'downSpeed': downSpeed, 'upSpeed': upSpeed})
 
 
 class ThreadSlow(QtCore.QThread):
@@ -73,33 +181,29 @@ class ThreadSlow(QtCore.QThread):
     def __init__(self, parent=None):
         super(ThreadSlow, self).__init__(parent)
         self.finished.connect(self.threadFinished)
+        self.config = Config()
 
     def threadFinished(self):
         self.start()
 
-    @staticmethod
-    def getPartitions():
-        msg = dict()
-        partitions = psutil.disk_partitions()
-        msg['partitions'] = []
-        for partition in partitions:
-            if (not ('boot' in partition.mountpoint)) and (not ('snap' in partition.mountpoint)):
-                disk_usage = psutil.disk_usage(partition.mountpoint)
-                msg['partitions'].append(
-                    {
-                        'mountpoint': partition.mountpoint,
-                        'total': humanfriendly.format_size(disk_usage.total),
-                        'used': humanfriendly.format_size(disk_usage.used),
-                        'free': humanfriendly.format_size(disk_usage.free),
-                        'percent': f'{disk_usage.percent}%'
-                    }
-                )
+    def getPartitions(self):
+        msg = []
+        for mntPoint in self.config.getConfig('filesystems'):
+            disk_usage = psutil.disk_usage(mntPoint)
+            msg.append({
+                'mountpoint': mntPoint,
+                'total': humanfriendly.format_size(disk_usage.total),
+                'used': humanfriendly.format_size(disk_usage.used),
+                'free': humanfriendly.format_size(disk_usage.free),
+                'percent': f'{disk_usage.percent}%'
+            })
 
         return msg
 
-    def run(self):
-        time.sleep(10)
-        self.signal.emit(self.getPartitions())
+
+def run(self):
+    time.sleep(10)
+    self.signal.emit(self.getPartitions())
 
 
 class ThreadFast(QtCore.QThread):
@@ -141,6 +245,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi(f'{resource_path}/mainwindow.ui', self)
+        # Config()
+        self.config = Config()
+        self.iface = self.config.getConfig('iface')
+        # aboutdialog
+        self.aboutDialog = QtWidgets.QDialog()
+        uic.loadUi(f'{resource_path}/aboutdialog.ui', self.aboutDialog)
+        self.aboutDialog.okPushButton = self.aboutDialog.findChild(QtWidgets.QPushButton, 'okPushButton')
+        self.aboutDialog.okPushButton.clicked.connect(self.quitAboutDialog)
+        self.version = self.aboutDialog.findChild(QtWidgets.QLabel, 'versionLabel').text()
+        print(color(':: ', fore=11), color(f'Gonha {self.version}', fore=14, back=0), color(' ::', fore=11))
+        print('Starting...')
+        print()
+
+        # Window Flags
         flags = QtCore.Qt.FramelessWindowHint
         flags |= QtCore.Qt.WindowStaysOnBottomHint
         flags |= QtCore.Qt.Tool
@@ -158,12 +276,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ifaceValueLabel = self.findChild(QtWidgets.QLabel, 'ifaceValueLabel')
         self.downloadValueLabel = self.findChild(QtWidgets.QLabel, 'downloadValueLabel')
         self.uploadValueLabel = self.findChild(QtWidgets.QLabel, 'uploadValueLabel')
-        # aboutdialog
-        self.aboutDialog = QtWidgets.QDialog()
-        uic.loadUi(f'{resource_path}/aboutdialog.ui', self.aboutDialog)
-        self.aboutDialog.okPushButton = self.aboutDialog.findChild(QtWidgets.QPushButton, 'okPushButton')
-        self.aboutDialog.okPushButton.clicked.connect(self.quitAboutDialog)
-        self.version = self.aboutDialog.findChild(QtWidgets.QLabel, 'versionLabel').text()
         # -------------------------------------------------------------
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
@@ -194,49 +306,51 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def receiveThreadNetworkStats(self, message):
         # print(message)
-        self.ifaceValueLabel.setText(iface)
+        self.ifaceValueLabel.setText(self.iface)
         self.downloadValueLabel.setText(message['downSpeed'])
         self.uploadValueLabel.setText(message['upSpeed'])
 
     def displayPartitions(self):
-        mntPoints = self.threadSlow.getPartitions()
         font = QtGui.QFont('Fira Code', 11)
         orange = 'color: rgb(252, 126, 0);'
         white = 'color: rgb(255, 255, 255);'
-        for i, mntPoint in enumerate(mntPoints['partitions']):
+        mntPoints = self.threadSlow.getPartitions()
+        # print(mntPoints)
+        for mntPoint in mntPoints:
             horizontalLayout = QtWidgets.QHBoxLayout()
 
-            mountpointValueLabel = QtWidgets.QLabel(f"{mntPoint['mountpoint']}")
+            #
+            mountpointValueLabel = QtWidgets.QLabel(mntPoint['mountpoint'])
             mountpointValueLabel.setFont(font)
             mountpointValueLabel.setStyleSheet(white)
             horizontalLayout.addWidget(mountpointValueLabel)
 
-            usedLabel = QtWidgets.QLabel(f"used:")
+            usedLabel = QtWidgets.QLabel('used:')
             usedLabel.setStyleSheet(orange)
             usedLabel.setFont(font)
             usedLabel.setStyleSheet('color: rgb(252, 126, 0);')
             horizontalLayout.addWidget(usedLabel)
 
-            usedValueLabel = QtWidgets.QLabel(f"{mntPoint['used']}")
+            usedValueLabel = QtWidgets.QLabel(mntPoint['used'])
             usedValueLabel.setFont(font)
             usedValueLabel.setStyleSheet(white)
             horizontalLayout.addWidget(usedValueLabel)
 
-            totalLabel = QtWidgets.QLabel(f"total: ")
+            totalLabel = QtWidgets.QLabel('total:')
             totalLabel.setStyleSheet(orange)
             horizontalLayout.addWidget(totalLabel)
 
-            totalValueLabel = QtWidgets.QLabel(f"{mntPoint['total']}")
+            totalValueLabel = QtWidgets.QLabel(mntPoint['total'])
             totalValueLabel.setFont(font)
             totalValueLabel.setStyleSheet(white)
             horizontalLayout.addWidget(totalValueLabel)
 
-            percentLabel = QtWidgets.QLabel(f"percent:")
+            percentLabel = QtWidgets.QLabel('percent:')
             percentLabel.setStyleSheet(orange)
             percentLabel.setFont(font)
             horizontalLayout.addWidget(percentLabel)
 
-            percentValueLabel = QtWidgets.QLabel(f"{mntPoint['percent']}")
+            percentValueLabel = QtWidgets.QLabel(mntPoint['percent'])
             percentValueLabel.setFont(font)
             percentValueLabel.setStyleSheet(white)
             horizontalLayout.addWidget(percentValueLabel)
@@ -250,15 +364,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 }
             )
 
-            # print(self.partitionsLabels)
-
             self.fsVerticalLayout.addLayout(horizontalLayout)
 
     def loadConfigs(self):
-        config = configparser.ConfigParser()
-        config.read(cfgFile)
-        # print(config['DEFAULT']['position'])
-        if config['DEFAULT']['position'] == 'topLeft':
+        # Adjust initial position
+        if self.config.getConfig('position') == 'Top Left':
             self.moveTopLeft()
         else:
             self.moveTopRight()
@@ -269,29 +379,14 @@ class MainWindow(QtWidgets.QMainWindow):
             f"{distroInfo['DISTRIB_DESCRIPTION']}"
         )
 
-    @staticmethod
-    def writeConfig(cfg):
-        config = configparser.ConfigParser()
-        config['DEFAULT'] = cfg
-        with open(cfgFile, 'w') as configfile:
-            config.write(configfile)
-
     def contextMenuEvent(self, event: QtGui.QContextMenuEvent):
         contextMenu = QtWidgets.QMenu(self)
-        topLeftAction = contextMenu.addAction('Top Left')
-        topRightAction = contextMenu.addAction('Top Right')
-        aboutAction = contextMenu.addAction('A&bout')
+        # topLeftAction = contextMenu.addAction('Top Left')
+        # topRightAction = contextMenu.addAction('Top Right')
+        # aboutAction = contextMenu.addAction('A&bout')
         quitAction = contextMenu.addAction('&Quit')
         action = contextMenu.exec_(self.mapToGlobal(event.pos()))
-        if action == topLeftAction:
-            self.writeConfig({'position': 'topLeft'})
-            self.moveTopLeft()
-        elif action == topRightAction:
-            self.writeConfig({'position': 'topRight'})
-            self.moveTopRight()
-        elif action == aboutAction:
-            self.aboutDialog.exec_()
-        elif action == quitAction:
+        if action == quitAction:
             sys.exit()
 
     def moveTopLeft(self):
