@@ -22,6 +22,7 @@ class Config:
         self.version = self.getVersion()
         print(color(':: ', fore=11), color(f'Gonha {self.version}', fore=14, back=0), color(' ::', fore=11))
         print('Starting...')
+        print()
         if not os.path.isfile(self.cfgFile):
             print(color('Config file not found in : ', fore=9), color(f'{self.cfgFile}', fore=11))
             print(color('Starting Wizard...', fore=14))
@@ -122,6 +123,12 @@ class Config:
             self.writeConfig()
             # ----------------------------------------
             sys.exit()
+
+    def getConfig(self, key):
+        with open(self.cfgFile, 'r') as openfile:
+            json_object = json.load(openfile)
+
+        return json_object[key]
 
     def writeConfig(self):
         if not os.path.isdir(os.path.dirname(self.cfgFile)):
