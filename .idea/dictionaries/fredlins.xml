@@ -2,6 +2,7 @@
   <dictionary name="fredlins">
     <words>
       <w>aboutdialog</w>
+      <w>addr</w>
       <w>addrs</w>
       <w>ampm</w>
       <w>centralwidget</w>
@@ -11,9 +12,11 @@
       <w>configobj</w>
       <w>distrib</w>
       <w>distro</w>
+      <w>donwload</w>
       <w>ewmh</w>
       <w>fastfinish</w>
       <w>fira</w>
+      <w>fstype</w>
       <w>gonha</w>
       <w>humanfriendly</w>
       <w>iface</w>
