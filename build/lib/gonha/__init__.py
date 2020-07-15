@@ -241,7 +241,7 @@ class ThreadFast(QtCore.QThread):
         sensors = psutil.sensors_temperatures()
         for i, key in enumerate(sensors):
             if i == sensorIndex:
-                self.message['temperatureValueLabel'] = '{:.1f}°'.format(float(sensors[key][i].current))
+                self.message['temperatureValueLabel'] = '{:.2f}°'.format(float(sensors[key][i].current))
                 break
 
         time.sleep(2)
@@ -311,7 +311,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadNetworkStats.start()
         self.loadConfigs()
         self.displayPartitions()
-        print(':: Gonha version {} ::'.format(self.version))
 
     def quitAboutDialog(self):
         self.aboutDialog.hide()
