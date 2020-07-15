@@ -124,6 +124,10 @@ class Config:
             # Write json global
             # print(self.globalJSON)
             self.writeConfig()
+
+            print(color("That´s ", fore=10), color('OK', fore=11))
+            print(color('Now, you can running', fore=10), color('gonha', fore=11),
+                  color('command again with all config options for your system!', fore=10))
             # ----------------------------------------
             sys.exit()
 
@@ -176,7 +180,7 @@ class ThreadNetworkStats(QtCore.QThread):
 
 
 class ThreadSlow(QtCore.QThread):
-    signal = QtCore.pyqtSignal(dict, name='ThreadSlowFinish')
+    signal = QtCore.pyqtSignal(list, name='ThreadSlowFinish')
 
     def __init__(self, parent=None):
         super(ThreadSlow, self).__init__(parent)
@@ -200,10 +204,9 @@ class ThreadSlow(QtCore.QThread):
 
         return msg
 
-
-def run(self):
-    time.sleep(10)
-    self.signal.emit(self.getPartitions())
+    def run(self):
+        time.sleep(10)
+        self.signal.emit(self.getPartitions())
 
 
 class ThreadFast(QtCore.QThread):
@@ -213,24 +216,33 @@ class ThreadFast(QtCore.QThread):
     def __init__(self, parent=None):
         super(ThreadFast, self).__init__(parent)
         self.finished.connect(self.threadFinished)
+        self.config = Config()
 
     def threadFinished(self):
-        # print('Thread Fast Finished')
         self.start()
 
     def run(self):
         now = datetime.now()
-        self.message['hourLabel'] = now.strftime('%I')
+        dateFormat = self.config.getConfig('dateFormat')
+        if dateFormat == '24 hours':
+            self.message['hourLabel'] = now.strftime('%H')
+            self.message['ampmLabel'] = ''
+        else:
+            self.message['hourLabel'] = now.strftime('%I')
+            self.message['ampmLabel'] = now.strftime('%p')
+
         self.message['minuteLabel'] = now.strftime('%M')
         self.message['secondsLabel'] = now.strftime('%S')
         self.message['dateLabel'] = now.strftime("%A, %d %B %Y")
-        self.message['ampmLabel'] = now.strftime('%p')
         self.message['cpuValueLabel'] = f"{psutil.cpu_percent()}%"
         self.message['memValueLabel'] = f"{psutil.virtual_memory().percent}%"
+
+        sensorIndex = int(self.config.getConfig('temp'))
         sensors = psutil.sensors_temperatures()
-        for key in sensors:
-            self.message['temperatureValueLabel'] = f'{int(sensors[key][0].current)}°'
-            break
+        for i, key in enumerate(sensors):
+            if i == sensorIndex:
+                self.message['temperatureValueLabel'] = '{:.1f}°'.format(float(sensors[key][i].current))
+                break
 
         time.sleep(2)
         self.signal.emit(self.message)
