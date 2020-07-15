@@ -4,3 +4,5 @@ psutil
 humanfriendly
 pathlib
 configobj
+PyInquirer
+colr

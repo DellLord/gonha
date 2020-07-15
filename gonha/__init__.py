@@ -419,10 +419,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def receiveThreadSlowFinish(self, message):
         for i, label in enumerate(self.partitionsLabels):
-            label['mountpointValueLabel'].setText(message['partitions'][i]['mountpoint'])
-            label['usedValueLabel'].setText(message['partitions'][i]['used'])
-            label['totalValueLabel'].setText(message['partitions'][i]['total'])
-            label['percentValueLabel'].setText(message['partitions'][i]['percent'])
+            label['mountpointValueLabel'].setText(message[i]['mountpoint'])
+            label['usedValueLabel'].setText(message[i]['used'])
+            label['totalValueLabel'].setText(message[i]['total'])
+            label['percentValueLabel'].setText(message[i]['percent'])
 
     def receiveThreadFastfinish(self, message):
         self.hourLabel.setText(message['hourLabel'])
