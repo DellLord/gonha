@@ -66,7 +66,7 @@ class Config:
             tempUserChoices = []
             for i, key in enumerate(sensors):
                 tempUserChoices.append(
-                    '{} - [{}] current temp: {:.2f}°'.format(i, key, float(sensors[key][i].current))
+                    '{} - [{}] current temp: {:.2f}°'.format(i, key, float(sensors[key][0].current))
                 )
 
             # Temperature Questions
