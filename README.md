@@ -1,13 +1,23 @@
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+[![PyPI version](https://badge.fury.io/py/gonha.svg)](https://badge.fury.io/py/gonha)
+[![GitHub issues](https://img.shields.io/github/issues/fredcox/gonha)](https://github.com/fredcox/gonha/issues)
+[![GitHub forks](https://img.shields.io/github/forks/fredcox/gonha)](https://github.com/fredcox/gonha/network)
+[![GitHub stars](https://img.shields.io/github/stars/fredcox/gonha)](https://github.com/fredcox/gonha/stargazers)
+[![GitHub license](https://img.shields.io/github/license/fredcox/gonha)](https://github.com/fredcox/gonha/blob/master/LICENSE)
+
+
 # Gonha
 
 ![Gonha - Logo](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/logo.png)
 
+Contributors
+
 * [About](#about)
 * [Dependencies](#dependencies)
 * [Install](#install)
-* [Config](#config)
-* [Buy me a Coffee](#buy-me-a-coffee)
 * [License](#license)
+* [Contributors](#contributors)
+* [Buy me a Coffee](#buy-me-a-coffee)
 
 ## About
 
@@ -38,6 +48,14 @@ Remember, ***$HOME/.local/bin*** must be in included in your PATH variable!
 $ pip3 install gonha
 $ gonha
 ```
+In your window manager (Kde, Cinammon, Gnome, Mate, Xfce) settings for startup application specify delay minimun
+of ***5 seconds***, this is necessary for ***gonha*** become visible in all workspaces.
+
+See the example above in Cinammon Startup Applications Settings
+
+![Gonha - Startup Applications](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/startupdelay.png)
+
+
 ps: If you got the following error:
 ```
 qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
@@ -52,36 +70,26 @@ Don´t worry, install libxcb-xinerama in your system:
 $ sudo apt install libxcb-xinerama0
 ```
 
-## Config
-
-After execute gonha for first time the ***$HOME/.config/gonha/config.ini*** is created and
- you need edit to match with network interface in your system. eg
-
-```bash
-...
-iface = enp5s0
-```
-By the way, if you want gonha display in ***top left*** section in your screen, please 
-***right click*** and switch the position.
-
-In your window manager (Kde, Cinammon, Gnome, Mate, Xfce) settings for startup application specify delay minimun
-of ***5 seconds***, this is necessary for ***gonha*** become visible in all workspaces.
-
-See the example above in Cinammon Startup Applications Settings
-
-![Gonha - Startup Applications](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/startupdelay.png)
-
 ## Screenshot
 
 This is my desktop with Linux Mint 20 and Gonha is top right on the screen.
 
 ![Gonha - Screenshot](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/gonhascreenshot.png)
 
-## Buy me a Coffee
+## Contributors
 
-<a href="https://www.buymeacoffee.com/fredcox" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+This project exists thanks to all the people who contribute!
+
+1. [Fred Lins](https://github.com/fredcox)
+2. [Carlos Fagiani Junior](https://github.com/fagianijunior)
 
 
 ## License 
 
-This project use MIT License
+This project use [MIT License](https://github.com/fredcox/gonha/blob/master/LICENSE)
+
+## Buy me a Coffee
+
+<a href="https://www.buymeacoffee.com/fredcox" target="_blank">
+        <img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174">
+</a>
