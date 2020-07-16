@@ -72,9 +72,13 @@ $ sudo apt install libxcb-xinerama0
 
 ## Screenshot
 
-This is my desktop with Linux Mint 20 and Gonha is top right on the screen.
+### Linux Mint 20 
 
-![Gonha - Screenshot](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/gonhascreenshot.png)
+![Linux Mint - Screenshot](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/gonhascreenshot.png)
+
+### Pop OS  
+
+![Pop OS - Screenshot](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/popos.jpg)
 
 ## Contributors
 
