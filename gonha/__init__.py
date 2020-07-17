@@ -377,8 +377,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.upDownRateWidgets[0].setText(message['iface'])
         self.upDownRateWidgets[1].setText('{}/s'.format(humanfriendly.format_size(message['downSpeed'])))
         self.upDownRateWidgets[2].setText('{}'.format(humanfriendly.format_size(message['upSpeed'])))
-        self.upDownRateWidgets[3].setText(humanfriendly.format_size(message['bytesSent']))
-        self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesRcv']))
+        self.upDownRateWidgets[3].setText(humanfriendly.format_size(message['bytesRcv']))
+        self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesSent']))
 
     def displayIface(self):
         ifaceGroupBox = QtWidgets.QGroupBox('iface')
@@ -442,33 +442,33 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout.addLayout(horizontalLayout)
         # ---------------------------------------------------
 
-        # Total out
+        # Total in
         bytesSentRcvHLayout = QtWidgets.QHBoxLayout()
 
-        bytesSentLabel = QtWidgets.QLabel('Total out:')
-        bytesSentLabel.setFont(self.fontDefault)
-        bytesSentLabel.setStyleSheet(self.orange)
-        bytesSentRcvHLayout.addWidget(bytesSentLabel)
-
-        bytesSentValueLabel = QtWidgets.QLabel('123 bytes')
-        bytesSentValueLabel.setFont(self.fontDefault)
-        bytesSentValueLabel.setStyleSheet(self.white)
-        bytesSentValueLabel.setAlignment(QtCore.Qt.AlignRight)
-        self.upDownRateWidgets.append(bytesSentValueLabel)
-        bytesSentRcvHLayout.addWidget(bytesSentValueLabel)
-
-        # Total in
         bytesRcvLabel = QtWidgets.QLabel('Total in:')
         bytesRcvLabel.setFont(self.fontDefault)
         bytesRcvLabel.setStyleSheet(self.orange)
         bytesSentRcvHLayout.addWidget(bytesRcvLabel)
 
-        bytesRcvValueLabel = QtWidgets.QLabel('423 bytes')
+        bytesRcvValueLabel = QtWidgets.QLabel('123 bytes')
         bytesRcvValueLabel.setFont(self.fontDefault)
         bytesRcvValueLabel.setStyleSheet(self.white)
         bytesRcvValueLabel.setAlignment(QtCore.Qt.AlignRight)
         self.upDownRateWidgets.append(bytesRcvValueLabel)
         bytesSentRcvHLayout.addWidget(bytesRcvValueLabel)
+
+        # Total out
+        bytesSentLabel = QtWidgets.QLabel('Total out:')
+        bytesSentLabel.setFont(self.fontDefault)
+        bytesSentLabel.setStyleSheet(self.orange)
+        bytesSentRcvHLayout.addWidget(bytesSentLabel)
+
+        bytesSentValueLabel = QtWidgets.QLabel('423 bytes')
+        bytesSentValueLabel.setFont(self.fontDefault)
+        bytesSentValueLabel.setStyleSheet(self.white)
+        bytesSentValueLabel.setAlignment(QtCore.Qt.AlignRight)
+        self.upDownRateWidgets.append(bytesSentValueLabel)
+        bytesSentRcvHLayout.addWidget(bytesSentValueLabel)
 
         verticalLayout.addLayout(bytesSentRcvHLayout)
 
