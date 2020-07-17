@@ -173,10 +173,19 @@ class ThreadNetworkStats(QtCore.QThread):
         counter1 = psutil.net_io_counters(pernic=True)[self.iface]
         time.sleep(1)
         counter2 = psutil.net_io_counters(pernic=True)[self.iface]
-        downSpeed = f'{humanfriendly.format_size(counter2.bytes_recv - counter1.bytes_recv)}/s'
-
-        upSpeed = f'{humanfriendly.format_size(counter2.bytes_sent - counter1.bytes_sent)}/s'
-        self.signal.emit({'downSpeed': downSpeed, 'upSpeed': upSpeed, 'iface': self.iface})
+        downSpeed = counter2.bytes_recv - counter1.bytes_recv
+        upSpeed = counter2.bytes_sent - counter1.bytes_sent
+        # get io statistics since boot
+        net_io = psutil.net_io_counters(pernic=True)
+        self.signal.emit(
+            {
+                'downSpeed': downSpeed,
+                'upSpeed': upSpeed,
+                'iface': self.iface,
+                'bytesSent': net_io[self.iface].bytes_sent,
+                'bytesRcv': net_io[self.iface].bytes_recv
+            }
+        )
 
 
 class ThreadSlow(QtCore.QThread):
@@ -365,10 +374,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bootTimeValueLabel.setText(f'{days} days, {hours} hrs {minutes} min and {seconds} sec')
 
     def receiveThreadNetworkStats(self, message):
-        self.getUpTime()
         self.upDownRateWidgets[0].setText(message['iface'])
-        self.upDownRateWidgets[1].setText(message['downSpeed'])
-        self.upDownRateWidgets[2].setText(message['upSpeed'])
+        self.upDownRateWidgets[1].setText('{}/s'.format(humanfriendly.format_size(message['downSpeed'])))
+        self.upDownRateWidgets[2].setText('{}'.format(humanfriendly.format_size(message['upSpeed'])))
+        self.upDownRateWidgets[3].setText(humanfriendly.format_size(message['bytesSent']))
+        self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesRcv']))
 
     def displayIface(self):
         ifaceGroupBox = QtWidgets.QGroupBox('iface')
@@ -428,9 +438,40 @@ class MainWindow(QtWidgets.QMainWindow):
         ifaceUpRateLabel.setFixedWidth(110)
         self.upDownRateWidgets.append(ifaceUpRateLabel)
         horizontalLayout.addWidget(ifaceUpRateLabel)
-        # ---------------------------------------------------
 
         verticalLayout.addLayout(horizontalLayout)
+        # ---------------------------------------------------
+
+        # Total out
+        bytesSentRcvHLayout = QtWidgets.QHBoxLayout()
+
+        bytesSentLabel = QtWidgets.QLabel('Total out:')
+        bytesSentLabel.setFont(self.fontDefault)
+        bytesSentLabel.setStyleSheet(self.orange)
+        bytesSentRcvHLayout.addWidget(bytesSentLabel)
+
+        bytesSentValueLabel = QtWidgets.QLabel('123 bytes')
+        bytesSentValueLabel.setFont(self.fontDefault)
+        bytesSentValueLabel.setStyleSheet(self.white)
+        bytesSentValueLabel.setAlignment(QtCore.Qt.AlignRight)
+        self.upDownRateWidgets.append(bytesSentValueLabel)
+        bytesSentRcvHLayout.addWidget(bytesSentValueLabel)
+
+        # Total in
+        bytesRcvLabel = QtWidgets.QLabel('Total in:')
+        bytesRcvLabel.setFont(self.fontDefault)
+        bytesRcvLabel.setStyleSheet(self.orange)
+        bytesSentRcvHLayout.addWidget(bytesRcvLabel)
+
+        bytesRcvValueLabel = QtWidgets.QLabel('423 bytes')
+        bytesRcvValueLabel.setFont(self.fontDefault)
+        bytesRcvValueLabel.setStyleSheet(self.white)
+        bytesRcvValueLabel.setAlignment(QtCore.Qt.AlignRight)
+        self.upDownRateWidgets.append(bytesRcvValueLabel)
+        bytesSentRcvHLayout.addWidget(bytesRcvValueLabel)
+
+        verticalLayout.addLayout(bytesSentRcvHLayout)
+
         ifaceGroupBox.setLayout(verticalLayout)
         self.verticalLayout.addWidget(ifaceGroupBox)
 
