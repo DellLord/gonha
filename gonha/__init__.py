@@ -367,13 +367,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def getUpTime(self):
         timedelta = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
         timedeltaInSeconds = timedelta.days * 24 * 3600 + timedelta.seconds
-
         minutes, seconds = divmod(timedeltaInSeconds, 60)
         hours, minutes = divmod(minutes, 60)
         days, hours = divmod(hours, 24)
         self.bootTimeValueLabel.setText(f'{days} days, {hours} hrs {minutes} min and {seconds} sec')
 
     def receiveThreadNetworkStats(self, message):
+        self.getUpTime()
         self.upDownRateWidgets[0].setText(message['iface'])
         self.upDownRateWidgets[1].setText('{}/s'.format(humanfriendly.format_size(message['downSpeed'])))
         self.upDownRateWidgets[2].setText('{}'.format(humanfriendly.format_size(message['upSpeed'])))
