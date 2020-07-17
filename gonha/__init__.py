@@ -281,7 +281,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.temperatureValueLabel = self.findChild(QtWidgets.QLabel, 'temperatureValueLabel')
 
         # BootTime Label
-        self.bootTimeLabel = QtWidgets.QLabel()
+        self.bootTimeValueLabel = QtWidgets.QLabel()
         # ---------------------------------------------------------------------
         # Styles
         self.groupBoxStyle = """
@@ -362,7 +362,7 @@ class MainWindow(QtWidgets.QMainWindow):
         minutes, seconds = divmod(timedeltaInSeconds, 60)
         hours, minutes = divmod(minutes, 60)
         days, hours = divmod(hours, 24)
-        self.bootTimeLabel.setText(f'Uptime: {days} days, {hours} hrs {minutes} min and {seconds} sec')
+        self.bootTimeValueLabel.setText(f'{days} days, {hours} hrs {minutes} min and {seconds} sec')
 
     def receiveThreadNetworkStats(self, message):
         self.getUpTime()
@@ -458,13 +458,17 @@ class MainWindow(QtWidgets.QMainWindow):
         # boot time label
         bootTimeHboxLayout = QtWidgets.QHBoxLayout()
 
-        self.bootTimeLabel.setText(
-            datetime.fromtimestamp(psutil.boot_time()).strftime('%H hours, %M minutes and %S seconds')
-        )
-        self.bootTimeLabel.setFont(self.fontDefault)
-        self.bootTimeLabel.setStyleSheet(self.white)
-        self.bootTimeLabel.setAlignment(QtCore.Qt.AlignCenter)
-        bootTimeHboxLayout.addWidget(self.bootTimeLabel)
+        bootTimeLabel = QtWidgets.QLabel('Uptime:')
+        bootTimeLabel.setFont(self.fontDefault)
+        bootTimeLabel.setStyleSheet(self.orange)
+        bootTimeHboxLayout.addWidget(bootTimeLabel)
+
+        self.getUpTime()
+        self.bootTimeValueLabel.setFont(self.fontDefault)
+        self.bootTimeValueLabel.setStyleSheet(self.white)
+        self.bootTimeValueLabel.setAlignment(QtCore.Qt.AlignCenter)
+        bootTimeHboxLayout.addWidget(self.bootTimeValueLabel)
+        # bootTimeHboxLayout.addStretch(1)
 
         verticalLayout.addLayout(bootTimeHboxLayout)
 
