@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gonha
-Version: 0.1.34
+Version: 0.2.0
 Summary: Light-weight system monitor for Linux
 Home-page: https://github.com/fredcox/gonha
 Author: Fred Cox
@@ -80,9 +80,13 @@ Description: [![made-with-python](https://img.shields.io/badge/Made%20with-Pytho
         
         ## Screenshot
         
-        This is my desktop with Linux Mint 20 and Gonha is top right on the screen.
+        ### Linux Mint 20 
         
-        ![Gonha - Screenshot](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/gonhascreenshot.png)
+        ![Linux Mint - Screenshot](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/gonhascreenshot.png)
+        
+        ### Pop OS  
+        
+        ![Pop OS - Screenshot](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/popos.jpg)
         
         ## Contributors
         
