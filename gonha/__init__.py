@@ -284,6 +284,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.downloadValueLabel = self.findChild(QtWidgets.QLabel, 'downloadValueLabel')
         self.uploadValueLabel = self.findChild(QtWidgets.QLabel, 'uploadValueLabel')
         # -------------------------------------------------------------
+        self.netGroupBox = self.findChild(QtWidgets.QGroupBox, 'netGroupBox')
+        self.netGroupBox.setStyleSheet('QGroupBox {'
+                                       'border: 1px solid white; '
+                                       'border-radius: 5px;'
+                                       'margin-top: 12px;'
+                                       'padding-left: 2px;'
+                                       '}'
+                                       'QGroupBox:title {'
+                                       'subcontrol-origin: margin;'
+                                       'subcontrol-position: top left;'
+                                       'color: rgb(252, 126, 0);'
+                                       'left: 15px;}')
+
+        # --------------------------------------------------------------
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         # Connect Threads Signals
