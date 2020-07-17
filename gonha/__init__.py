@@ -24,7 +24,7 @@ class Config:
         # Config file
         self.cfgFile = f'{Path.home()}/.config/gonha/config.json'
         self.globalJSON = dict()
-        self.aboutdialogFile = pkg_resources.resource_filename('gonha', 'aboutdialog.ui')
+        self.mainWindowFile = f'{resource_path}/mainwindow.ui'
         self.version = self.getVersion()
         if not os.path.isfile(self.cfgFile):
             print(color('Config file not found in : ', fore=9), color(f'{self.cfgFile}', fore=11))
@@ -151,7 +151,7 @@ class Config:
 
     def getVersion(self):
         pattern = "([0-9]+.[0-9]+.[0-9]+)"
-        with open(self.aboutdialogFile, 'r') as f:
+        with open(self.mainWindowFile, 'r') as f:
             for line in f.readlines():
                 if re.search(pattern, line):
                     return re.search(pattern, line).group()
@@ -260,12 +260,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Config()
         self.config = Config()
         self.iface = self.config.getConfig('iface')
-        # aboutdialog
-        self.aboutDialog = QtWidgets.QDialog()
-        uic.loadUi(f'{resource_path}/aboutdialog.ui', self.aboutDialog)
-        self.aboutDialog.okPushButton = self.aboutDialog.findChild(QtWidgets.QPushButton, 'okPushButton')
-        self.aboutDialog.okPushButton.clicked.connect(self.quitAboutDialog)
-        self.version = self.aboutDialog.findChild(QtWidgets.QLabel, 'versionLabel').text()
+        self.version = self.windowTitle()
         print(color(':: ', fore=11), color(f'Gonha {self.version}', fore=14, back=0), color(' ::', fore=11))
         print('Starting...')
         print()
@@ -311,9 +306,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadNetworkStats.start()
         self.loadConfigs()
         self.displayPartitions()
-
-    def quitAboutDialog(self):
-        self.aboutDialog.hide()
 
     def receiveThreadNetworkStats(self, message):
         # print(message)
@@ -395,7 +387,6 @@ class MainWindow(QtWidgets.QMainWindow):
         contextMenu = QtWidgets.QMenu(self)
         # topLeftAction = contextMenu.addAction('Top Left')
         # topRightAction = contextMenu.addAction('Top Right')
-        # aboutAction = contextMenu.addAction('A&bout')
         quitAction = contextMenu.addAction('&Quit')
         action = contextMenu.exec_(self.mapToGlobal(event.pos()))
         if action == quitAction:

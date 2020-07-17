@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 version = '0.1.34'
 pattern = "([0-9]+.[0-9]+.[0-9]+)"
 newlines = []
-dialog_filename = 'gonha/aboutdialog.ui'
+dialog_filename = 'gonha/mainwindow.ui'
 with open(dialog_filename, 'r') as f:
     for line in f.readlines():
         if re.search(pattern, line):
