@@ -76,10 +76,6 @@ $ sudo apt install libxcb-xinerama0
 
 ![Linux Mint - Screenshot](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/gonhascreenshot.png)
 
-### Pop OS  
-
-![Pop OS - Screenshot](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/popos.jpg)
-
 ## Contributors
 
 This project exists thanks to all the people who contribute!
