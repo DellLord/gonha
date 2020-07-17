@@ -196,10 +196,10 @@ class ThreadSlow(QtCore.QThread):
             disk_usage = psutil.disk_usage(mntPoint)
             msg.append({
                 'mountpoint': mntPoint,
-                'total': humanfriendly.format_size(disk_usage.total),
-                'used': humanfriendly.format_size(disk_usage.used),
-                'free': humanfriendly.format_size(disk_usage.free),
-                'percent': f'{disk_usage.percent}%'
+                'total': disk_usage.total,
+                'used': disk_usage.used,
+                'free': disk_usage.free,
+                'percent': disk_usage.percent
             })
 
         return msg
@@ -279,24 +279,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cpuValueLabel = self.findChild(QtWidgets.QLabel, 'cpuValueLabel')
         self.lsbreleaseLabel = self.findChild(QtWidgets.QLabel, 'lsbreleaseLabel')
         self.temperatureValueLabel = self.findChild(QtWidgets.QLabel, 'temperatureValueLabel')
-        self.fsVerticalLayout = self.findChild(QtWidgets.QVBoxLayout, 'fsVerticalLayout')
         self.ifaceValueLabel = self.findChild(QtWidgets.QLabel, 'ifaceValueLabel')
         self.downloadValueLabel = self.findChild(QtWidgets.QLabel, 'downloadValueLabel')
         self.uploadValueLabel = self.findChild(QtWidgets.QLabel, 'uploadValueLabel')
+        self.groupBoxStyle = """
+        QGroupBox {
+            border: 1px solid white;
+            border-radius: 5px;
+            margin-top: 12px;
+            padding-left: 2px;
+        }
+        QGroupBox:title {
+            subcontrol-origin: margin;
+            subcontrol-position: top left;
+            color: rgb(252, 126, 0);
+            left: 15px;
+        }
+        """
         # -------------------------------------------------------------
+        self.centralwidget = self.findChild(QtWidgets.QWidget, 'centralwidget')  # Get Central widget
         self.netGroupBox = self.findChild(QtWidgets.QGroupBox, 'netGroupBox')
-        self.netGroupBox.setStyleSheet('QGroupBox {'
-                                       'border: 1px solid white; '
-                                       'border-radius: 5px;'
-                                       'margin-top: 12px;'
-                                       'padding-left: 2px;'
-                                       '}'
-                                       'QGroupBox:title {'
-                                       'subcontrol-origin: margin;'
-                                       'subcontrol-position: top left;'
-                                       'color: rgb(252, 126, 0);'
-                                       'left: 15px;}')
-
+        self.netGroupBox.setStyleSheet(self.groupBoxStyle)
+        self.fsGroupBox = self.findChild(QtWidgets.QGroupBox, 'fsGroupBox')
+        self.fsGroupBox.setStyleSheet(self.groupBoxStyle)
         # --------------------------------------------------------------
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
@@ -332,57 +337,93 @@ class MainWindow(QtWidgets.QMainWindow):
         orange = 'color: rgb(252, 126, 0);'
         white = 'color: rgb(255, 255, 255);'
         mntPoints = self.threadSlow.getPartitions()
-        # print(mntPoints)
+        verticalLayout = QtWidgets.QVBoxLayout()
+        verticalLayout.setAlignment(QtCore.Qt.AlignTop)
+        height = 0
+        fsGroupBox = QtWidgets.QGroupBox('disks')
+        fsGroupBox.setStyleSheet(self.groupBoxStyle)
+        progressBarStyle = """
+        QProgressBar {
+            text-align: center;
+        }
+        QProgressBar::chunk {
+            background: rgb(255, 51, 0);
+            font-weight: bold;
+        }        
+        """
         for mntPoint in mntPoints:
-            horizontalLayout = QtWidgets.QHBoxLayout()
+            mountpointHorizontalLayout = QtWidgets.QHBoxLayout()
 
-            #
+            # ------------- mountpoint ----------------------
             mountpointValueLabel = QtWidgets.QLabel(mntPoint['mountpoint'])
             mountpointValueLabel.setFont(font)
             mountpointValueLabel.setStyleSheet(white)
-            horizontalLayout.addWidget(mountpointValueLabel)
+            mountpointHorizontalLayout.addWidget(mountpointValueLabel)
 
-            usedLabel = QtWidgets.QLabel('used:')
-            usedLabel.setStyleSheet(orange)
-            usedLabel.setFont(font)
-            usedLabel.setStyleSheet('color: rgb(252, 126, 0);')
-            horizontalLayout.addWidget(usedLabel)
-
-            usedValueLabel = QtWidgets.QLabel(mntPoint['used'])
-            usedValueLabel.setFont(font)
-            usedValueLabel.setStyleSheet(white)
-            horizontalLayout.addWidget(usedValueLabel)
-
-            totalLabel = QtWidgets.QLabel('total:')
-            totalLabel.setStyleSheet(orange)
-            horizontalLayout.addWidget(totalLabel)
-
-            totalValueLabel = QtWidgets.QLabel(mntPoint['total'])
+            print(humanfriendly.format_size(mntPoint['total']))
+            totalValueLabel = QtWidgets.QLabel(humanfriendly.format_size(mntPoint['total']))
             totalValueLabel.setFont(font)
             totalValueLabel.setStyleSheet(white)
-            horizontalLayout.addWidget(totalValueLabel)
+            totalValueLabel.setAlignment(QtCore.Qt.AlignRight)
+            mountpointHorizontalLayout.addWidget(totalValueLabel)
 
-            percentLabel = QtWidgets.QLabel('percent:')
-            percentLabel.setStyleSheet(orange)
-            percentLabel.setFont(font)
-            horizontalLayout.addWidget(percentLabel)
+            verticalLayout.addLayout(mountpointHorizontalLayout)
+            # ----------------------------------------------------------
 
-            percentValueLabel = QtWidgets.QLabel(mntPoint['percent'])
-            percentValueLabel.setFont(font)
-            percentValueLabel.setStyleSheet(white)
-            horizontalLayout.addWidget(percentValueLabel)
+            # used stats
+            usedHorizontalLayout = QtWidgets.QHBoxLayout()
+            usedLabel = QtWidgets.QLabel('used:')
+            usedLabel.setFont(font)
+            usedLabel.setStyleSheet(orange)
+            usedHorizontalLayout.addWidget(usedLabel)
+
+            usedValueLabel = QtWidgets.QLabel(humanfriendly.format_size(mntPoint['used']))
+            usedValueLabel.setFont(font)
+            usedValueLabel.setStyleSheet(white)
+            usedValueLabel.setAlignment(QtCore.Qt.AlignRight)
+            usedHorizontalLayout.addWidget(usedValueLabel)
+
+            verticalLayout.addLayout(usedHorizontalLayout)
+            # ----------------------------------------------------------
+            # ProgressBar
+            usedPBHLayout = QtWidgets.QHBoxLayout()
+            usedPB = QtWidgets.QProgressBar()
+            usedPB.setFont(font)
+            usedPB.setStyleSheet(progressBarStyle)
+            used = float(mntPoint['used'])
+            total = float(mntPoint['total'])
+            usedPB.setValue(int((used * 100) / total))
+            usedPBHLayout.addWidget(usedPB)
+
+            verticalLayout.addLayout(usedPBHLayout)
+
+            # free stats
+            freeHorizontalLayout = QtWidgets.QHBoxLayout()
+            freeLabel = QtWidgets.QLabel('free:')
+            freeLabel.setFont(font)
+            freeLabel.setStyleSheet(orange)
+            freeHorizontalLayout.addWidget(freeLabel)
+
+            freeValueLabel = QtWidgets.QLabel(humanfriendly.format_size(mntPoint['free']))
+            freeValueLabel.setFont(font)
+            freeValueLabel.setStyleSheet(white)
+            freeValueLabel.setAlignment(QtCore.Qt.AlignRight)
+            freeHorizontalLayout.addWidget(freeValueLabel)
+
+            verticalLayout.addLayout(freeHorizontalLayout)
+            # ----------------------------------------------------------
+
+            height = height + 100
 
             self.partitionsLabels.append(
                 {
                     'mountpointValueLabel': mountpointValueLabel,
-                    'usedValueLabel': usedValueLabel,
-                    'totalValueLabel': totalValueLabel,
-                    'percentValueLabel': percentValueLabel
+                    'usedValueLabel': totalValueLabel
                 }
             )
 
-            self.fsVerticalLayout.addLayout(horizontalLayout)
-            self.fsVerticalLayout.setAlignment(QtCore.Qt.AlignTop)
+        self.fsGroupBox.setLayout(verticalLayout)
+        self.fsGroupBox.setMinimumHeight(height)
 
     def loadConfigs(self):
         # Adjust initial position

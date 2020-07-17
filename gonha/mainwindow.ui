@@ -344,48 +344,6 @@
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
-      <widget class="QWidget" name="verticalLayoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>520</y>
-         <width>471</width>
-         <height>211</height>
-        </rect>
-       </property>
-       <layout class="QVBoxLayout" name="fsVerticalLayout">
-        <property name="sizeConstraint">
-         <enum>QLayout::SetDefaultConstraint</enum>
-        </property>
-       </layout>
-      </widget>
-      <widget class="QLabel" name="filesystemLabel">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>480</y>
-         <width>471</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Fira Code</family>
-         <pointsize>16</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(252, 126, 0);</string>
-       </property>
-       <property name="text">
-        <string>::Filesystem::</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
       <widget class="QGroupBox" name="netGroupBox">
        <property name="geometry">
         <rect>
@@ -562,6 +520,25 @@ border:  0;</string>
         </property>
        </widget>
       </widget>
+      <widget class="QGroupBox" name="fsGroupBox">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>480</y>
+         <width>471</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Fira Code Medium</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="title">
+        <string>disks</string>
+       </property>
+      </widget>
       <zorder>minuteLabel</zorder>
       <zorder>hourLabel</zorder>
       <zorder>ampmLabel</zorder>
@@ -573,9 +550,8 @@ border:  0;</string>
       <zorder>lsbreleaseLabel</zorder>
       <zorder>temperatureLabel</zorder>
       <zorder>temperatureValueLabel</zorder>
-      <zorder>verticalLayoutWidget</zorder>
-      <zorder>filesystemLabel</zorder>
       <zorder>netGroupBox</zorder>
+      <zorder>fsGroupBox</zorder>
      </widget>
     </item>
    </layout>
