@@ -3,18 +3,16 @@ import sys
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from ewmh import EWMH
 import time
+import datetime
 from datetime import datetime
 import psutil
 import humanfriendly
 from pathlib import Path
-import pkg_resources
 from colr import color
-from PyInquirer import prompt, print_json
+from PyInquirer import prompt
 import re
 import json
-from configobj import ConfigObj
 import distro
-import humanize
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)
@@ -281,6 +279,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.memValueLabel = self.findChild(QtWidgets.QLabel, 'memValueLabel')
         self.cpuValueLabel = self.findChild(QtWidgets.QLabel, 'cpuValueLabel')
         self.temperatureValueLabel = self.findChild(QtWidgets.QLabel, 'temperatureValueLabel')
+
+        # BootTime Label
+        self.bootTimeLabel = QtWidgets.QLabel()
         # ---------------------------------------------------------------------
         # Styles
         self.groupBoxStyle = """
@@ -354,13 +355,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayIface()
         self.displayPartitions()
 
+    def getUpTime(self):
+        timedelta = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
+        timedeltaInSeconds = timedelta.days * 24 * 3600 + timedelta.seconds
+
+        minutes, seconds = divmod(timedeltaInSeconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
+        self.bootTimeLabel.setText(f'Uptime: {days} days, {hours} hrs {minutes} min and {seconds} sec')
+
     def receiveThreadNetworkStats(self, message):
+        self.getUpTime()
         self.upDownRateWidgets[0].setText(message['iface'])
         self.upDownRateWidgets[1].setText(message['downSpeed'])
         self.upDownRateWidgets[2].setText(message['upSpeed'])
-
-        # self.downloadValueLabel.setText(message['downSpeed'])
-        # self.uploadValueLabel.setText(message['upSpeed'])
 
     def displayIface(self):
         ifaceGroupBox = QtWidgets.QGroupBox('iface')
@@ -450,13 +458,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # boot time label
         bootTimeHboxLayout = QtWidgets.QHBoxLayout()
 
-        bootTimeLabel = QtWidgets.QLabel(
+        self.bootTimeLabel.setText(
             datetime.fromtimestamp(psutil.boot_time()).strftime('%H hours, %M minutes and %S seconds')
         )
-        bootTimeLabel.setFont(self.fontDefault)
-        bootTimeLabel.setStyleSheet(self.white)
-        bootTimeLabel.setAlignment(QtCore.Qt.AlignCenter)
-        bootTimeHboxLayout.addWidget(bootTimeLabel)
+        self.bootTimeLabel.setFont(self.fontDefault)
+        self.bootTimeLabel.setStyleSheet(self.white)
+        self.bootTimeLabel.setAlignment(QtCore.Qt.AlignCenter)
+        bootTimeHboxLayout.addWidget(self.bootTimeLabel)
 
         verticalLayout.addLayout(bootTimeHboxLayout)
 

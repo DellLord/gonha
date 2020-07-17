@@ -45,11 +45,9 @@ setuptools.setup(
         'psutil',
         'humanfriendly',
         'pathlib',
-        'configobj',
         'PyInquirer',
         'colr',
-        'distro',
-        'humanize'
+        'distro'
     ],
     include_package_data=True,
     zip_safe=False,
