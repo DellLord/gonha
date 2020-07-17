@@ -18,8 +18,6 @@ gonha/images/icon.png
 gonha/images/icon.xcf
 gonha/images/logo.png
 gonha/images/logo.xcf
-gonha/images/manjaro.jpg
-gonha/images/popos.jpg
 gonha/images/shot1.png
 gonha/images/startupdelay.png
 gonha/images/upload.png
