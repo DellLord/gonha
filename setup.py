@@ -47,7 +47,9 @@ setuptools.setup(
         'pathlib',
         'configobj',
         'PyInquirer',
-        'colr'
+        'colr',
+        'distro',
+        'humanize'
     ],
     include_package_data=True,
     zip_safe=False,
