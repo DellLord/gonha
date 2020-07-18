@@ -13,7 +13,7 @@ from PyInquirer import prompt
 import re
 import json
 import distro
-import shutil
+
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)

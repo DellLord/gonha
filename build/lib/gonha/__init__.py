@@ -316,20 +316,18 @@ class MainWindow(QtWidgets.QMainWindow):
         }
         """
         self.redPBStyle = """
-        QProgressBar::value {
-            font-weight: bold;
-        }
         QProgressBar {
             text-align: left;
+            font-weight: bold;
         }
         QProgressBar::chunk {
             background: rgb(255, 51, 0);
-            font-weight: bold;
         }
         """
         self.greenPBStyle = """
         QProgressBar {
             text-align: left;
+            font-weight: bold;            
         }
         QProgressBar::chunk {
             background: rgb(51, 153, 51);
@@ -453,7 +451,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Total in
         bytesSentRcvHLayout = QtWidgets.QHBoxLayout()
 
-        bytesRcvLabel = QtWidgets.QLabel('Total in:')
+        bytesRcvLabel = QtWidgets.QLabel('total in:')
         bytesRcvLabel.setFont(self.fontDefault)
         bytesRcvLabel.setStyleSheet(self.orange)
         bytesSentRcvHLayout.addWidget(bytesRcvLabel)
@@ -466,7 +464,7 @@ class MainWindow(QtWidgets.QMainWindow):
         bytesSentRcvHLayout.addWidget(bytesRcvValueLabel)
 
         # Total out
-        bytesSentLabel = QtWidgets.QLabel('Total out:')
+        bytesSentLabel = QtWidgets.QLabel('total out:')
         bytesSentLabel.setFont(self.fontDefault)
         bytesSentLabel.setStyleSheet(self.orange)
         bytesSentRcvHLayout.addWidget(bytesSentLabel)
@@ -507,7 +505,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # boot time label
         bootTimeHboxLayout = QtWidgets.QHBoxLayout()
 
-        bootTimeLabel = QtWidgets.QLabel('Uptime:')
+        bootTimeLabel = QtWidgets.QLabel('uptime:')
         bootTimeLabel.setFont(self.fontDefault)
         bootTimeLabel.setFixedWidth(65)
         bootTimeLabel.setStyleSheet(self.orange)
