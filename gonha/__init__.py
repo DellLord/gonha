@@ -505,7 +505,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # boot time label
         bootTimeHboxLayout = QtWidgets.QHBoxLayout()
 
-        bootTimeLabel = QtWidgets.QLabel('Uptime:')
+        bootTimeLabel = QtWidgets.QLabel('uptime:')
         bootTimeLabel.setFont(self.fontDefault)
         bootTimeLabel.setFixedWidth(65)
         bootTimeLabel.setStyleSheet(self.orange)
