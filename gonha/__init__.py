@@ -366,7 +366,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadFast.start()
         self.threadSlow.start()
         self.threadNetworkStats.start()
-        self.loadConfigs()
+        self.loadPosition()
         self.displaySystem()
         self.displayIface()
         self.displayPartitions()
@@ -625,7 +625,7 @@ class MainWindow(QtWidgets.QMainWindow):
         total = float(val2)
         return int((free * 100) / total)
 
-    def loadConfigs(self):
+    def loadPosition(self):
         # Adjust initial position
         if self.config.getConfig('position') == 'Top Left':
             self.moveTopLeft()
