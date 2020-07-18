@@ -453,7 +453,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Total in
         bytesSentRcvHLayout = QtWidgets.QHBoxLayout()
 
-        bytesRcvLabel = QtWidgets.QLabel('Total in:')
+        bytesRcvLabel = QtWidgets.QLabel('total in:')
         bytesRcvLabel.setFont(self.fontDefault)
         bytesRcvLabel.setStyleSheet(self.orange)
         bytesSentRcvHLayout.addWidget(bytesRcvLabel)
@@ -466,7 +466,7 @@ class MainWindow(QtWidgets.QMainWindow):
         bytesSentRcvHLayout.addWidget(bytesRcvValueLabel)
 
         # Total out
-        bytesSentLabel = QtWidgets.QLabel('Total out:')
+        bytesSentLabel = QtWidgets.QLabel('total out:')
         bytesSentLabel.setFont(self.fontDefault)
         bytesSentLabel.setStyleSheet(self.orange)
         bytesSentRcvHLayout.addWidget(bytesSentLabel)
