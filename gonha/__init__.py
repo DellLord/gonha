@@ -13,6 +13,7 @@ from PyInquirer import prompt
 import re
 import json
 import distro
+import shutil
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)
@@ -508,6 +509,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         bootTimeLabel = QtWidgets.QLabel('Uptime:')
         bootTimeLabel.setFont(self.fontDefault)
+        bootTimeLabel.setFixedWidth(65)
         bootTimeLabel.setStyleSheet(self.orange)
         bootTimeHboxLayout.addWidget(bootTimeLabel)
 
@@ -516,7 +518,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bootTimeValueLabel.setStyleSheet(self.white)
         self.bootTimeValueLabel.setAlignment(QtCore.Qt.AlignCenter)
         bootTimeHboxLayout.addWidget(self.bootTimeValueLabel)
-        # bootTimeHboxLayout.addStretch(1)
 
         verticalLayout.addLayout(bootTimeHboxLayout)
 
