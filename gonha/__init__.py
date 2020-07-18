@@ -66,7 +66,7 @@ class Config:
             tempUserChoices = []
             for i, key in enumerate(sensors):
                 tempUserChoices.append(
-                    '{} - [{}] current temp: {:.2f}°'.format(i, key, float(sensors[key][0].current))
+                    '{} - [{}] current temp: {:.0f}°C'.format(i, key, float(sensors[key][0].current))
                 )
 
             # Temperature Questions
@@ -245,12 +245,14 @@ class ThreadFast(QtCore.QThread):
         self.message['dateLabel'] = now.strftime("%A, %d %B %Y")
         self.message['cpuValueLabel'] = f"{psutil.cpu_percent()}%"
         self.message['memValueLabel'] = f"{psutil.virtual_memory().percent}%"
+        if psutil.swap_memory().total != 0:
+            self.message['swapValueLabel'] = f"{psutil.swap_memory().percent}%"
 
         sensorIndex = int(self.config.getConfig('temp'))
         sensors = psutil.sensors_temperatures()
         for i, key in enumerate(sensors):
             if i == sensorIndex:
-                self.message['temperatureValueLabel'] = '{:.2f}°'.format(float(sensors[key][0].current))
+                self.message['temperatureValueLabel'] = '{:.0f}°C'.format(float(sensors[key][0].current))
                 break
 
         time.sleep(2)
@@ -286,6 +288,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ampmLabel = self.findChild(QtWidgets.QLabel, 'ampmLabel')
         self.dateLabel = self.findChild(QtWidgets.QLabel, 'dateLabel')
         self.memValueLabel = self.findChild(QtWidgets.QLabel, 'memValueLabel')
+        if psutil.swap_memory().total == 0:
+            self.swapValueLabel.setHidden(True)
+            self.swapLabel.setHidden(True)
+        else:
+            self.swapValueLabel = self.findChild(QtWidgets.QLabel, 'swapValueLabel')
         self.cpuValueLabel = self.findChild(QtWidgets.QLabel, 'cpuValueLabel')
         self.temperatureValueLabel = self.findChild(QtWidgets.QLabel, 'temperatureValueLabel')
 
@@ -317,7 +324,7 @@ class MainWindow(QtWidgets.QMainWindow):
         QProgressBar::chunk {
             background: rgb(255, 51, 0);
             font-weight: bold;
-        }        
+        }
         """
         self.greenPBStyle = """
         QProgressBar {
@@ -326,7 +333,7 @@ class MainWindow(QtWidgets.QMainWindow):
         QProgressBar::chunk {
             background: rgb(51, 153, 51);
             font-weight: bold;
-        }        
+        }
         """
         self.orange = 'color: rgb(252, 126, 0);'
         self.white = 'color: rgb(255, 255, 255);'
@@ -662,5 +669,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ampmLabel.setText(message['ampmLabel'])
         self.dateLabel.setText(message['dateLabel'])
         self.memValueLabel.setText(message['memValueLabel'])
+        if psutil.swap_memory().total != 0:
+            self.swapValueLabel.setText(message['swapValueLabel'])
         self.cpuValueLabel.setText(message['cpuValueLabel'])
         self.temperatureValueLabel.setText(message['temperatureValueLabel'])
