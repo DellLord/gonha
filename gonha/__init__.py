@@ -316,20 +316,18 @@ class MainWindow(QtWidgets.QMainWindow):
         }
         """
         self.redPBStyle = """
-        QProgressBar::value {
-            font-weight: bold;
-        }
         QProgressBar {
             text-align: left;
+            font-weight: bold;
         }
         QProgressBar::chunk {
             background: rgb(255, 51, 0);
-            font-weight: bold;
         }
         """
         self.greenPBStyle = """
         QProgressBar {
             text-align: left;
+            font-weight: bold;            
         }
         QProgressBar::chunk {
             background: rgb(51, 153, 51);
