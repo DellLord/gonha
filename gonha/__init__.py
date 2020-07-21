@@ -208,8 +208,7 @@ class ThreadSlow(QtCore.QThread):
                 'mountpoint': mntPoint,
                 'total': disk_usage.total,
                 'used': disk_usage.used,
-                'free': disk_usage.free,
-                'percent': disk_usage.percent
+                'free': disk_usage.free
             })
 
         return msg
