@@ -394,12 +394,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.getUpTime()
         self.upDownRateWidgets[0].setText(message['iface'])
         self.upDownRateWidgets[1].setText('{}/s'.format(humanfriendly.format_size(message['downSpeed'])))
-        self.upDownRateWidgets[2].setText('{}'.format(humanfriendly.format_size(message['upSpeed'])))
+        self.upDownRateWidgets[2].setText('{}/s'.format(humanfriendly.format_size(message['upSpeed'])))
         self.upDownRateWidgets[3].setText(humanfriendly.format_size(message['bytesRcv']))
         self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesSent']))
 
     def displayIface(self):
-        ifaceGroupBox = QtWidgets.QGroupBox('iface')
+        ifaceGroupBox = QtWidgets.QGroupBox('net interface')
         ifaceGroupBox.setFont(self.fontGroupBox)
         ifaceGroupBox.setStyleSheet(self.groupBoxStyle)
         verticalLayout = QtWidgets.QVBoxLayout()
@@ -443,6 +443,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # -------------------------------------------------
         # Upload Icon
         uploadIcon = QtWidgets.QLabel()
+        print('File exist: {}'.format(os.path.isfile(f'{resource_path}/images/upload.png')))
         uploadIcon.setPixmap(QtGui.QPixmap(f'{resource_path}/images/upload.png'))
         horizontalLayout.addWidget(uploadIcon)
         # -------------------------------------------------
