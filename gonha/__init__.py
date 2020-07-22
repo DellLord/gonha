@@ -330,6 +330,7 @@ class MainWindow(QtWidgets.QMainWindow):
         QProgressBar {
             text-align: left;
             font-weight: bold;
+            color: rgb(255, 255, 255);            
         }
         QProgressBar::chunk {
             background: rgb(255, 51, 0);
@@ -338,11 +339,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.greenPBStyle = """
         QProgressBar {
             text-align: left;
-            font-weight: bold;            
+            font-weight: bold;
+            color: rgb(255, 255, 255); 
         }
         QProgressBar::chunk {
             background: rgb(51, 153, 51);
-            font-weight: bold;
         }
         """
         self.orange = 'color: rgb(252, 126, 0);'

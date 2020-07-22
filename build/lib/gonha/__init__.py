@@ -13,7 +13,7 @@ from PyInquirer import prompt
 import re
 import json
 import distro
-import shutil
+import subprocess
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)
@@ -203,13 +203,24 @@ class ThreadSlow(QtCore.QThread):
     def getPartitions(self):
         msg = []
         for mntPoint in self.config.getConfig('filesystems'):
-            disk_usage = psutil.disk_usage(mntPoint)
+            # disk_usage = psutil.disk_usage(mntPoint)
+            dfOutput = subprocess.getoutput(f'df -h {mntPoint}')
+            dfOutput = dfOutput.split('\n')
+            dfOutput = dfOutput[1].split()
+            total = humanfriendly.parse_size(dfOutput[1])
+            total = total - ((total * 5) / 100)
+            total = humanfriendly.format_size(total)
+
+            percentUsed = int(dfOutput[4].strip('%'))
+            percentFree = 100 - percentUsed
+
             msg.append({
                 'mountpoint': mntPoint,
-                'total': disk_usage.total,
-                'used': disk_usage.used,
-                'free': disk_usage.free,
-                'percent': disk_usage.percent
+                'total': '{}'.format(total),
+                'used': '{}B'.format(dfOutput[2]),
+                'free': '{}B'.format(dfOutput[3]),
+                'percentUsed': percentUsed,
+                'percentFree': percentFree
             })
 
         return msg
@@ -319,6 +330,7 @@ class MainWindow(QtWidgets.QMainWindow):
         QProgressBar {
             text-align: left;
             font-weight: bold;
+            color: rgb(255, 255, 255);            
         }
         QProgressBar::chunk {
             background: rgb(255, 51, 0);
@@ -327,11 +339,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.greenPBStyle = """
         QProgressBar {
             text-align: left;
-            font-weight: bold;            
+            font-weight: bold;
+            color: rgb(255, 255, 255); 
         }
         QProgressBar::chunk {
             background: rgb(51, 153, 51);
-            font-weight: bold;
         }
         """
         self.orange = 'color: rgb(252, 126, 0);'
@@ -541,7 +553,7 @@ class MainWindow(QtWidgets.QMainWindow):
             mountpointValueLabel.setStyleSheet(self.white)
             mountpointHorizontalLayout.addWidget(mountpointValueLabel)
 
-            totalValueLabel = QtWidgets.QLabel(humanfriendly.format_size(mntPoint['total']))
+            totalValueLabel = QtWidgets.QLabel(mntPoint['total'])
             totalValueLabel.setFont(self.fontDefault)
             totalValueLabel.setStyleSheet(self.white)
             totalValueLabel.setAlignment(QtCore.Qt.AlignRight)
@@ -556,7 +568,7 @@ class MainWindow(QtWidgets.QMainWindow):
             usedLabel.setStyleSheet(self.orange)
             usedHorizontalLayout.addWidget(usedLabel)
 
-            usedValueLabel = QtWidgets.QLabel(humanfriendly.format_size(mntPoint['used']))
+            usedValueLabel = QtWidgets.QLabel(mntPoint['used'])
             usedValueLabel.setFont(self.fontDefault)
             usedValueLabel.setStyleSheet(self.white)
             usedValueLabel.setAlignment(QtCore.Qt.AlignRight)
@@ -569,7 +581,7 @@ class MainWindow(QtWidgets.QMainWindow):
             usedPB = QtWidgets.QProgressBar()
             usedPB.setFont(self.fontDefault)
             usedPB.setStyleSheet(self.redPBStyle)
-            usedPB.setValue(self.getValueInt(mntPoint['used'], mntPoint['total']))
+            usedPB.setValue(mntPoint['percentUsed'])
             usedPBLayout.addWidget(usedPB)
 
             verticalLayout.addLayout(usedPBLayout)
@@ -582,7 +594,7 @@ class MainWindow(QtWidgets.QMainWindow):
             freeLabel.setStyleSheet(self.orange)
             freeHorizontalLayout.addWidget(freeLabel)
 
-            freeValueLabel = QtWidgets.QLabel(humanfriendly.format_size(mntPoint['free']))
+            freeValueLabel = QtWidgets.QLabel(mntPoint['free'])
             freeValueLabel.setFont(self.fontDefault)
             freeValueLabel.setStyleSheet(self.white)
             freeValueLabel.setAlignment(QtCore.Qt.AlignRight)
@@ -594,7 +606,7 @@ class MainWindow(QtWidgets.QMainWindow):
             freePB = QtWidgets.QProgressBar()
             freePB.setFont(self.fontDefault)
             freePB.setStyleSheet(self.greenPBStyle)
-            freePB.setValue(self.getValueInt(mntPoint['free'], mntPoint['total']))
+            freePB.setValue(mntPoint['percentFree'])
             freePBHLayout.addWidget(freePB)
 
             verticalLayout.addLayout(freePBHLayout)
@@ -656,11 +668,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def receiveThreadSlowFinish(self, message):
         for i, widget in enumerate(self.partitionsWidgets):
             widget['mountpointValueLabel'].setText(message[i]['mountpoint'])
-            widget['totalValueLabel'].setText(humanfriendly.format_size(message[i]['total']))
-            widget['usedValueLabel'].setText(humanfriendly.format_size(message[i]['used']))
-            widget['usedPB'].setValue(self.getValueInt(message[i]['used'], message[i]['total']))
-            widget['freeValueLabel'].setText(humanfriendly.format_size(message[i]['free']))
-            widget['freePB'].setValue(self.getValueInt(message[i]['free'], message[i]['total']))
+            widget['totalValueLabel'].setText(message[i]['total'])
+            widget['usedValueLabel'].setText(message[i]['used'])
+            widget['usedPB'].setValue(message[i]['percentUsed'])
+            widget['freeValueLabel'].setText(message[i]['free'])
+            widget['freePB'].setValue(message[i]['percentFree'])
 
     def receiveThreadFastfinish(self, message):
         self.hourLabel.setText(message['hourLabel'])
