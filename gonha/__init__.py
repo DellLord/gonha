@@ -210,13 +210,14 @@ class ThreadSlow(QtCore.QThread):
             total = humanfriendly.parse_size(dfOutput[1])
             total = total - ((total * 5) / 100)
             total = humanfriendly.format_size(total)
+            total = total.split()
 
             percentUsed = int(dfOutput[4].strip('%'))
             percentFree = 100 - percentUsed
 
             msg.append({
                 'mountpoint': mntPoint,
-                'total': '{}'.format(total),
+                'total': '{}{}'.format(total[0], total[1]),
                 'used': '{}B'.format(dfOutput[2]),
                 'free': '{}B'.format(dfOutput[3]),
                 'percentUsed': percentUsed,
@@ -363,14 +364,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadFast.signal.connect(self.receiveThreadFastfinish)
         self.threadSlow.signal.connect(self.receiveThreadSlowFinish)
         self.threadNetworkStats.signal.connect(self.receiveThreadNetworkStats)
-        self.moveTopRight()
         self.show()
         # Show in all workspaces
         self.ew = EWMH()
         self.all_wins = self.ew.getClientList()
         self.wins = filter(lambda w: w.get_wm_class()[1] == 'gonha', self.all_wins)
         for w in self.wins:
-            print(w)
+            # print(w)
             self.ew.setWmDesktop(w, 0xffffffff)
 
         self.ew.display.flush()
@@ -399,7 +399,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesSent']))
 
     def displayIface(self):
-        ifaceGroupBox = QtWidgets.QGroupBox('net interface')
+        ifaceGroupBox = QtWidgets.QGroupBox('net')
         ifaceGroupBox.setFont(self.fontGroupBox)
         ifaceGroupBox.setStyleSheet(self.groupBoxStyle)
         verticalLayout = QtWidgets.QVBoxLayout()
@@ -407,7 +407,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # -------------------------------------------------
         # iface Label
-        ifaceLabel = QtWidgets.QLabel('iface:')
+        ifaceLabel = QtWidgets.QLabel('interface:')
         ifaceLabel.setFont(self.fontDefault)
         ifaceLabel.setStyleSheet(self.orange)
         ifaceLabel.setAlignment(QtCore.Qt.AlignLeft)
@@ -443,7 +443,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # -------------------------------------------------
         # Upload Icon
         uploadIcon = QtWidgets.QLabel()
-        print('File exist: {}'.format(os.path.isfile(f'{resource_path}/images/upload.png')))
         uploadIcon.setPixmap(QtGui.QPixmap(f'{resource_path}/images/upload.png'))
         horizontalLayout.addWidget(uploadIcon)
         # -------------------------------------------------
@@ -630,12 +629,6 @@ class MainWindow(QtWidgets.QMainWindow):
         diskGroupBox.setLayout(verticalLayout)
         diskGroupBox.setMinimumHeight(height)
         self.verticalLayout.addWidget(diskGroupBox)
-
-    @staticmethod
-    def getValueInt(val1, val2):
-        free = float(val1)
-        total = float(val2)
-        return int((free * 100) / total)
 
     def loadPosition(self):
         # Adjust initial position
