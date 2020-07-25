@@ -204,25 +204,14 @@ class ThreadSlow(QtCore.QThread):
     def getPartitions(self):
         msg = []
         for mntPoint in self.config.getConfig('filesystems'):
-            # disk_usage = psutil.disk_usage(mntPoint)
-            dfOutput = subprocess.getoutput(f'df -h {mntPoint}')
-            dfOutput = dfOutput.split('\n')
-            dfOutput = dfOutput[1].split()
-            total = humanfriendly.parse_size(dfOutput[1])
-            total = total - ((total * 5) / 100)
-            total = humanfriendly.format_size(total)
-            total = total.split()
-
-            percentUsed = int(dfOutput[4].strip('%'))
-            percentFree = 100 - percentUsed
-
+            disk_usage = psutil.disk_usage(mntPoint)
             msg.append({
                 'mountpoint': mntPoint,
-                'total': '{}{}'.format(total[0], total[1]),
-                'used': '{}B'.format(dfOutput[2]),
-                'free': '{}B'.format(dfOutput[3]),
-                'percentUsed': percentUsed,
-                'percentFree': percentFree
+                'total': '{}'.format(humanfriendly.format_size(disk_usage.total)),
+                'used': '{}'.format(humanfriendly.format_size(disk_usage.used)),
+                'free': '{}'.format(humanfriendly.format_size(disk_usage.free)),
+                'percentUsed': disk_usage.percent,
+                'percentFree': 100 - disk_usage.percent
             })
 
         return msg
@@ -353,15 +342,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.green = 'color: rgb(0, 204, 0);'
         # ---------------------------------------------------------------------
         # Setup cfgDir
-        self.cfgDir = f'{Path.home()}/.config/gonha'
-        print(self.cfgDir)
+        SiFile = f'{Path.home()}/.config/gonha/system_intelligence.json'
         query_and_export(
             query_scope=list(('all',)),
             verbose=False,
             export_format='json',
             generate_html_table=False,
-            output=f'{self.cfgDir}/system_intelligence.json'
+            output=SiFile
         )
+        # Now open the system-intelligence json file
+        self.SiData = None  # Store system information
+        with open(SiFile) as f:
+            self.SiData = json.load(f)
         # ---------------------------------------------------------------------
         # Default font
         self.fontDefault = QtGui.QFont('Fira Code', 11)
@@ -532,13 +524,28 @@ class MainWindow(QtWidgets.QMainWindow):
         cpuLabel.setStyleSheet(self.orange)
         cpuHBLayout.addWidget(cpuLabel)
 
-        # print(cpuInfo)
-        cpuBrandLabel = QtWidgets.QLabel('test')
+        print(self.SiData)
+        cpuBrandLabel = QtWidgets.QLabel(self.SiData['cpu']['brand_raw'])
         cpuBrandLabel.setFont(self.fontDefault)
         cpuBrandLabel.setStyleSheet(self.white)
         cpuHBLayout.addWidget(cpuBrandLabel)
 
         verticalLayout.addLayout(cpuHBLayout)
+
+        # Cpu load
+        cpuLoadHBLayout = QtWidgets.QHBoxLayout()
+        cpuLoadLabel = QtWidgets.QLabel('load:')
+        cpuLoadLabel.setFont(self.fontDefault)
+        cpuLoadLabel.setStyleSheet(self.orange)
+        cpuLoadHBLayout.addWidget(cpuLoadLabel)
+
+        cpuLoadValueLabel = QtWidgets.QLabel('10%')
+        cpuLoadValueLabel.setFont(self.fontDefault)
+        cpuLoadValueLabel.setStyleSheet(self.white)
+        cpuLoadHBLayout.addWidget(cpuLoadValueLabel)
+
+        verticalLayout.addLayout(cpuLoadHBLayout)
+
         # ---------------------------------------------------------------------------
         # boot time label
         bootTimeHboxLayout = QtWidgets.QHBoxLayout()
