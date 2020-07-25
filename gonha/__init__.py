@@ -529,7 +529,6 @@ class MainWindow(QtWidgets.QMainWindow):
         bootTimeHboxLayout.addWidget(self.bootTimeValueLabel)
 
         verticalLayout.addLayout(bootTimeHboxLayout)
-
         # ---------------------------------------------------------------------------
 
         # CPU Info
@@ -675,10 +674,6 @@ class MainWindow(QtWidgets.QMainWindow):
         height = 0
         pbFixedWidth = 280
         labelAlignment = (QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-
-        print(self.SiData['hdd'])
-        for key in self.SiData['hdd']['model']:
-            print(key)
 
         for mntPoint in mntPoints:
             mountpointHorizontalLayout = QtWidgets.QHBoxLayout()

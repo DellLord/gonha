@@ -14,6 +14,7 @@ import re
 import json
 import distro
 import subprocess
+from system_intelligence.query import query_and_export
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)
@@ -203,25 +204,14 @@ class ThreadSlow(QtCore.QThread):
     def getPartitions(self):
         msg = []
         for mntPoint in self.config.getConfig('filesystems'):
-            # disk_usage = psutil.disk_usage(mntPoint)
-            dfOutput = subprocess.getoutput(f'df -h {mntPoint}')
-            dfOutput = dfOutput.split('\n')
-            dfOutput = dfOutput[1].split()
-            total = humanfriendly.parse_size(dfOutput[1])
-            total = total - ((total * 5) / 100)
-            total = humanfriendly.format_size(total)
-            total = total.split()
-
-            percentUsed = int(dfOutput[4].strip('%'))
-            percentFree = 100 - percentUsed
-
+            disk_usage = psutil.disk_usage(mntPoint)
             msg.append({
                 'mountpoint': mntPoint,
-                'total': '{}{}'.format(total[0], total[1]),
-                'used': '{}B'.format(dfOutput[2]),
-                'free': '{}B'.format(dfOutput[3]),
-                'percentUsed': percentUsed,
-                'percentFree': percentFree
+                'total': '{}'.format(humanfriendly.format_size(disk_usage.total)),
+                'used': '{}'.format(humanfriendly.format_size(disk_usage.used)),
+                'free': '{}'.format(humanfriendly.format_size(disk_usage.free)),
+                'percentUsed': disk_usage.percent,
+                'percentFree': 100 - int(disk_usage.percent)
             })
 
         return msg
@@ -256,19 +246,22 @@ class ThreadFast(QtCore.QThread):
         self.message['minuteLabel'] = now.strftime('%M')
         self.message['secondsLabel'] = now.strftime('%S')
         self.message['dateLabel'] = now.strftime("%A, %d %B %Y")
-        self.message['cpuValueLabel'] = f"{psutil.cpu_percent()}%"
-        self.message['memValueLabel'] = f"{psutil.virtual_memory().percent}%"
-        if psutil.swap_memory().total != 0:
-            self.message['swapValueLabel'] = f"{psutil.swap_memory().percent}%"
+
+        self.message['cpuProgressBar'] = psutil.cpu_percent()
+        self.message['ramProgressBar'] = psutil.virtual_memory().percent
+        self.message['swapProgressBar'] = psutil.swap_memory().percent
 
         sensorIndex = int(self.config.getConfig('temp'))
         sensors = psutil.sensors_temperatures()
         for i, key in enumerate(sensors):
             if i == sensorIndex:
-                self.message['temperatureValueLabel'] = '{:.0f}°C'.format(float(sensors[key][0].current))
+                self.message['label'] = sensors[key][0].label
+                self.message['current'] = '{:.0f}°C'.format(float(sensors[key][0].current))
+                self.message['high'] = '{:.0f}°C'.format(float(sensors[key][0].high))
+                self.message['critical'] = '{:.0f}°C'.format(float(sensors[key][0].critical))
                 break
 
-        time.sleep(2)
+        time.sleep(1)
         self.signal.emit(self.message)
 
 
@@ -278,6 +271,7 @@ class MainWindow(QtWidgets.QMainWindow):
     threadSlow = ThreadSlow()
     partitionsWidgets = []
     upDownRateWidgets = []
+    systemWidgets = dict()
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -300,14 +294,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.minuteLabel = self.findChild(QtWidgets.QLabel, 'minuteLabel')
         self.ampmLabel = self.findChild(QtWidgets.QLabel, 'ampmLabel')
         self.dateLabel = self.findChild(QtWidgets.QLabel, 'dateLabel')
-        self.memValueLabel = self.findChild(QtWidgets.QLabel, 'memValueLabel')
-        if psutil.swap_memory().total == 0:
-            self.swapValueLabel.setHidden(True)
-            self.swapLabel.setHidden(True)
-        else:
-            self.swapValueLabel = self.findChild(QtWidgets.QLabel, 'swapValueLabel')
-        self.cpuValueLabel = self.findChild(QtWidgets.QLabel, 'cpuValueLabel')
-        self.temperatureValueLabel = self.findChild(QtWidgets.QLabel, 'temperatureValueLabel')
 
         # BootTime Label
         self.bootTimeValueLabel = QtWidgets.QLabel()
@@ -331,7 +317,8 @@ class MainWindow(QtWidgets.QMainWindow):
         QProgressBar {
             text-align: left;
             font-weight: bold;
-            color: rgb(255, 255, 255);            
+            color: rgb(255, 255, 255);
+            background-color : rgba(0, 0, 0, 0);                        
         }
         QProgressBar::chunk {
             background: rgb(255, 51, 0);
@@ -341,7 +328,8 @@ class MainWindow(QtWidgets.QMainWindow):
         QProgressBar {
             text-align: left;
             font-weight: bold;
-            color: rgb(255, 255, 255); 
+            color: rgb(255, 255, 255);
+            background-color : rgba(0, 0, 0, 0); 
         }
         QProgressBar::chunk {
             background: rgb(51, 153, 51);
@@ -349,7 +337,25 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.orange = 'color: rgb(252, 126, 0);'
         self.white = 'color: rgb(255, 255, 255);'
-        self.green = 'color: rgb(0, 204, 0);'
+        self.green = 'color: rgb(34, 255, 19);'
+        self.red = 'color: rgb(255, 48, 79);'
+        # ---------------------------------------------------------------------
+        # Setup cfgDir
+        SiFile = f'{Path.home()}/.config/gonha/system_intelligence.json'
+        # if not exists so, create
+        if not os.path.isfile(SiFile):
+            query_and_export(
+                query_scope=list(('all',)),
+                verbose=False,
+                export_format='json',
+                generate_html_table=False,
+                output=SiFile
+            )
+
+        # Now open the system-intelligence json file
+        self.SiData = None  # Store system information
+        with open(SiFile) as f:
+            self.SiData = json.load(f)
         # ---------------------------------------------------------------------
         # Default font
         self.fontDefault = QtGui.QFont('Fira Code', 11)
@@ -494,12 +500,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout.addWidget(ifaceGroupBox)
 
     def displaySystem(self):
-
+        labelDefaultWidth = 50
         distroLinux = distro.linux_distribution()
 
-        unameGroupBox = QtWidgets.QGroupBox('system')
-        unameGroupBox.setFont(self.fontGroupBox)
-        unameGroupBox.setStyleSheet(self.groupBoxStyle)
+        systemGroupBox = QtWidgets.QGroupBox('system')
+        systemGroupBox.setFont(self.fontGroupBox)
+        systemGroupBox.setStyleSheet(self.groupBoxStyle)
+
         verticalLayout = QtWidgets.QVBoxLayout()
         # ---------------------------------------------------------------------------
         unamehboxLayout = QtWidgets.QHBoxLayout()
@@ -512,16 +519,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         verticalLayout.addLayout(unamehboxLayout)
         # ---------------------------------------------------------------------------
-
-        # ---------------------------------------------------------------------------
         # boot time label
         bootTimeHboxLayout = QtWidgets.QHBoxLayout()
-
-        bootTimeLabel = QtWidgets.QLabel('uptime:')
-        bootTimeLabel.setFont(self.fontDefault)
-        bootTimeLabel.setFixedWidth(65)
-        bootTimeLabel.setStyleSheet(self.orange)
-        bootTimeHboxLayout.addWidget(bootTimeLabel)
 
         self.getUpTime()
         self.bootTimeValueLabel.setFont(self.fontDefault)
@@ -530,10 +529,140 @@ class MainWindow(QtWidgets.QMainWindow):
         bootTimeHboxLayout.addWidget(self.bootTimeValueLabel)
 
         verticalLayout.addLayout(bootTimeHboxLayout)
+        # ---------------------------------------------------------------------------
+
+        # CPU Info
+        cpuHBLayout = QtWidgets.QHBoxLayout()
+
+        cpuBrandLabel = QtWidgets.QLabel(self.SiData['cpu']['brand_raw'])
+        cpuBrandLabel.setFont(self.fontDefault)
+        cpuBrandLabel.setStyleSheet(self.white)
+        cpuBrandLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        cpuHBLayout.addWidget(cpuBrandLabel)
+
+        verticalLayout.addLayout(cpuHBLayout)
+
+        # Cpu load
+        cpuLoadHBLayout = QtWidgets.QHBoxLayout()
+        cpuLoadLabel = QtWidgets.QLabel('cpu:')
+        cpuLoadLabel.setFixedWidth(labelDefaultWidth)
+        cpuLoadLabel.setFont(self.fontDefault)
+        cpuLoadLabel.setStyleSheet(self.orange)
+        cpuLoadHBLayout.addWidget(cpuLoadLabel)
+
+        cpuProgressBar = QtWidgets.QProgressBar()
+        cpuProgressBar.setFont(self.fontDefault)
+        cpuProgressBar.setStyleSheet(self.greenPBStyle)
+        cpuProgressBar.setValue(12)
+        self.systemWidgets['cpuProgressBar'] = cpuProgressBar
+
+        cpuLoadHBLayout.addWidget(cpuProgressBar)
+
+        verticalLayout.addLayout(cpuLoadHBLayout)
 
         # ---------------------------------------------------------------------------
-        unameGroupBox.setLayout(verticalLayout)
-        self.verticalLayout.addWidget(unameGroupBox)
+        # ram load
+        ramLoadHBLayout = QtWidgets.QHBoxLayout()
+
+        ramLoadLabel = QtWidgets.QLabel('ram:')
+        ramLoadLabel.setFixedWidth(labelDefaultWidth)
+        ramLoadLabel.setFont(self.fontDefault)
+        ramLoadLabel.setStyleSheet(self.orange)
+
+        ramLoadHBLayout.addWidget(ramLoadLabel)
+
+        ramProgressBar = QtWidgets.QProgressBar()
+        ramProgressBar.setFont(self.fontDefault)
+        ramProgressBar.setStyleSheet(self.greenPBStyle)
+        self.systemWidgets['ramProgressBar'] = ramProgressBar
+        ramProgressBar.setValue(32)
+
+        ramLoadHBLayout.addWidget(ramProgressBar)
+
+        verticalLayout.addLayout(ramLoadHBLayout)
+        # ---------------------------------------------------------------------------
+        # swap load
+        swapHBLayout = QtWidgets.QHBoxLayout()
+
+        swapLabel = QtWidgets.QLabel('swap:')
+        swapLabel.setFixedWidth(labelDefaultWidth)
+        swapLabel.setFont(self.fontDefault)
+        swapLabel.setStyleSheet(self.orange)
+
+        swapHBLayout.addWidget(swapLabel)
+
+        swapProgressBar = QtWidgets.QProgressBar()
+        swapProgressBar.setFont(self.fontDefault)
+        swapProgressBar.setStyleSheet(self.greenPBStyle)
+        self.systemWidgets['swapProgressBar'] = swapProgressBar
+        swapProgressBar.setValue(52)
+
+        swapHBLayout.addWidget(swapProgressBar)
+
+        verticalLayout.addLayout(swapHBLayout)
+
+        # ---------------------------------------------------------------------------
+        # Temperature
+        tempHBLayout = QtWidgets.QHBoxLayout()
+
+        tempLabel = QtWidgets.QLabel('temp:')
+        # tempLabel.setFixedWidth(labelDefaultWidth)
+        tempLabel.setFont(self.fontDefault)
+        tempLabel.setStyleSheet(self.orange)
+
+        tempHBLayout.addWidget(tempLabel)
+
+        tempValueLabel = QtWidgets.QLabel('label')
+        self.systemWidgets['label'] = tempValueLabel
+        tempValueLabel.setFont(self.fontDefault)
+        tempValueLabel.setStyleSheet(self.white)
+
+        tempHBLayout.addWidget(tempValueLabel)
+
+        tempCurrentLabel = QtWidgets.QLabel('current:')
+        tempCurrentLabel.setFont(self.fontDefault)
+        tempCurrentLabel.setStyleSheet(self.orange)
+
+        tempHBLayout.addWidget(tempCurrentLabel)
+
+        tempCurrentValueLabel = QtWidgets.QLabel('30C')
+        tempCurrentValueLabel.setFont(self.fontDefault)
+        self.systemWidgets['current'] = tempCurrentValueLabel
+        tempCurrentValueLabel.setStyleSheet(self.white)
+
+        tempHBLayout.addWidget(tempCurrentValueLabel)
+
+        tempHighLabel = QtWidgets.QLabel('high:')
+        tempHighLabel.setFont(self.fontDefault)
+        tempHighLabel.setStyleSheet(self.orange)
+
+        tempHBLayout.addWidget(tempHighLabel)
+
+        tempHighValueLabel = QtWidgets.QLabel('50C')
+        tempHighValueLabel.setFont(self.fontDefault)
+        tempHighValueLabel.setStyleSheet(self.red)
+        self.systemWidgets['high'] = tempHighValueLabel
+
+        tempHBLayout.addWidget(tempHighValueLabel)
+
+        tempCritLabel = QtWidgets.QLabel('critical:')
+        tempCritLabel.setFont(self.fontDefault)
+        tempCritLabel.setStyleSheet(self.orange)
+
+        tempHBLayout.addWidget(tempCritLabel)
+
+        tempCritValueLabel = QtWidgets.QLabel('60C')
+        tempCritValueLabel.setFont(self.fontDefault)
+        tempCritValueLabel.setStyleSheet(self.red)
+        self.systemWidgets['critical'] = tempCritValueLabel
+
+        tempHBLayout.addWidget(tempCritValueLabel)
+
+        verticalLayout.addLayout(tempHBLayout)
+
+        # ---------------------------------------------------------------------------
+        systemGroupBox.setLayout(verticalLayout)
+        self.verticalLayout.addWidget(systemGroupBox)
 
     def displayPartitions(self):
         mntPoints = self.threadSlow.getPartitions()
@@ -543,6 +672,8 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout = QtWidgets.QVBoxLayout()
         verticalLayout.setAlignment(QtCore.Qt.AlignTop)
         height = 0
+        pbFixedWidth = 280
+        labelAlignment = (QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 
         for mntPoint in mntPoints:
             mountpointHorizontalLayout = QtWidgets.QHBoxLayout()
@@ -566,54 +697,55 @@ class MainWindow(QtWidgets.QMainWindow):
             usedLabel = QtWidgets.QLabel('used:')
             usedLabel.setFont(self.fontDefault)
             usedLabel.setStyleSheet(self.orange)
+            usedLabel.setFixedWidth(60)
             usedHorizontalLayout.addWidget(usedLabel)
+
+            # ProgressBar
+            usedPB = QtWidgets.QProgressBar()
+            usedPB.setFont(self.fontDefault)
+            usedPB.setStyleSheet(self.redPBStyle)
+            usedPB.setFixedWidth(pbFixedWidth)
+            usedPB.setValue(mntPoint['percentUsed'])
+
+            usedHorizontalLayout.addWidget(usedPB)
 
             usedValueLabel = QtWidgets.QLabel(mntPoint['used'])
             usedValueLabel.setFont(self.fontDefault)
             usedValueLabel.setStyleSheet(self.white)
-            usedValueLabel.setAlignment(QtCore.Qt.AlignRight)
+            usedValueLabel.setAlignment(labelAlignment)
+
             usedHorizontalLayout.addWidget(usedValueLabel)
 
             verticalLayout.addLayout(usedHorizontalLayout)
-
-            # ProgressBar
-            usedPBLayout = QtWidgets.QHBoxLayout()
-            usedPB = QtWidgets.QProgressBar()
-            usedPB.setFont(self.fontDefault)
-            usedPB.setStyleSheet(self.redPBStyle)
-            usedPB.setValue(mntPoint['percentUsed'])
-            usedPBLayout.addWidget(usedPB)
-
-            verticalLayout.addLayout(usedPBLayout)
-
             # ----------------------------------------------------------
             # free stats
             freeHorizontalLayout = QtWidgets.QHBoxLayout()
             freeLabel = QtWidgets.QLabel('free:')
             freeLabel.setFont(self.fontDefault)
             freeLabel.setStyleSheet(self.orange)
+            freeLabel.setFixedWidth(60)
             freeHorizontalLayout.addWidget(freeLabel)
+
+            freePB = QtWidgets.QProgressBar()
+            freePB.setFont(self.fontDefault)
+            freePB.setStyleSheet(self.greenPBStyle)
+            freePB.setFixedWidth(pbFixedWidth)
+            freePB.setAlignment(QtCore.Qt.AlignLeft)
+            freePB.setValue(mntPoint['percentFree'])
+
+            freeHorizontalLayout.addWidget(freePB)
 
             freeValueLabel = QtWidgets.QLabel(mntPoint['free'])
             freeValueLabel.setFont(self.fontDefault)
             freeValueLabel.setStyleSheet(self.white)
-            freeValueLabel.setAlignment(QtCore.Qt.AlignRight)
+            freeValueLabel.setAlignment(labelAlignment)
             freeHorizontalLayout.addWidget(freeValueLabel)
 
             verticalLayout.addLayout(freeHorizontalLayout)
 
-            freePBHLayout = QtWidgets.QHBoxLayout()
-            freePB = QtWidgets.QProgressBar()
-            freePB.setFont(self.fontDefault)
-            freePB.setStyleSheet(self.greenPBStyle)
-            freePB.setValue(mntPoint['percentFree'])
-            freePBHLayout.addWidget(freePB)
-
-            verticalLayout.addLayout(freePBHLayout)
-
             # ----------------------------------------------------------
 
-            height = height + 120
+            height = height + 105
 
             self.partitionsWidgets.append(
                 {
@@ -673,8 +805,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.minuteLabel.setText(message['minuteLabel'])
         self.ampmLabel.setText(message['ampmLabel'])
         self.dateLabel.setText(message['dateLabel'])
-        self.memValueLabel.setText(message['memValueLabel'])
-        if psutil.swap_memory().total != 0:
-            self.swapValueLabel.setText(message['swapValueLabel'])
-        self.cpuValueLabel.setText(message['cpuValueLabel'])
-        self.temperatureValueLabel.setText(message['temperatureValueLabel'])
+        # --------------------------------------------------------
+        # update cpu load
+        self.systemWidgets['cpuProgressBar'].setValue(message['cpuProgressBar'])
+        self.systemWidgets['ramProgressBar'].setValue(message['ramProgressBar'])
+        self.systemWidgets['swapProgressBar'].setValue(message['swapProgressBar'])
+        # ----------------------------
+        # update temperature
+        self.systemWidgets['label'].setText(message['label'])
+        self.systemWidgets['current'].setText(message['current'])
+        self.systemWidgets['high'].setText(message['high'])
+        self.systemWidgets['critical'].setText(message['critical'])
+
+        current = int(''.join(filter(str.isdigit, message['current'])))
+        critical = int(''.join(filter(str.isdigit, message['critical'])))
+        if current >= critical:
+            self.systemWidgets['current'].setStyleSheet(self.red)
+        else:
+            self.systemWidgets['current'].setStyleSheet(self.green)
