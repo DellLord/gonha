@@ -211,7 +211,7 @@ class ThreadSlow(QtCore.QThread):
                 'used': '{}'.format(humanfriendly.format_size(disk_usage.used)),
                 'free': '{}'.format(humanfriendly.format_size(disk_usage.free)),
                 'percentUsed': disk_usage.percent,
-                'percentFree': 100 - disk_usage.percent
+                'percentFree': 100 - int(disk_usage.percent)
             })
 
         return msg
@@ -294,14 +294,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.minuteLabel = self.findChild(QtWidgets.QLabel, 'minuteLabel')
         self.ampmLabel = self.findChild(QtWidgets.QLabel, 'ampmLabel')
         self.dateLabel = self.findChild(QtWidgets.QLabel, 'dateLabel')
-        self.memValueLabel = self.findChild(QtWidgets.QLabel, 'memValueLabel')
-        if psutil.swap_memory().total == 0:
-            self.swapValueLabel.setHidden(True)
-            self.swapLabel.setHidden(True)
-        else:
-            self.swapValueLabel = self.findChild(QtWidgets.QLabel, 'swapValueLabel')
-        # self.cpuValueLabel = self.findChild(QtWidgets.QLabel, 'cpuValueLabel')
-        # self.temperatureValueLabel = self.findChild(QtWidgets.QLabel, 'temperatureValueLabel')
 
         # BootTime Label
         self.bootTimeValueLabel = QtWidgets.QLabel()
@@ -325,7 +317,8 @@ class MainWindow(QtWidgets.QMainWindow):
         QProgressBar {
             text-align: left;
             font-weight: bold;
-            color: rgb(0, 0, 0);            
+            color: rgb(255, 255, 255);
+            background-color : rgba(0, 0, 0, 0);                        
         }
         QProgressBar::chunk {
             background: rgb(255, 51, 0);
@@ -335,7 +328,8 @@ class MainWindow(QtWidgets.QMainWindow):
         QProgressBar {
             text-align: left;
             font-weight: bold;
-            color: rgb(0, 0, 0); 
+            color: rgb(255, 255, 255);
+            background-color : rgba(0, 0, 0, 0); 
         }
         QProgressBar::chunk {
             background: rgb(51, 153, 51);
@@ -679,8 +673,12 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout = QtWidgets.QVBoxLayout()
         verticalLayout.setAlignment(QtCore.Qt.AlignTop)
         height = 0
-        pbFixedWidth = 250
-        labelAlignment = QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter
+        pbFixedWidth = 280
+        labelAlignment = (QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        print(self.SiData['hdd'])
+        for key in self.SiData['hdd']['model']:
+            print(key)
 
         for mntPoint in mntPoints:
             mountpointHorizontalLayout = QtWidgets.QHBoxLayout()
