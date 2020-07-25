@@ -47,7 +47,8 @@ setuptools.setup(
         'pathlib',
         'PyInquirer',
         'colr',
-        'distro'
+        'distro',
+        'system-intelligence'
     ],
     include_package_data=True,
     zip_safe=False,

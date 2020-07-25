@@ -14,6 +14,7 @@ import re
 import json
 import distro
 import subprocess
+from system_intelligence.query import query_and_export
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)
@@ -351,6 +352,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.white = 'color: rgb(255, 255, 255);'
         self.green = 'color: rgb(0, 204, 0);'
         # ---------------------------------------------------------------------
+        # Setup cfgDir
+        self.cfgDir = f'{Path.home()}/.config/gonha'
+        print(self.cfgDir)
+        query_and_export(
+            query_scope=list(('all',)),
+            verbose=False,
+            export_format='json',
+            generate_html_table=False,
+            output=f'{self.cfgDir}/system_intelligence.json'
+        )
+        # ---------------------------------------------------------------------
         # Default font
         self.fontDefault = QtGui.QFont('Fira Code', 11)
         self.fontGroupBox = QtGui.QFont('Fira Code', 14)
@@ -513,6 +525,20 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout.addLayout(unamehboxLayout)
         # ---------------------------------------------------------------------------
 
+        # CPU Info
+        cpuHBLayout = QtWidgets.QHBoxLayout()
+        cpuLabel = QtWidgets.QLabel('cpu:')
+        cpuLabel.setFont(self.fontDefault)
+        cpuLabel.setStyleSheet(self.orange)
+        cpuHBLayout.addWidget(cpuLabel)
+
+        # print(cpuInfo)
+        cpuBrandLabel = QtWidgets.QLabel('test')
+        cpuBrandLabel.setFont(self.fontDefault)
+        cpuBrandLabel.setStyleSheet(self.white)
+        cpuHBLayout.addWidget(cpuBrandLabel)
+
+        verticalLayout.addLayout(cpuHBLayout)
         # ---------------------------------------------------------------------------
         # boot time label
         bootTimeHboxLayout = QtWidgets.QHBoxLayout()

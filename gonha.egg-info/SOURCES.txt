@@ -12,8 +12,10 @@ gonha.egg-info/not-zip-safe
 gonha.egg-info/requires.txt
 gonha.egg-info/top_level.txt
 gonha/images/directoryicon.png
+gonha/images/download.png
 gonha/images/gonhascreenshot.png
 gonha/images/logo.png
 gonha/images/logo.xcf
 gonha/images/shot1.png
 gonha/images/startupdelay.png
+gonha/images/upload.png

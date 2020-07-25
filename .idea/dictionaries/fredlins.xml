@@ -10,6 +10,7 @@
       <w>cinammon</w>
       <w>colr</w>
       <w>configobj</w>
+      <w>cpuinfo</w>
       <w>diskstats</w>
       <w>distrib</w>
       <w>distro</w>
@@ -29,11 +30,13 @@
       <w>mountpoint</w>
       <w>mountpoints</w>
       <w>pathlib</w>
+      <w>proc</w>
       <w>psutil</w>
       <w>pyhton</w>
       <w>recebendo</w>
       <w>shutil</w>
       <w>subcontrol</w>
+      <w>teste</w>
       <w>threadfinish</w>
       <w>threadslow</w>
       <w>timebox</w>
