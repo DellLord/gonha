@@ -11,6 +11,7 @@
       <w>colr</w>
       <w>configobj</w>
       <w>cpuinfo</w>
+      <w>crit</w>
       <w>diskstats</w>
       <w>distrib</w>
       <w>distro</w>
@@ -36,6 +37,7 @@
       <w>recebendo</w>
       <w>shutil</w>
       <w>subcontrol</w>
+      <w>tdie</w>
       <w>teste</w>
       <w>threadfinish</w>
       <w>threadslow</w>
