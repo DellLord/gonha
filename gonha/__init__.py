@@ -679,6 +679,8 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout = QtWidgets.QVBoxLayout()
         verticalLayout.setAlignment(QtCore.Qt.AlignTop)
         height = 0
+        pbFixedWidth = 250
+        labelAlignment = QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter
 
         for mntPoint in mntPoints:
             mountpointHorizontalLayout = QtWidgets.QHBoxLayout()
@@ -702,54 +704,55 @@ class MainWindow(QtWidgets.QMainWindow):
             usedLabel = QtWidgets.QLabel('used:')
             usedLabel.setFont(self.fontDefault)
             usedLabel.setStyleSheet(self.orange)
+            usedLabel.setFixedWidth(60)
             usedHorizontalLayout.addWidget(usedLabel)
+
+            # ProgressBar
+            usedPB = QtWidgets.QProgressBar()
+            usedPB.setFont(self.fontDefault)
+            usedPB.setStyleSheet(self.redPBStyle)
+            usedPB.setFixedWidth(pbFixedWidth)
+            usedPB.setValue(mntPoint['percentUsed'])
+
+            usedHorizontalLayout.addWidget(usedPB)
 
             usedValueLabel = QtWidgets.QLabel(mntPoint['used'])
             usedValueLabel.setFont(self.fontDefault)
             usedValueLabel.setStyleSheet(self.white)
-            usedValueLabel.setAlignment(QtCore.Qt.AlignRight)
+            usedValueLabel.setAlignment(labelAlignment)
+
             usedHorizontalLayout.addWidget(usedValueLabel)
 
             verticalLayout.addLayout(usedHorizontalLayout)
-
-            # ProgressBar
-            usedPBLayout = QtWidgets.QHBoxLayout()
-            usedPB = QtWidgets.QProgressBar()
-            usedPB.setFont(self.fontDefault)
-            usedPB.setStyleSheet(self.redPBStyle)
-            usedPB.setValue(mntPoint['percentUsed'])
-            usedPBLayout.addWidget(usedPB)
-
-            verticalLayout.addLayout(usedPBLayout)
-
             # ----------------------------------------------------------
             # free stats
             freeHorizontalLayout = QtWidgets.QHBoxLayout()
             freeLabel = QtWidgets.QLabel('free:')
             freeLabel.setFont(self.fontDefault)
             freeLabel.setStyleSheet(self.orange)
+            freeLabel.setFixedWidth(60)
             freeHorizontalLayout.addWidget(freeLabel)
+
+            freePB = QtWidgets.QProgressBar()
+            freePB.setFont(self.fontDefault)
+            freePB.setStyleSheet(self.greenPBStyle)
+            freePB.setFixedWidth(pbFixedWidth)
+            freePB.setAlignment(QtCore.Qt.AlignLeft)
+            freePB.setValue(mntPoint['percentFree'])
+
+            freeHorizontalLayout.addWidget(freePB)
 
             freeValueLabel = QtWidgets.QLabel(mntPoint['free'])
             freeValueLabel.setFont(self.fontDefault)
             freeValueLabel.setStyleSheet(self.white)
-            freeValueLabel.setAlignment(QtCore.Qt.AlignRight)
+            freeValueLabel.setAlignment(labelAlignment)
             freeHorizontalLayout.addWidget(freeValueLabel)
 
             verticalLayout.addLayout(freeHorizontalLayout)
 
-            freePBHLayout = QtWidgets.QHBoxLayout()
-            freePB = QtWidgets.QProgressBar()
-            freePB.setFont(self.fontDefault)
-            freePB.setStyleSheet(self.greenPBStyle)
-            freePB.setValue(mntPoint['percentFree'])
-            freePBHLayout.addWidget(freePB)
-
-            verticalLayout.addLayout(freePBHLayout)
-
             # ----------------------------------------------------------
 
-            height = height + 120
+            height = height + 105
 
             self.partitionsWidgets.append(
                 {
