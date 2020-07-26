@@ -500,7 +500,7 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout.addLayout(dateTimeHBLayout)
 
         dateTimeGroupBox.setLayout(verticalLayout)
-        dateTimeGroupBox.setMinimumHeight(200)
+        dateTimeGroupBox.setMinimumHeight(40)
         self.verticalLayout.addWidget(dateTimeGroupBox)
 
     def displaySystem(self):
