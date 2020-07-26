@@ -13,6 +13,7 @@ from PyInquirer import prompt
 import re
 import json
 import distro
+from cpuinfo import get_cpu_info
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)
@@ -314,10 +315,13 @@ class MainWindow(QtWidgets.QMainWindow):
             text-align: left;
             font-weight: bold;
             color: rgb(255, 255, 255);
-            background-color : rgba(0, 0, 0, 0);                        
+            background-color : rgba(0, 0, 0, 0);
+            border: 0px solid rgba(0, 0, 0, 0);
+            border-radius: 3px;                                    
         }
         QProgressBar::chunk {
             background: rgb(255, 51, 0);
+            border-radius: 3px;
         }
         """
         self.greenPBStyle = """
@@ -325,10 +329,13 @@ class MainWindow(QtWidgets.QMainWindow):
             text-align: left;
             font-weight: bold;
             color: rgb(255, 255, 255);
-            background-color : rgba(0, 0, 0, 0); 
+            background-color : rgba(0, 0, 0, 0);
+            border: 0px solid rgba(0, 0, 0, 0);
+            border-radius: 3px;           
         }
         QProgressBar::chunk {
             background: rgb(51, 153, 51);
+            border-radius: 3px;            
         }
         """
         self.orange = 'color: rgb(252, 126, 0);'
@@ -504,7 +511,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout.addWidget(dateTimeGroupBox)
 
     def displaySystem(self):
-        labelDefaultWidth = 50
+        labelDefaultWidth = 80
+
+        cpuInfo = get_cpu_info()
         distroLinux = distro.linux_distribution()
 
         systemGroupBox = QtWidgets.QGroupBox('system')
@@ -515,7 +524,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # ---------------------------------------------------------------------------
         unamehboxLayout = QtWidgets.QHBoxLayout()
         # uname label
-        unameLabel = QtWidgets.QLabel(f'{distroLinux[0]} {distroLinux[1]} codename {distroLinux[2]}')
+        codename = distroLinux[2]
+        distroStr = f'{distroLinux[0]} {distroLinux[1]} codename {distroLinux[2]}'
+        if codename == '':
+            distroStr = f'{distroLinux[0]} {distroLinux[1]}'
+
+        unameLabel = QtWidgets.QLabel(distroStr)
         unameLabel.setFont(self.fontDefault)
         unameLabel.setStyleSheet(self.white)
         unameLabel.setAlignment(QtCore.Qt.AlignCenter)
@@ -538,7 +552,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # CPU Info
         cpuHBLayout = QtWidgets.QHBoxLayout()
 
-        cpuBrandLabel = QtWidgets.QLabel('test')
+        cpuBrandLabel = QtWidgets.QLabel(cpuInfo['brand_raw'])
         cpuBrandLabel.setFont(self.fontDefault)
         cpuBrandLabel.setStyleSheet(self.white)
         cpuBrandLabel.setAlignment(QtCore.Qt.AlignHCenter)
@@ -610,7 +624,7 @@ class MainWindow(QtWidgets.QMainWindow):
         tempHBLayout = QtWidgets.QHBoxLayout()
 
         tempLabel = QtWidgets.QLabel('temp:')
-        # tempLabel.setFixedWidth(labelDefaultWidth)
+        tempLabel.setFixedWidth(labelDefaultWidth)
         tempLabel.setFont(self.fontDefault)
         tempLabel.setStyleSheet(self.orange)
 
@@ -625,6 +639,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         tempCurrentLabel = QtWidgets.QLabel('current:')
         tempCurrentLabel.setFont(self.fontDefault)
+        tempCurrentLabel.setFixedWidth(labelDefaultWidth)
         tempCurrentLabel.setStyleSheet(self.orange)
 
         tempHBLayout.addWidget(tempCurrentLabel)
@@ -652,6 +667,7 @@ class MainWindow(QtWidgets.QMainWindow):
         height = 0
         pbFixedWidth = 280
         labelAlignment = (QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        labelDefaultWidth = 80
 
         for mntPoint in mntPoints:
             mountpointHorizontalLayout = QtWidgets.QHBoxLayout()
@@ -675,7 +691,7 @@ class MainWindow(QtWidgets.QMainWindow):
             usedLabel = QtWidgets.QLabel('used:')
             usedLabel.setFont(self.fontDefault)
             usedLabel.setStyleSheet(self.orange)
-            usedLabel.setFixedWidth(60)
+            usedLabel.setFixedWidth(labelDefaultWidth)
             usedHorizontalLayout.addWidget(usedLabel)
 
             # ProgressBar
@@ -701,7 +717,7 @@ class MainWindow(QtWidgets.QMainWindow):
             freeLabel = QtWidgets.QLabel('free:')
             freeLabel.setFont(self.fontDefault)
             freeLabel.setStyleSheet(self.orange)
-            freeLabel.setFixedWidth(60)
+            freeLabel.setFixedWidth(labelDefaultWidth)
             freeHorizontalLayout.addWidget(freeLabel)
 
             freePB = QtWidgets.QProgressBar()

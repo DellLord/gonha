@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 # update aboutdialog.ui with correct version
-version = '0.2.22'
+version = '0.2.26'
 pattern = "([0-9]+.[0-9]+.[0-9]+)"
 newlines = []
 dialog_filename = 'gonha/mainwindow.ui'
@@ -48,7 +48,7 @@ setuptools.setup(
         'PyInquirer',
         'colr',
         'distro',
-        'system-intelligence'
+        'py-cpuinfo'
     ],
     include_package_data=True,
     zip_safe=False,

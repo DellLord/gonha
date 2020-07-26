@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gonha
-Version: 0.2.22
+Version: 0.2.26
 Summary: Light-weight system monitor for Linux
 Home-page: https://github.com/fredcox/gonha
 Author: Fred Cox
@@ -53,7 +53,7 @@ Description: [![made-with-python](https://img.shields.io/badge/Made%20with-Pytho
         Remember, ***$HOME/.local/bin*** must be in included in your PATH variable!
         
         ```bash
-        $ pip3 install gonha
+        $ pip3 install gonha --user
         $ gonha
         ```
         In your window manager (Kde, Cinammon, Gnome, Mate, Xfce) settings for startup application specify delay minimun
