@@ -384,6 +384,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadSlow.start()
         self.threadNetworkStats.start()
         self.loadPosition()
+        self.displayDateTime()
         self.displaySystem()
         self.displayIface()
         self.displayPartitions()
@@ -498,6 +499,30 @@ class MainWindow(QtWidgets.QMainWindow):
 
         ifaceGroupBox.setLayout(verticalLayout)
         self.verticalLayout.addWidget(ifaceGroupBox)
+
+    def displayDateTime(self):
+
+        dateTimeGroupBox = QtWidgets.QGroupBox('datetime')
+        dateTimeGroupBox.setFont(self.fontGroupBox)
+        dateTimeGroupBox.setStyleSheet(self.groupBoxStyle)
+
+        verticalLayout = QtWidgets.QVBoxLayout()
+
+        dateTimeHBLayout = QtWidgets.QHBoxLayout()
+
+        hourLabel = QtWidgets.QLabel('02')
+        minLabel = QtWidgets.QLabel('24')
+        secLabel = QtWidgets.QLabel('32')
+
+        dateTimeHBLayout.addWidget(hourLabel)
+        dateTimeHBLayout.addWidget(minLabel)
+        dateTimeHBLayout.addWidget(secLabel)
+
+        verticalLayout.addLayout(dateTimeHBLayout)
+
+        dateTimeGroupBox.setLayout(verticalLayout)
+        dateTimeGroupBox.setMinimumHeight(200)
+        self.verticalLayout.addWidget(dateTimeGroupBox)
 
     def displaySystem(self):
         labelDefaultWidth = 50
