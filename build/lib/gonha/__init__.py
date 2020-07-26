@@ -665,7 +665,7 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout = QtWidgets.QVBoxLayout()
         verticalLayout.setAlignment(QtCore.Qt.AlignTop)
         height = 0
-        pbFixedWidth = 280
+        pbFixedWidth = 260
         labelAlignment = (QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         labelDefaultWidth = 80
 
