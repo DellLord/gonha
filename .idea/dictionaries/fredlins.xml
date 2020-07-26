@@ -10,6 +10,7 @@
       <w>cinammon</w>
       <w>colr</w>
       <w>configobj</w>
+      <w>cpufreq</w>
       <w>cpuinfo</w>
       <w>crit</w>
       <w>diskstats</w>
@@ -34,10 +35,13 @@
       <w>proc</w>
       <w>psutil</w>
       <w>pyhton</w>
+      <w>ramused</w>
       <w>recebendo</w>
       <w>rgba</w>
       <w>shutil</w>
       <w>subcontrol</w>
+      <w>swapused</w>
+      <w>systemd</w>
       <w>tdie</w>
       <w>teste</w>
       <w>threadfinish</w>
@@ -48,6 +52,8 @@
       <w>unamevbox</w>
       <w>uptime</w>
       <w>vbox</w>
+      <w>virt</w>
+      <w>vmtemp</w>
     </words>
   </dictionary>
 </component>

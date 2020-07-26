@@ -14,9 +14,21 @@ import re
 import json
 import distro
 from cpuinfo import get_cpu_info
+import subprocess
+import random
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)
+
+
+class VirtualMachine:
+    @staticmethod
+    def getStatus():
+        outCmd = subprocess.getoutput('systemd-detect-virt')
+        if outCmd == 'none':
+            return False
+        else:
+            return True
 
 
 class Config:
@@ -62,26 +74,28 @@ class Config:
             dateFormatResponse = prompt(dateFormatQuestions)
             self.updateConfig(dateFormatResponse)
 
-            # Temperature Question
-            sensors = psutil.sensors_temperatures()
-            tempUserChoices = []
-            for i, key in enumerate(sensors):
-                tempUserChoices.append(
-                    '{} - [{}] current temp: {:.0f}°C'.format(i, key, float(sensors[key][0].current))
-                )
+            # if Inside virtual machine, so bypass
+            if not VirtualMachine().getStatus():
+                # Temperature Question
+                sensors = psutil.sensors_temperatures()
+                tempUserChoices = []
+                for i, key in enumerate(sensors):
+                    tempUserChoices.append(
+                        '{} - [{}] current temp: {:.0f}°C'.format(i, key, float(sensors[key][0].current))
+                    )
 
-            # Temperature Questions
-            tempQuestions = [
-                {
-                    'type': 'list',
-                    'name': 'temp',
-                    'message': 'Select what is temperature sensor you want gonha to show',
-                    'choices': tempUserChoices,
-                    'filter': lambda val: tempUserChoices.index(val)
-                }
-            ]
-            tempResponse = prompt(tempQuestions)
-            self.updateConfig(tempResponse)
+                # Temperature Questions
+                tempQuestions = [
+                    {
+                        'type': 'list',
+                        'name': 'temp',
+                        'message': 'Select what is temperature sensor you want gonha to show',
+                        'choices': tempUserChoices,
+                        'filter': lambda val: tempUserChoices.index(val)
+                    }
+                ]
+                tempResponse = prompt(tempQuestions)
+                self.updateConfig(tempResponse)
 
             partitionsChoices = []
             # Filesystem sections
@@ -246,17 +260,26 @@ class ThreadFast(QtCore.QThread):
         self.message['secondsLabel'] = now.strftime('%S')
         self.message['dateLabel'] = now.strftime("%A, %d %B %Y")
 
+        self.message['cpufreq'] = '{:.0f} Mhz'.format(psutil.cpu_freq().current)
+        self.message['ramused'] = '{}'.format(humanfriendly.format_size(psutil.virtual_memory().used))
+        self.message['swapused'] = '{}'.format(humanfriendly.format_size(psutil.swap_memory().used))
         self.message['cpuProgressBar'] = psutil.cpu_percent()
         self.message['ramProgressBar'] = psutil.virtual_memory().percent
         self.message['swapProgressBar'] = psutil.swap_memory().percent
 
-        sensorIndex = int(self.config.getConfig('temp'))
-        sensors = psutil.sensors_temperatures()
-        for i, key in enumerate(sensors):
-            if i == sensorIndex:
-                self.message['label'] = sensors[key][0].label
-                self.message['current'] = '{:.0f}°C'.format(float(sensors[key][0].current))
-                break
+        # --------------------------------------------------------
+        # if inside virtual machine , so bypass sensor
+        if not VirtualMachine().getStatus():
+            sensorIndex = int(self.config.getConfig('temp'))
+            sensors = psutil.sensors_temperatures()
+            for i, key in enumerate(sensors):
+                if i == sensorIndex:
+                    self.message['label'] = sensors[key][0].label
+                    self.message['current'] = '{:.0f}°C'.format(float(sensors[key][0].current))
+                    break
+        else:
+            self.message['label'] = 'vmtemp'
+            self.message['current'] = '{:.0f}°C'.format(random.uniform(1, 100))
 
         time.sleep(1)
         self.signal.emit(self.message)
@@ -576,6 +599,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         cpuLoadHBLayout.addWidget(cpuProgressBar)
 
+        cpuFreqLabel = QtWidgets.QLabel('14343.34 Mhz')
+        cpuFreqLabel.setFont(self.fontDefault)
+        self.systemWidgets['cpufreq'] = cpuFreqLabel
+        cpuFreqLabel.setStyleSheet(self.white)
+
+        cpuLoadHBLayout.addWidget(cpuFreqLabel)
+
         verticalLayout.addLayout(cpuLoadHBLayout)
 
         # ---------------------------------------------------------------------------
@@ -597,6 +627,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         ramLoadHBLayout.addWidget(ramProgressBar)
 
+        ramUsedLabel = QtWidgets.QLabel('15443 MB')
+        ramUsedLabel.setFont(self.fontDefault)
+        ramUsedLabel.setStyleSheet(self.white)
+        self.systemWidgets['ramused'] = ramUsedLabel
+
+        ramLoadHBLayout.addWidget(ramUsedLabel)
+
         verticalLayout.addLayout(ramLoadHBLayout)
         # ---------------------------------------------------------------------------
         # swap load
@@ -616,6 +653,13 @@ class MainWindow(QtWidgets.QMainWindow):
         swapProgressBar.setValue(52)
 
         swapHBLayout.addWidget(swapProgressBar)
+
+        swapUsedLabel = QtWidgets.QLabel('16654 MB')
+        swapUsedLabel.setFont(self.fontDefault)
+        swapUsedLabel.setStyleSheet(self.white)
+        self.systemWidgets['swapused'] = swapUsedLabel
+
+        swapHBLayout.addWidget(swapUsedLabel)
 
         verticalLayout.addLayout(swapHBLayout)
 
@@ -808,6 +852,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # update temperature
         self.systemWidgets['label'].setText(message['label'])
         self.systemWidgets['current'].setText(message['current'])
+
+        self.systemWidgets['cpufreq'].setText(message['cpufreq'])
+        self.systemWidgets['ramused'].setText(message['ramused'])
+        self.systemWidgets['swapused'].setText(message['swapused'])
 
         current = int(''.join(filter(str.isdigit, message['current'])))
         critical = 80
