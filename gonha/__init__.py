@@ -13,8 +13,6 @@ from PyInquirer import prompt
 import re
 import json
 import distro
-import subprocess
-from system_intelligence.query import query_and_export
 
 app = QtWidgets.QApplication(sys.argv)
 resource_path = os.path.dirname(__file__)
@@ -257,8 +255,6 @@ class ThreadFast(QtCore.QThread):
             if i == sensorIndex:
                 self.message['label'] = sensors[key][0].label
                 self.message['current'] = '{:.0f}°C'.format(float(sensors[key][0].current))
-                self.message['high'] = '{:.0f}°C'.format(float(sensors[key][0].high))
-                self.message['critical'] = '{:.0f}°C'.format(float(sensors[key][0].critical))
                 break
 
         time.sleep(1)
@@ -339,23 +335,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.white = 'color: rgb(255, 255, 255);'
         self.green = 'color: rgb(34, 255, 19);'
         self.red = 'color: rgb(255, 48, 79);'
-        # ---------------------------------------------------------------------
-        # Setup cfgDir
-        SiFile = f'{Path.home()}/.config/gonha/system_intelligence.json'
-        # if not exists so, create
-        if not os.path.isfile(SiFile):
-            query_and_export(
-                query_scope=list(('all',)),
-                verbose=False,
-                export_format='json',
-                generate_html_table=False,
-                output=SiFile
-            )
-
-        # Now open the system-intelligence json file
-        self.SiData = None  # Store system information
-        with open(SiFile) as f:
-            self.SiData = json.load(f)
         # ---------------------------------------------------------------------
         # Default font
         self.fontDefault = QtGui.QFont('Fira Code', 11)
@@ -559,7 +538,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # CPU Info
         cpuHBLayout = QtWidgets.QHBoxLayout()
 
-        cpuBrandLabel = QtWidgets.QLabel(self.SiData['cpu']['brand_raw'])
+        cpuBrandLabel = QtWidgets.QLabel('test')
         cpuBrandLabel.setFont(self.fontDefault)
         cpuBrandLabel.setStyleSheet(self.white)
         cpuBrandLabel.setAlignment(QtCore.Qt.AlignHCenter)
@@ -656,32 +635,6 @@ class MainWindow(QtWidgets.QMainWindow):
         tempCurrentValueLabel.setStyleSheet(self.white)
 
         tempHBLayout.addWidget(tempCurrentValueLabel)
-
-        tempHighLabel = QtWidgets.QLabel('high:')
-        tempHighLabel.setFont(self.fontDefault)
-        tempHighLabel.setStyleSheet(self.orange)
-
-        tempHBLayout.addWidget(tempHighLabel)
-
-        tempHighValueLabel = QtWidgets.QLabel('50C')
-        tempHighValueLabel.setFont(self.fontDefault)
-        tempHighValueLabel.setStyleSheet(self.red)
-        self.systemWidgets['high'] = tempHighValueLabel
-
-        tempHBLayout.addWidget(tempHighValueLabel)
-
-        tempCritLabel = QtWidgets.QLabel('critical:')
-        tempCritLabel.setFont(self.fontDefault)
-        tempCritLabel.setStyleSheet(self.orange)
-
-        tempHBLayout.addWidget(tempCritLabel)
-
-        tempCritValueLabel = QtWidgets.QLabel('60C')
-        tempCritValueLabel.setFont(self.fontDefault)
-        tempCritValueLabel.setStyleSheet(self.red)
-        self.systemWidgets['critical'] = tempCritValueLabel
-
-        tempHBLayout.addWidget(tempCritValueLabel)
 
         verticalLayout.addLayout(tempHBLayout)
 
@@ -839,11 +792,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # update temperature
         self.systemWidgets['label'].setText(message['label'])
         self.systemWidgets['current'].setText(message['current'])
-        self.systemWidgets['high'].setText(message['high'])
-        self.systemWidgets['critical'].setText(message['critical'])
 
         current = int(''.join(filter(str.isdigit, message['current'])))
-        critical = int(''.join(filter(str.isdigit, message['critical'])))
+        critical = 80
         if current >= critical:
             self.systemWidgets['current'].setStyleSheet(self.red)
         else:
