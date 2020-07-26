@@ -1,9 +1,9 @@
-PyInquirer
 PyQt5
-colr
-distro
 ewmh
+psutil
 humanfriendly
 pathlib
-psutil
+PyInquirer
+colr
+distro
 system-intelligence

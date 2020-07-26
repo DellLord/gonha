@@ -45,7 +45,7 @@ $ fc-cache -v
 Remember, ***$HOME/.local/bin*** must be in included in your PATH variable!
 
 ```bash
-$ pip3 install gonha
+$ pip3 install gonha --user
 $ gonha
 ```
 In your window manager (Kde, Cinammon, Gnome, Mate, Xfce) settings for startup application specify delay minimun

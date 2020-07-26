@@ -314,10 +314,13 @@ class MainWindow(QtWidgets.QMainWindow):
             text-align: left;
             font-weight: bold;
             color: rgb(255, 255, 255);
-            background-color : rgba(0, 0, 0, 0);                        
+            background-color : rgba(0, 0, 0, 0);
+            border: 0px solid rgba(0, 0, 0, 0);
+            border-radius: 3px;                                    
         }
         QProgressBar::chunk {
             background: rgb(255, 51, 0);
+            border-radius: 3px;
         }
         """
         self.greenPBStyle = """
@@ -325,10 +328,13 @@ class MainWindow(QtWidgets.QMainWindow):
             text-align: left;
             font-weight: bold;
             color: rgb(255, 255, 255);
-            background-color : rgba(0, 0, 0, 0); 
+            background-color : rgba(0, 0, 0, 0);
+            border: 0px solid rgba(0, 0, 0, 0);
+            border-radius: 3px;           
         }
         QProgressBar::chunk {
             background: rgb(51, 153, 51);
+            border-radius: 3px;            
         }
         """
         self.orange = 'color: rgb(252, 126, 0);'
@@ -363,7 +369,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadSlow.start()
         self.threadNetworkStats.start()
         self.loadPosition()
-        self.displayDateTime()
+        # self.displayDateTime()
         self.displaySystem()
         self.displayIface()
         self.displayPartitions()
@@ -515,7 +521,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # ---------------------------------------------------------------------------
         unamehboxLayout = QtWidgets.QHBoxLayout()
         # uname label
-        unameLabel = QtWidgets.QLabel(f'{distroLinux[0]} {distroLinux[1]} codename {distroLinux[2]}')
+        codename = distroLinux[2]
+        distroStr = f'{distroLinux[0]} {distroLinux[1]} codename {distroLinux[2]}'
+        if codename == '':
+            distroStr = f'{distroLinux[0]} {distroLinux[1]}'
+
+        unameLabel = QtWidgets.QLabel(distroStr)
         unameLabel.setFont(self.fontDefault)
         unameLabel.setStyleSheet(self.white)
         unameLabel.setAlignment(QtCore.Qt.AlignCenter)
