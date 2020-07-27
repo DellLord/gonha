@@ -1,6 +1,6 @@
 import sys
 import distro
-from PyQt5 import QtWidgets, uic, QtGui
+from PyQt5 import QtWidgets, QtGui
 from cpuinfo import get_cpu_info
 from ewmh import EWMH
 from gonha.threads import *
@@ -17,11 +17,12 @@ class MainWindow(QtWidgets.QMainWindow):
     threadSlow = ThreadSlow()
     partitionsWidgets = []
     upDownRateWidgets = []
+    dtWidgets = dict()
     systemWidgets = dict()
+    verticalLayout = QtWidgets.QVBoxLayout()
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        uic.loadUi(f'{self.config.resource_path}/mainwindow.ui', self)
         print(color(':: ', fore=11), color(f'Gonha {self.version}', fore=14, back=0), color(' ::', fore=11))
         print('Starting...')
         print()
@@ -31,15 +32,6 @@ class MainWindow(QtWidgets.QMainWindow):
         flags |= QtCore.Qt.WindowStaysOnBottomHint
         flags |= QtCore.Qt.Tool
         # -------------------------------------------------------------
-        # Find Childs
-        self.hourLabel = self.findChild(QtWidgets.QLabel, 'hourLabel')
-        self.minuteLabel = self.findChild(QtWidgets.QLabel, 'minuteLabel')
-        self.ampmLabel = self.findChild(QtWidgets.QLabel, 'ampmLabel')
-        self.dateLabel = self.findChild(QtWidgets.QLabel, 'dateLabel')
-
-        # BootTime Label
-        # self.bootTimeValueLabel = QtWidgets.QLabel()
-        # ---------------------------------------------------------------------
         # Styles
         self.groupBoxStyle = """
         QGroupBox {
@@ -92,8 +84,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fontDefault = QtGui.QFont('Fira Code', 11)
         self.fontGroupBox = QtGui.QFont('Fira Code', 14)
         # -------------------------------------------------------------
-        self.verticalLayout = self.findChild(QtWidgets.QVBoxLayout, 'verticalLayout')
         self.verticalLayout.setAlignment(QtCore.Qt.AlignTop)
+
         # --------------------------------------------------------------
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
@@ -101,21 +93,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadFast.signal.connect(self.receiveThreadFastfinish)
         self.threadSlow.signal.connect(self.receiveThreadSlowFinish)
         self.threadNetworkStats.signal.connect(self.receiveThreadNetworkStats)
+
+        self.setMinimumSize(QtCore.QSize(490, 900))
+        centralWidGet = QtWidgets.QWidget(self)
+        centralWidGet.setLayout(self.verticalLayout)
+        self.setCentralWidget(centralWidGet)
         self.show()
+
         # Show in all workspaces
         self.ew = EWMH()
         self.all_wins = self.ew.getClientList()
         self.wins = filter(lambda w: w.get_wm_class()[1] == 'gonha', self.all_wins)
         for w in self.wins:
-            # print(w)
             self.ew.setWmDesktop(w, 0xffffffff)
 
         self.ew.display.flush()
+
         self.threadFast.start()
         self.threadSlow.start()
         self.threadNetworkStats.start()
+
         self.loadPosition()
-        # self.displayDateTime()
+        self.displayDateTime()
         self.displaySystem()
         self.displayIface()
         self.displayPartitions()
@@ -223,6 +222,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout.addWidget(ifaceGroupBox)
 
     def displayDateTime(self):
+        timeFont = QtGui.QFont('Fira Code', 20)
 
         dateTimeGroupBox = QtWidgets.QGroupBox('datetime')
         dateTimeGroupBox.setFont(self.fontGroupBox)
@@ -231,16 +231,55 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout = QtWidgets.QVBoxLayout()
 
         dateTimeHBLayout = QtWidgets.QHBoxLayout()
+        dateTimeHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
+
+        twoPointLabel = [QtWidgets.QLabel(':'), QtWidgets.QLabel(':')]
+        twoPointLabel[0].setFont(timeFont)
+        twoPointLabel[0].setStyleSheet(self.orange)
+        twoPointLabel[1].setFont(timeFont)
+        twoPointLabel[1].setStyleSheet(self.orange)
 
         hourLabel = QtWidgets.QLabel('02')
+        hourLabel.setFont(timeFont)
+        hourLabel.setStyleSheet(self.white)
+        self.dtWidgets['hour'] = hourLabel
+
         minLabel = QtWidgets.QLabel('24')
+        minLabel.setFont(timeFont)
+        minLabel.setStyleSheet(self.white)
+        self.dtWidgets['min'] = minLabel
+
         secLabel = QtWidgets.QLabel('32')
+        secLabel.setFont(timeFont)
+        secLabel.setStyleSheet(self.white)
+        self.dtWidgets['sec'] = secLabel
+
+        ampmLabel = QtWidgets.QLabel('pm')
+        ampmLabel.setFont(timeFont)
+        ampmLabel.setStyleSheet(self.orange)
+        self.dtWidgets['ampm'] = ampmLabel
 
         dateTimeHBLayout.addWidget(hourLabel)
+        dateTimeHBLayout.addWidget(twoPointLabel[0])
         dateTimeHBLayout.addWidget(minLabel)
+        dateTimeHBLayout.addWidget(twoPointLabel[1])
         dateTimeHBLayout.addWidget(secLabel)
+        dateTimeHBLayout.addWidget(ampmLabel)
 
         verticalLayout.addLayout(dateTimeHBLayout)
+
+        # Now, add date
+        dateHBLayout = QtWidgets.QHBoxLayout()
+        dateHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
+
+        dateLabel = QtWidgets.QLabel('test')
+        dateLabel.setFont(timeFont)
+        dateLabel.setStyleSheet(self.white)
+        self.dtWidgets['date'] = dateLabel
+
+        dateHBLayout.addWidget(dateLabel)
+
+        verticalLayout.addLayout(dateHBLayout)
 
         dateTimeGroupBox.setLayout(verticalLayout)
         dateTimeGroupBox.setMinimumHeight(40)
@@ -553,10 +592,11 @@ class MainWindow(QtWidgets.QMainWindow):
             widget['freePB'].setValue(message[i]['percentFree'])
 
     def receiveThreadFastfinish(self, message):
-        self.hourLabel.setText(message['hourLabel'])
-        self.minuteLabel.setText(message['minuteLabel'])
-        self.ampmLabel.setText(message['ampmLabel'])
-        self.dateLabel.setText(message['dateLabel'])
+        self.dtWidgets['hour'].setText(message['hour'])
+        self.dtWidgets['min'].setText(message['min'])
+        self.dtWidgets['sec'].setText(message['sec'])
+        self.dtWidgets['ampm'].setText(message['ampm'])
+        self.dtWidgets['date'].setText(message['date'])
         # --------------------------------------------------------
         # update cpu load
         self.systemWidgets['cpuProgressBar'].setValue(message['cpuProgressBar'])
