@@ -270,7 +270,7 @@ class MainWindow(QtWidgets.QMainWindow):
         dateHBLayout = QtWidgets.QHBoxLayout()
         dateHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
 
-        dateLabel = QtWidgets.QLabel('test')
+        dateLabel = QtWidgets.QLabel('')
         dateLabel.setFont(timeFont)
         dateLabel.setStyleSheet(self.white)
         self.dtWidgets['date'] = dateLabel
