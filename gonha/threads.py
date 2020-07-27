@@ -82,6 +82,15 @@ class ThreadFast(QtCore.QThread):
     def threadFinished(self):
         self.start()
 
+    @staticmethod
+    def getUpTime():
+        timedelta = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
+        timedeltaInSeconds = timedelta.days * 24 * 3600 + timedelta.seconds
+        minutes, seconds = divmod(timedeltaInSeconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
+        return f'{days} days, {hours} hrs {minutes} min and {seconds} sec'
+
     def run(self):
         now = datetime.now()
         dateFormat = self.config.getConfig('dateFormat')
@@ -102,6 +111,7 @@ class ThreadFast(QtCore.QThread):
         self.message['cpuProgressBar'] = psutil.cpu_percent()
         self.message['ramProgressBar'] = psutil.virtual_memory().percent
         self.message['swapProgressBar'] = psutil.swap_memory().percent
+        self.message['boottime'] = self.getUpTime()
 
         # --------------------------------------------------------
         # if inside virtual machine , so bypass sensor

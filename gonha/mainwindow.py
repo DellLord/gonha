@@ -4,10 +4,13 @@ from PyQt5 import QtWidgets, uic, QtGui
 from cpuinfo import get_cpu_info
 from ewmh import EWMH
 from gonha.threads import *
+from colr import color
 
 
 class MainWindow(QtWidgets.QMainWindow):
     config = Config()
+    iface = config.getConfig('iface')
+    version = config.getVersion()
     app = QtWidgets.QApplication(sys.argv)
     threadNetworkStats = ThreadNetworkStats()
     threadFast = ThreadFast()
@@ -19,8 +22,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi(f'{self.config.resource_path}/mainwindow.ui', self)
-        self.iface = self.config.getConfig('iface')
-        self.version = self.windowTitle()
+        print(color(':: ', fore=11), color(f'Gonha {self.version}', fore=14, back=0), color(' ::', fore=11))
+        print('Starting...')
+        print()
+        # -------------------------------------------------------------
         # Window Flags
         flags = QtCore.Qt.FramelessWindowHint
         flags |= QtCore.Qt.WindowStaysOnBottomHint
@@ -33,7 +38,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dateLabel = self.findChild(QtWidgets.QLabel, 'dateLabel')
 
         # BootTime Label
-        self.bootTimeValueLabel = QtWidgets.QLabel()
+        # self.bootTimeValueLabel = QtWidgets.QLabel()
         # ---------------------------------------------------------------------
         # Styles
         self.groupBoxStyle = """
@@ -115,16 +120,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayIface()
         self.displayPartitions()
 
-    def getUpTime(self):
-        timedelta = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
-        timedeltaInSeconds = timedelta.days * 24 * 3600 + timedelta.seconds
-        minutes, seconds = divmod(timedeltaInSeconds, 60)
-        hours, minutes = divmod(minutes, 60)
-        days, hours = divmod(hours, 24)
-        self.bootTimeValueLabel.setText(f'{days} days, {hours} hrs {minutes} min and {seconds} sec')
-
     def receiveThreadNetworkStats(self, message):
-        self.getUpTime()
         self.upDownRateWidgets[0].setText(message['iface'])
         self.upDownRateWidgets[1].setText('{}/s'.format(humanfriendly.format_size(message['downSpeed'])))
         self.upDownRateWidgets[2].setText('{}/s'.format(humanfriendly.format_size(message['upSpeed'])))
@@ -280,11 +276,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # boot time label
         bootTimeHboxLayout = QtWidgets.QHBoxLayout()
 
-        self.getUpTime()
-        self.bootTimeValueLabel.setFont(self.fontDefault)
-        self.bootTimeValueLabel.setStyleSheet(self.white)
-        self.bootTimeValueLabel.setAlignment(QtCore.Qt.AlignCenter)
-        bootTimeHboxLayout.addWidget(self.bootTimeValueLabel)
+        bootTimeValueLabel = QtWidgets.QLabel()
+        bootTimeValueLabel.setFont(self.fontDefault)
+        bootTimeValueLabel.setStyleSheet(self.white)
+        bootTimeValueLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.systemWidgets['boottime'] = bootTimeValueLabel
+        bootTimeHboxLayout.addWidget(bootTimeValueLabel)
 
         verticalLayout.addLayout(bootTimeHboxLayout)
         # ---------------------------------------------------------------------------
@@ -573,6 +570,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.systemWidgets['cpufreq'].setText(message['cpufreq'])
         self.systemWidgets['ramused'].setText(message['ramused'])
         self.systemWidgets['swapused'].setText(message['swapused'])
+
+        self.systemWidgets['boottime'].setText(message['boottime'])
 
         current = int(''.join(filter(str.isdigit, message['current'])))
         critical = 80
