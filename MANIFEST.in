@@ -2,3 +2,4 @@ include gonha/README.me
 include gonha/LICENSE
 include gonha/*.ui
 include gonha/images/*
+include gonha/images/distros/*

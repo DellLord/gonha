@@ -291,21 +291,36 @@ class MainWindow(QtWidgets.QMainWindow):
         systemGroupBox.setStyleSheet(self.groupBoxStyle)
 
         verticalLayout = QtWidgets.QVBoxLayout()
+
+        # distro Label
+        distroJson = self.config.getConfig('distro')
+        distroStr = f"{distroJson['name']} {distroJson['version']}"
+        if not distroJson['codename'] == '':
+            distroStr = f"{distroStr} {distroJson['codename']}"
+
         # ---------------------------------------------------------------------------
-        unamehboxLayout = QtWidgets.QHBoxLayout()
-        # uname label
-        codename = 'gonha'
-        distroStr = f'teste'
-        if codename == '':
-            distroStr = f'teste'
+        distroHBLayout = QtWidgets.QHBoxLayout()
+        distroHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
+        distroVBLayout = QtWidgets.QVBoxLayout()
 
-        unameLabel = QtWidgets.QLabel(distroStr)
-        unameLabel.setFont(self.fontDefault)
-        unameLabel.setStyleSheet(self.white)
-        unameLabel.setAlignment(QtCore.Qt.AlignCenter)
-        unamehboxLayout.addWidget(unameLabel)
+        distroIcon = QtWidgets.QLabel()
+        distroIcon.setPixmap(QtGui.QPixmap(distroJson['iconfile']))
+        distroIcon.setMinimumSize(QtCore.QSize(32, 32))
 
-        verticalLayout.addLayout(unamehboxLayout)
+        distroHBLayout.addWidget(distroIcon)
+        # ---------------------------------------------------------------------------
+
+        distroLabel = QtWidgets.QLabel(distroStr)
+        distroLabel.setFont(self.fontDefault)
+        distroLabel.setStyleSheet(self.white)
+        distroLabel.setAlignment(QtCore.Qt.AlignCenter)
+
+        distroVBLayout.addWidget(distroLabel)
+        distroVBLayout.addWidget(QtWidgets.QLabel('Kernel'))
+
+        distroHBLayout.addLayout(distroVBLayout)
+
+        verticalLayout.addLayout(distroHBLayout)
         # ---------------------------------------------------------------------------
         # boot time label
         bootTimeHboxLayout = QtWidgets.QHBoxLayout()
