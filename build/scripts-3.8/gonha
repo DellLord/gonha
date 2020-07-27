@@ -1,10 +1,8 @@
 #!python
 import gonha
-
+from gonha.mainwindow import MainWindow
 
 if __name__ == '__main__':
-    # app = QtWidgets.QApplication(sys.argv)
-    gonha.Config()
-    app = gonha.app
-    window = gonha.MainWindow()
+    app = MainWindow.app
+    window = MainWindow()
     app.exec_()
