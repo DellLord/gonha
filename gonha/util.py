@@ -156,9 +156,7 @@ class Config:
     def updateConfig(self, data):
         self.globalJSON.update(data)
 
-    def getVersion(self):
-        pattern = "([0-9]+.[0-9]+.[0-9]+)"
-        with open(self.mainWindowFile, 'r') as f:
-            for line in f.readlines():
-                if re.search(pattern, line):
-                    return re.search(pattern, line).group()
+    @staticmethod
+    def getVersion():
+        return '1.0.1'
+

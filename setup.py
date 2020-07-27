@@ -1,29 +1,12 @@
 import setuptools
-import re
+from gonha.util import Config
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-# update aboutdialog.ui with correct version
-version = '1.0.1'
-pattern = "([0-9]+.[0-9]+.[0-9]+)"
-newlines = []
-dialog_filename = 'gonha/mainwindow.ui'
-with open(dialog_filename, 'r') as f:
-    for line in f.readlines():
-        if re.search(pattern, line):
-            newlines.append(re.sub(pattern, version, line))
-        else:
-            newlines.append(line)
-
-with open(dialog_filename, 'w') as f:
-    for line in newlines:
-        f.write(line)
-
-
 setuptools.setup(
     name="gonha",
-    version=version,
+    version=Config().getVersion(),
     author="Fred Cox",
     author_email="fredcox@gmail.com",
     description="Light-weight system monitor for Linux",
