@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gonha
-Version: 1.0.2
+Version: 1.0.4
 Summary: Light-weight system monitor for Linux
 Home-page: https://github.com/fredcox/gonha
 Author: Fred Cox
@@ -29,7 +29,7 @@ Description: [![made-with-python](https://img.shields.io/badge/Made%20with-Pytho
         
         ## About
         
-        ![Gonha - Logo](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/shot1.png)
+        ![Gonha - Logo](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/shot.png)
         
         ***Gonha*** is a simple light-weight system monitor for Linux
         

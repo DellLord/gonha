@@ -18,6 +18,6 @@ gonha/images/download.png
 gonha/images/gonhascreenshot.png
 gonha/images/logo.png
 gonha/images/logo.xcf
-gonha/images/shot1.png
+gonha/images/shot.png
 gonha/images/startupdelay.png
 gonha/images/upload.png
