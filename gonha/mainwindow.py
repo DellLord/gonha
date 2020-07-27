@@ -1,5 +1,4 @@
 import sys
-import distro
 from PyQt5 import QtWidgets, QtGui
 from ewmh import EWMH
 from gonha.threads import *
@@ -287,8 +286,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def displaySystem(self):
         labelDefaultWidth = 80
 
-        distroLinux = distro.linux_distribution()
-
         systemGroupBox = QtWidgets.QGroupBox('system')
         systemGroupBox.setFont(self.fontGroupBox)
         systemGroupBox.setStyleSheet(self.groupBoxStyle)
@@ -297,10 +294,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # ---------------------------------------------------------------------------
         unamehboxLayout = QtWidgets.QHBoxLayout()
         # uname label
-        codename = distroLinux[2]
-        distroStr = f'{distroLinux[0]} {distroLinux[1]} codename {distroLinux[2]}'
+        codename = 'gonha'
+        distroStr = f'teste'
         if codename == '':
-            distroStr = f'{distroLinux[0]} {distroLinux[1]}'
+            distroStr = f'teste'
 
         unameLabel = QtWidgets.QLabel(distroStr)
         unameLabel.setFont(self.fontDefault)

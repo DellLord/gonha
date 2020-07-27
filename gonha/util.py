@@ -7,6 +7,7 @@ import psutil
 import json
 import sys
 from cpuinfo import get_cpu_info
+import distro
 
 
 class VirtualMachine:
@@ -21,7 +22,7 @@ class VirtualMachine:
 
 class Config:
     resource_path = os.path.dirname(__file__)
-    mainWindowFile = f'{resource_path}/mainwindow.ui'
+    distrosDir = f'{resource_path}/images/distros'
     cfgFile = f'{Path.home()}/.config/gonha/config.json'
     globalJSON = dict()
 
@@ -30,9 +31,40 @@ class Config:
 
         if not os.path.isfile(self.cfgFile):
             self.wizard()
+        else:
+            try:
+                cfgVersion = self.getConfig('version')
+            except KeyError:
+                cfgVersion = ''
+
+            if self.getVersion() != cfgVersion:
+                print(color('New config file is necessary', fore=14))
+                print('Current version is [{}] and old version is {}'.format(self.getVersion(), cfgVersion))
+                os.remove(self.cfgFile)
+                self.wizard()
 
     def wizard(self):
+        # ----------------------------------------------------------------
+        # Get cpu info
         cpuInfo = get_cpu_info()
+        # ----------------------------------------------------------------
+        # update with current version
+        self.updateConfig({'version': self.getVersion()})
+        # ----------------------------------------------------------------
+        # ----------------------------------------------------------------
+        # update with distro information
+        dist = {
+            'distro': {
+                'id': distro.id(),
+                'name': distro.name(),
+                'codename': distro.codename(),
+                'version': distro.version(),
+                'iconfile': f'{self.distrosDir}/{distro.id()}.png'
+            }
+        }
+        self.updateConfig(dist)
+        # ----------------------------------------------------------------
+
         print(color('Config file not found in : ', fore=9), color(f'{self.cfgFile}', fore=11))
         print(color('Starting Wizard...', fore=14))
         print('')
@@ -54,7 +86,6 @@ class Config:
         # -------------------------------------------------------------------------
         # Cpu Info
         self.updateConfig({'cpuinfo': cpuInfo['brand_raw']})
-        print(self.globalJSON)
         # -------------------------------------------------------------------------
         # Date Format Question
         dateFormatQuestions = [

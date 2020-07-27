@@ -1,8 +1,0 @@
-#!python
-import gonha
-from gonha.mainwindow import MainWindow
-
-if __name__ == '__main__':
-    app = MainWindow.app
-    window = MainWindow()
-    app.exec_()

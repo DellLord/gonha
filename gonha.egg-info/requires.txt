@@ -1,9 +1,0 @@
-PyInquirer
-PyQt5
-colr
-distro
-ewmh
-humanfriendly
-pathlib
-psutil
-py-cpuinfo

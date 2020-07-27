@@ -1,12 +1,23 @@
 import setuptools
-from gonha.util import Config
+import re
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+
+pattern = "([0-9]+.[0-9]+.[0-9]+)"
+utilFile = 'gonha/util.py'
+version = ''
+with open(utilFile, 'r') as f:
+    for line in f.readlines():
+        searchObj = re.search(pattern, line)
+        if searchObj:
+            version = searchObj.group()
+            break
+
 setuptools.setup(
     name="gonha",
-    version=Config().getVersion(),
+    version=version,
     author="Fred Cox",
     author_email="fredcox@gmail.com",
     description="Light-weight system monitor for Linux",

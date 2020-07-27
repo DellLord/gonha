@@ -15,9 +15,11 @@
       <w>cpuinfo</w>
       <w>crit</w>
       <w>devel</w>
+      <w>diferents</w>
       <w>diskstats</w>
       <w>distrib</w>
       <w>distro</w>
+      <w>distros</w>
       <w>donwload</w>
       <w>ewmh</w>
       <w>fastfinish</w>
@@ -26,6 +28,7 @@
       <w>gonha</w>
       <w>hbox</w>
       <w>humanfriendly</w>
+      <w>iconfile</w>
       <w>iface</w>
       <w>lsbconfig</w>
       <w>lsbrelease</w>
