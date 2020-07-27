@@ -34,7 +34,7 @@ gonha/images/distros/mandriva.png
 gonha/images/distros/manjaro.png
 gonha/images/distros/mxlinux.png
 gonha/images/distros/opensuse.png
-gonha/images/distros/popos.png
+gonha/images/distros/pop.png
 gonha/images/distros/rhel.png
 gonha/images/distros/scientific.png
 gonha/images/distros/slackware.png
