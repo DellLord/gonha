@@ -22,6 +22,7 @@ class MainWindow(QtWidgets.QMainWindow):
     systemWidgets = dict()
     verticalLayout = QtWidgets.QVBoxLayout()
     weather = Weather()
+    debugRed = 'background-color: rgb(255, 48, 79);'
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -117,7 +118,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.loadPosition()
         self.displayDTWeather()
-        # self.displayweather()
         self.displaySystem()
         self.displayIface()
         self.displayPartitions()
@@ -239,10 +239,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def displayDTWeather(self):
         countries = dict(countries_for_language('en'))
-        debugRed = 'background-color: rgb(255, 48, 79);'
         timeHeight = 50
         dateHeight = 25
         tempHeight = 60
+        labelDefaultHeight = 15
 
         timeFont = QtGui.QFont('Fira Code', 45)
         dayFont = QtGui.QFont('Fira Code', 20)
@@ -343,6 +343,7 @@ class MainWindow(QtWidgets.QMainWindow):
         weatherHBLayout = QtWidgets.QHBoxLayout()
 
         weatherVBLayout = QtWidgets.QVBoxLayout()
+        weatherVBLayout.setSpacing(0)
         weatherVBLayout.setAlignment(QtCore.Qt.AlignVCenter)
 
         tempLabel = QtWidgets.QLabel('22°C')
@@ -366,13 +367,10 @@ class MainWindow(QtWidgets.QMainWindow):
         weatherHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
 
         cityRegionLabel = QtWidgets.QLabel(
-            f"{self.config.getConfig('location')['city']}, {self.config.getConfig('location')['region']}")
-        cityRegionLabel.setFont(self.fontDefault)
-        cityRegionLabel.setStyleSheet(self.white)
+            f"{self.config.getConfig('location')['city']}")
+        self.setLabel(cityRegionLabel, self.white, self.fontDefault)
 
         countryLabel = QtWidgets.QLabel(countries[self.config.getConfig('location')['country']])
-        countryLabel.setFont(self.fontDefault)
-        countryLabel.setStyleSheet(self.white)
         self.setLabel(countryLabel, self.white, self.fontDefault)
 
         weatherVBLayout.addWidget(cityRegionLabel)
@@ -434,6 +432,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def displaySystem(self):
         labelDefaultWidth = 80
+        labelDefaultHeight = 15
 
         systemGroupBox = QtWidgets.QGroupBox('system')
         systemGroupBox.setFont(self.fontGroupBox)
@@ -451,25 +450,29 @@ class MainWindow(QtWidgets.QMainWindow):
         distroHBLayout = QtWidgets.QHBoxLayout()
         distroHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
         distroVBLayout = QtWidgets.QVBoxLayout()
+        distroVBLayout.setSpacing(0)
 
         distroIcon = QtWidgets.QLabel()
         distroIcon.setPixmap(QtGui.QPixmap(distroJson['iconfile']))
-        distroIcon.setMinimumSize(QtCore.QSize(32, 32))
+        distroIcon.setFixedHeight(64)
 
         distroHBLayout.addWidget(distroIcon)
         # ---------------------------------------------------------------------------
         # Distro label
         distroLabel = QtWidgets.QLabel(distroStr)
         self.setLabel(distroLabel, self.white, self.fontDefault)
+        distroLabel.setFixedHeight(labelDefaultHeight)
         # ---------------------------------------------------------------------------
         # kernel label
         platJson = self.config.getConfig('platform')
         kernelLabel = QtWidgets.QLabel(f"Kernel {platJson['release']}")
         self.setLabel(kernelLabel, self.white, self.fontDefault)
+        kernelLabel.setFixedHeight(labelDefaultHeight)
         # ---------------------------------------------------------------------------
         # Machine Label
         machineLabel = QtWidgets.QLabel(f"node {platJson['node']} arch {platJson['machine']}")
         self.setLabel(machineLabel, self.white, self.fontDefault)
+        machineLabel.setFixedHeight(labelDefaultHeight)
         # ---------------------------------------------------------------------------
         distroVBLayout.addWidget(distroLabel)
         distroVBLayout.addWidget(kernelLabel)
@@ -484,8 +487,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         bootTimeValueLabel = QtWidgets.QLabel()
         self.setLabel(bootTimeValueLabel, self.white, self.fontDefault)
-        bootTimeValueLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.systemWidgets['boottime'] = bootTimeValueLabel
+
+        bootTimeValueLabel.setAlignment(QtCore.Qt.AlignCenter)
+
         bootTimeHboxLayout.addWidget(bootTimeValueLabel)
 
         verticalLayout.addLayout(bootTimeHboxLayout)
@@ -718,12 +723,11 @@ class MainWindow(QtWidgets.QMainWindow):
         screen = self.app.primaryScreen()
         print('Screen: %s' % screen.name())
         size = screen.size()
-        print('Size: %d x %d' % (size.width(), size.height()))
+        print('Screen Resolution: %d x %d' % (size.width(), size.height()))
         rect = screen.availableGeometry()
-        print('Available: %d x %d' % (rect.width(), rect.height()))
+        print('Available space for gonha: %d x %d' % (rect.width(), rect.height()))
         # move window to top right
         win = self.geometry()
-        print(f'mainwindow size {win.width()} x {win.height()}')
         self.move(rect.width() - win.width(), 0)
 
     def receiveThreadSlowFinish(self, message):
