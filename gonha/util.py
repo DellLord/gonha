@@ -114,27 +114,24 @@ class Config:
                 'type': 'input',
                 'name': 'city',
                 'message': 'What\'s your city name',
-                'default': geoData['city'],
-                'filter': lambda val: str(val, 'utf-8')
+                'default': geoData['city']
             },
             {
                 'type': 'input',
                 'name': 'region',
                 'message': 'What\'s your region',
-                'default': geoData['region'],
-                'filter': lambda val: str(val, 'utf-8')
+                'default': geoData['region']
             },
             {
                 'type': 'input',
                 'name': 'country',
                 'message': 'What\'s your country code',
-                'default': geoData['country'],
-                'filter': lambda val: str(val, 'utf-8')
+                'default': geoData['country']
             }
         ]
 
         geoResponse = prompt(geoQuestions)
-        self.updateConfig(geoResponse)
+        self.updateConfig({'location': geoResponse})
         # ----------------------------------------
         # Position Question
         positionQuestions = [
