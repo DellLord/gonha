@@ -7,6 +7,34 @@ import humanfriendly
 from gonha.util import VirtualMachine
 from datetime import datetime
 import random
+from gonha.util import Weather
+from unit_convert import UnitConvert
+import portolan
+
+
+class ThreadWeather(QtCore.QThread):
+    signal = QtCore.pyqtSignal(dict, name='ThreadWeatherFinish')
+    weather = Weather()
+
+    def __init__(self, parent=None):
+        super(ThreadWeather, self).__init__(parent)
+        self.finished.connect(self.updateWeather)
+
+    def updateWeather(self):
+        message = dict()
+        data = self.weather.getData()
+        message['temp'] = f"{data['main']['temp']}°C"
+        message['humidity'] = f"{data['main']['humidity']}%"
+        message['pressure'] = f"{data['main']['pressure']}hPa"
+        visibilityAsKm = UnitConvert(metres=int(data['visibility'])).kilometres
+        message['visibility'] = f"{visibilityAsKm}Km"
+        windDir = portolan.abbr(float(data['wind']['deg']))
+        message['wind'] = f"{data['wind']['speed']}m/s {windDir}"
+        self.signal.emit(message)
+        self.start()
+
+    def run(self):
+        self.sleep(1800)  # sleep 30 minutes
 
 
 class ThreadNetworkStats(QtCore.QThread):

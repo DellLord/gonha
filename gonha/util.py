@@ -11,6 +11,7 @@ import platform
 import requests
 import subprocess
 import netifaces
+import urllib.request
 
 
 class VirtualMachine:
@@ -275,12 +276,18 @@ class GeoIp:
         return self.outJson
 
 
-class Wheather:
+class Weather:
     config = Config()
     city = config.getConfig('location')['city']
     url = 'http://api.openweathermap.org/data/2.5/weather?q='
     apikey = 'e943e3d03143693768df6ca7c621c8b5'
+    iconUrlPrefix = 'https://openweathermap.org/img/wn/'
+    iconUrlSuffix = '@2x.png'
 
     def getData(self):
         res = requests.get(f'{self.url}{self.city}&APPID={self.apikey}&units=metric')
         return res.json()
+
+    def getIcon(self, iconStr):
+        with urllib.request.urlopen(f"{self.iconUrlPrefix}{iconStr}{self.iconUrlSuffix}") as response:
+            return response.read()

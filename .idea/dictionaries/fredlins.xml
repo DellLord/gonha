@@ -12,6 +12,7 @@
       <w>centralwidget</w>
       <w>childs</w>
       <w>cinammon</w>
+      <w>cloudpixmark</w>
       <w>colr</w>
       <w>configobj</w>
       <w>cpufreq</w>
@@ -20,6 +21,7 @@
       <w>devel</w>
       <w>diferents</w>
       <w>diskstats</w>
+      <w>displayweather</w>
       <w>distrib</w>
       <w>distro</w>
       <w>distros</w>
@@ -74,6 +76,7 @@
       <w>teste</w>
       <w>threadfinish</w>
       <w>threadslow</w>
+      <w>threadweather</w>
       <w>timebox</w>
       <w>uname</w>
       <w>unamehbox</w>

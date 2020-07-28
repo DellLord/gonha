@@ -46,7 +46,8 @@ setuptools.setup(
         'requests',
         'netifaces',
         'country_list',
-        'portolan'
+        'portolan',
+        'unit-convert'
     ],
     include_package_data=True,
     zip_safe=False,
