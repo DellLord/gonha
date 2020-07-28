@@ -37,8 +37,10 @@
       <w>gonha</w>
       <w>hbox</w>
       <w>hellcife</w>
+      <w>hpvw</w>
       <w>humanfriendly</w>
       <w>iconfile</w>
+      <w>iconpixmap</w>
       <w>iface</w>
       <w>inpint</w>
       <w>intint</w>
@@ -55,6 +57,8 @@
       <w>netifaces</w>
       <w>niface</w>
       <w>pathlib</w>
+      <w>pixmap</w>
+      <w>portolan</w>
       <w>proc</w>
       <w>psutil</w>
       <w>pyhton</w>
@@ -77,8 +81,10 @@
       <w>uptime</w>
       <w>vbox</w>
       <w>virt</w>
+      <w>visitibility</w>
       <w>vmtemp</w>
       <w>wday</w>
+      <w>wheater</w>
       <w>wheather</w>
       <w>xidni</w>
     </words>

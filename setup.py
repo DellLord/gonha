@@ -44,7 +44,9 @@ setuptools.setup(
         'distro',
         'py-cpuinfo',
         'requests',
-        'netifaces'
+        'netifaces',
+        'country_list',
+        'portolan'
     ],
     include_package_data=True,
     zip_safe=False,

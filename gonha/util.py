@@ -283,5 +283,4 @@ class Wheather:
 
     def getData(self):
         res = requests.get(f'{self.url}{self.city}&APPID={self.apikey}&units=metric')
-        print(res.json())
         return res.json()

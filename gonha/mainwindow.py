@@ -4,6 +4,10 @@ from ewmh import EWMH
 from gonha.threads import *
 from colr import color
 from gonha.util import Wheather
+from country_list import countries_for_language
+import urllib.request
+import portolan
+from unit_convert import UnitConvert
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -19,6 +23,7 @@ class MainWindow(QtWidgets.QMainWindow):
     dtWidgets = dict()
     systemWidgets = dict()
     verticalLayout = QtWidgets.QVBoxLayout()
+    wheather = Wheather()
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -93,7 +98,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadSlow.signal.connect(self.receiveThreadSlowFinish)
         self.threadNetworkStats.signal.connect(self.receiveThreadNetworkStats)
 
-        self.setMinimumSize(QtCore.QSize(490, 900))
         centralWidGet = QtWidgets.QWidget(self)
         centralWidGet.setLayout(self.verticalLayout)
         self.setCentralWidget(centralWidGet)
@@ -113,7 +117,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadNetworkStats.start()
 
         self.loadPosition()
-        self.displayDateTime()
+        self.displayDTWeather()
+        # self.displayWheather()
         self.displaySystem()
         self.displayIface()
         self.displayPartitions()
@@ -252,43 +257,118 @@ class MainWindow(QtWidgets.QMainWindow):
         ifaceGroupBox.setLayout(verticalLayout)
         self.verticalLayout.addWidget(ifaceGroupBox)
 
-    def displayDateTime(self):
-        timeFont = QtGui.QFont('Fira Code', 50)
+    def displayWheather(self):
+        urlPrefix = 'https://openweathermap.org/img/wn/'
+        urlSuffix = '@2x.png'
+        wheatherData = self.wheather.getData()
+        countries = dict(countries_for_language('en'))
+        print(wheatherData)
+
+        vLayout = QtWidgets.QVBoxLayout()
+        hLayout = QtWidgets.QHBoxLayout()
+        hLayout.setAlignment(QtCore.Qt.AlignLeft)
+
+        cityLabel = QtWidgets.QLabel(f"{self.config.getConfig('location')['city']},")
+        cityLabel.setFont(self.fontDefault)
+        cityLabel.setStyleSheet(self.white)
+
+        regionLabel = QtWidgets.QLabel(self.config.getConfig('location')['region'])
+        regionLabel.setFont(self.fontDefault)
+        regionLabel.setStyleSheet(self.white)
+
+        countryLabel = QtWidgets.QLabel(countries[self.config.getConfig('location')['country']])
+        countryLabel.setFont(self.fontDefault)
+        countryLabel.setStyleSheet(self.white)
+
+        hLayout.addWidget(cityLabel)
+        hLayout.addWidget(regionLabel)
+        hLayout.addWidget(countryLabel)
+
+        vLayout.addLayout(hLayout)
+
+        wheaterHBLayout = QtWidgets.QHBoxLayout()
+
+        # cloudIconUrl = f"http://openweathermap.org/img/wn/{wheatherData['weather'][0]['icon']}@2x.png"
+        pixmap = QtGui.QPixmap()
+        data = urllib.request.urlopen('https://openweathermap.org/img/wn/10d@2x.png')
+        with urllib.request.urlopen('https://openweathermap.org/img/wn/10d@2x.png') as response:
+            data = response.read()
+
+        pixmap.loadFromData(data)
+
+        cloudIcon = QtWidgets.QLabel()
+        cloudIcon.setPixmap(pixmap)
+        cloudIcon.setMinimumSize(QtCore.QSize(32, 32))
+
+        cloudsLabel = QtWidgets.QLabel(wheatherData['weather'][0]['description'])
+        cloudsLabel.setFont(self.fontDefault)
+        cloudsLabel.setStyleSheet(self.white)
+
+        wheaterHBLayout.addWidget(cloudIcon)
+        wheaterHBLayout.addWidget(cloudsLabel)
+
+        vLayout.addLayout(wheaterHBLayout)
+
+        self.verticalLayout.addLayout(vLayout)
+
+    def displayDTWeather(self):
+        urlPrefix = 'https://openweathermap.org/img/wn/'
+        urlSuffix = '@2x.png'
+        wheatherData = self.wheather.getData()
+        countries = dict(countries_for_language('en'))
+        debugRed = 'background-color: rgb(255, 48, 79);'
+        timeHeight = 50
+        dateHeight = 25
+        print(wheatherData)
+
+        timeFont = QtGui.QFont('Fira Code', 45)
         dayFont = QtGui.QFont('Fira Code', 20)
         weekdayFont = QtGui.QFont('Fira Code', 15)
-        dateFont = QtGui.QFont('Fira Code', 12)
+        yearFont = QtGui.QFont('Fira Code', 12)
+        monthFont = QtGui.QFont('Fira Code', 12)
 
         gray = 'color: rgb(143, 143, 143);'
-        right = QtCore.Qt.AlignRight
-        left = QtCore.Qt.AlignLeft
 
-        verticalLayout = QtWidgets.QVBoxLayout()
         mainHBLayout = QtWidgets.QHBoxLayout()
+        mainHBLayout.setSpacing(0)
         mainHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
+
         # Horizontal Layout for time
         timeHBLayout = QtWidgets.QHBoxLayout()
+        timeHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
 
-        dateTimeGroupBox = QtWidgets.QGroupBox('datetime')
-        dateTimeGroupBox.setFont(self.fontGroupBox)
-        dateTimeGroupBox.setStyleSheet(self.groupBoxStyle)
-
-        twoPointLabel = QtWidgets.QLabel(':')
-        twoPointLabel.setFont(timeFont)
-        twoPointLabel.setStyleSheet(gray)
+        twoPointLabel = [QtWidgets.QLabel(':'), QtWidgets.QLabel(':')]
+        for label in twoPointLabel:
+            label.setFont(timeFont)
+            label.setStyleSheet(gray)
+            label.setFixedHeight(timeHeight)
 
         hourLabel = QtWidgets.QLabel('22')
         hourLabel.setFont(timeFont)
         hourLabel.setStyleSheet(self.white)
+        hourLabel.setFixedHeight(timeHeight)
         self.dtWidgets['hour'] = hourLabel
 
         minLabel = QtWidgets.QLabel('24')
         minLabel.setFont(timeFont)
         minLabel.setStyleSheet(self.white)
+        minLabel.setFixedHeight(timeHeight)
         self.dtWidgets['min'] = minLabel
 
+        secLabel = QtWidgets.QLabel('45')
+        secLabel.setFont(timeFont)
+        secLabel.setStyleSheet(self.white)
+        secLabel.setFixedHeight(timeHeight)
+        self.dtWidgets['sec'] = secLabel
+
         timeHBLayout.addWidget(hourLabel)
-        timeHBLayout.addWidget(twoPointLabel)
+        timeHBLayout.addWidget(twoPointLabel[0])
         timeHBLayout.addWidget(minLabel)
+        timeHBLayout.addWidget(twoPointLabel[1])
+        timeHBLayout.addWidget(secLabel)
+
+        self.dtWidgets['hour'] = hourLabel
+        self.dtWidgets['min'] = minLabel
 
         mainHBLayout.addLayout(timeHBLayout)
 
@@ -296,18 +376,31 @@ class MainWindow(QtWidgets.QMainWindow):
         dateVBLayout = QtWidgets.QVBoxLayout()
         # date horizontal layout
         dateHBLayout = QtWidgets.QHBoxLayout()
-        dateHBLayout.setAlignment(left)
+        dateHBLayout.setAlignment(QtCore.Qt.AlignLeft)
 
         dayLabel = QtWidgets.QLabel('05')
         dayLabel.setFont(dayFont)
         dayLabel.setStyleSheet(self.orange)
+        dayLabel.setFixedHeight(dateHeight)
 
-        dateStrLabel = QtWidgets.QLabel('June 2019')
-        dateStrLabel.setFont(dateFont)
-        dateStrLabel.setStyleSheet(self.white)
+        monthLabel = QtWidgets.QLabel('June')
+        monthLabel.setFont(monthFont)
+        monthLabel.setStyleSheet(self.white)
+        monthLabel.setFixedHeight(dateHeight)
+        monthLabel.setAlignment(QtCore.Qt.AlignBottom)
+
+        yearLabel = QtWidgets.QLabel('2020')
+        yearLabel.setFont(yearFont)
+        yearLabel.setStyleSheet(self.white)
+        yearLabel.setFixedHeight(dateHeight)
+        yearLabel.setAlignment(QtCore.Qt.AlignBottom)
 
         dateHBLayout.addWidget(dayLabel)
-        dateHBLayout.addWidget(dateStrLabel)
+        dateHBLayout.addWidget(monthLabel)
+        dateHBLayout.addWidget(yearLabel)
+        self.dtWidgets['day'] = dayLabel
+        self.dtWidgets['month'] = monthLabel
+        self.dtWidgets['year'] = yearLabel
 
         dateVBLayout.addLayout(dateHBLayout)
 
@@ -316,17 +409,110 @@ class MainWindow(QtWidgets.QMainWindow):
         weekdayLabel = QtWidgets.QLabel('Saturday')
         weekdayLabel.setFont(weekdayFont)
         weekdayLabel.setStyleSheet(self.white)
+        weekdayLabel.setFixedHeight(20)
 
         weekdayHBLayout.addWidget(weekdayLabel)
+        self.dtWidgets['weekday'] = weekdayLabel
 
         dateVBLayout.addLayout(weekdayHBLayout)
 
         mainHBLayout.addLayout(dateVBLayout)
 
-        verticalLayout.addLayout(mainHBLayout)
+        # --------------------------------------------------------
+        # weather conditions
 
-        dateTimeGroupBox.setLayout(verticalLayout)
-        self.verticalLayout.addWidget(dateTimeGroupBox)
+        weatherHBLayout = QtWidgets.QHBoxLayout()
+
+        weatherVBLayout = QtWidgets.QVBoxLayout()
+        weatherVBLayout.setAlignment(QtCore.Qt.AlignVCenter)
+
+        tempLabel = QtWidgets.QLabel('20°C')
+        tempLabel.setFont(timeFont)
+        tempLabel.setStyleSheet(self.white)
+
+        weatherHBLayout.addWidget(tempLabel)
+
+        # Cloud Icon
+        pixmap = QtGui.QPixmap()
+        with urllib.request.urlopen(f"{urlPrefix}{wheatherData['weather'][0]['icon']}{urlSuffix}") as response:
+            iconData = response.read()
+
+        pixmap.loadFromData(iconData)
+        cloudIconLabel = QtWidgets.QLabel()
+        cloudIconLabel.setPixmap(pixmap)
+        cloudIconLabel.setFixedWidth(80)
+
+        self.dtWidgets['iconpixmap'] = cloudIconLabel.pixmap()
+
+        weatherHBLayout.addWidget(cloudIconLabel)
+        weatherHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
+
+        cityRegionLabel = QtWidgets.QLabel(
+            f"{self.config.getConfig('location')['city']}, {self.config.getConfig('location')['region']}")
+        cityRegionLabel.setFont(self.fontDefault)
+        cityRegionLabel.setStyleSheet(self.white)
+
+        countryLabel = QtWidgets.QLabel(countries[self.config.getConfig('location')['country']])
+        countryLabel.setFont(self.fontDefault)
+        countryLabel.setStyleSheet(self.white)
+
+        weatherVBLayout.addWidget(cityRegionLabel)
+        weatherVBLayout.addWidget(countryLabel)
+
+        weatherHBLayout.addLayout(weatherVBLayout)
+        # ---------------------------------------------------------------------
+        # humidity, pressure, visibility,  wind,
+        weatherGridLayout = QtWidgets.QGridLayout()
+
+        # humidityIcon
+        humidityIcon = QtWidgets.QLabel()
+        humidityIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/humidity.png'))
+        humidityIcon.setFixedWidth(32)
+
+        pressureIcon = QtWidgets.QLabel()
+        pressureIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/pressure.png'))
+        pressureIcon.setFixedWidth(32)
+
+        visibilityIcon = QtWidgets.QLabel()
+        visibilityIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/visibility.png'))
+        visibilityIcon.setFixedWidth(32)
+
+        windIcon = QtWidgets.QLabel()
+        windIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/wind.png'))
+        windIcon.setFixedWidth(32)
+
+        weatherGridLayout.addWidget(humidityIcon, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        weatherGridLayout.addWidget(pressureIcon, 0, 1, 1, 1, QtCore.Qt.AlignHCenter)
+        weatherGridLayout.addWidget(visibilityIcon, 0, 2, 1, 1, QtCore.Qt.AlignHCenter)
+        weatherGridLayout.addWidget(windIcon, 0, 3, 1, 1, QtCore.Qt.AlignHCenter)
+        # ---------------------------------------------------------------------
+
+        humidityLabel = QtWidgets.QLabel(f"{wheatherData['main']['humidity']}%")
+        humidityLabel.setFont(self.fontDefault)
+        humidityLabel.setStyleSheet(self.white)
+
+        pressureLabel = QtWidgets.QLabel(f"{wheatherData['main']['pressure']}hPa")
+        pressureLabel.setFont(self.fontDefault)
+        pressureLabel.setStyleSheet(self.white)
+
+        visibilityAsKm = UnitConvert(metres=int(wheatherData['visibility'])).kilometres
+        visibilityLabel = QtWidgets.QLabel(f"{visibilityAsKm}Km")
+        visibilityLabel.setFont(self.fontDefault)
+        visibilityLabel.setStyleSheet(self.white)
+
+        windDir = portolan.abbr(float(wheatherData['wind']['deg']))
+        windLabel = QtWidgets.QLabel(f"{wheatherData['wind']['speed']}m/s {windDir}")
+        windLabel.setFont(self.fontDefault)
+        windLabel.setStyleSheet(self.white)
+
+        weatherGridLayout.addWidget(humidityLabel, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        weatherGridLayout.addWidget(pressureLabel, 1, 1, 1, 1, QtCore.Qt.AlignHCenter)
+        weatherGridLayout.addWidget(visibilityLabel, 1, 2, 1, 1, QtCore.Qt.AlignHCenter)
+        weatherGridLayout.addWidget(windLabel, 1, 3, 1, 1, QtCore.Qt.AlignHCenter)
+
+        self.verticalLayout.addLayout(mainHBLayout)
+        self.verticalLayout.addLayout(weatherHBLayout)
+        self.verticalLayout.addLayout(weatherGridLayout)
 
     def displaySystem(self):
         labelDefaultWidth = 80
@@ -657,11 +843,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.systemWidgets['extip'].setText(ipaddrs['extip'])
 
     def receiveThreadFastfinish(self, message):
-        # self.dtWidgets['hour'].setText(message['hour'])
-        # self.dtWidgets['min'].setText(message['min'])
-        # self.dtWidgets['sec'].setText(message['sec'])
-        # self.dtWidgets['ampm'].setText(message['ampm'])
-        # self.dtWidgets['date'].setText(message['date'])
+
+        self.dtWidgets['hour'].setText(message['hour'])
+        self.dtWidgets['min'].setText(message['min'])
+        self.dtWidgets['sec'].setText(message['sec'])
+        self.dtWidgets['day'].setText(f"{message['day']},")
+        self.dtWidgets['month'].setText(f" {message['month']} ")
+        self.dtWidgets['year'].setText(message['year'])
+        self.dtWidgets['weekday'].setText(message['weekday'])
         # --------------------------------------------------------
         # update cpu load
         self.systemWidgets['cpuProgressBar'].setValue(message['cpuProgressBar'])

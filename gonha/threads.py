@@ -110,8 +110,8 @@ class ThreadFast(QtCore.QThread):
         self.message['date'] = now.strftime("%A, %d %B %Y")
 
         self.message['day'] = now.strftime('%d')
-        self.message['wday'] = now.strftime('%A')
-        self.message['mname'] = now.strftime('%B')
+        self.message['weekday'] = now.strftime('%A')
+        self.message['month'] = now.strftime('%B')
         self.message['year'] = now.strftime('%Y')
 
         self.message['cpufreq'] = '{:.0f} Mhz'.format(psutil.cpu_freq().current)
