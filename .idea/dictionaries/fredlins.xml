@@ -49,6 +49,7 @@
       <w>lsbrelease</w>
       <w>mainwindow</w>
       <w>mensagem</w>
+      <w>mname</w>
       <w>mountpoint</w>
       <w>mountpoints</w>
       <w>netifaces</w>
@@ -77,6 +78,7 @@
       <w>vbox</w>
       <w>virt</w>
       <w>vmtemp</w>
+      <w>wday</w>
       <w>wheather</w>
       <w>xidni</w>
     </words>

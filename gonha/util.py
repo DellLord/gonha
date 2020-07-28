@@ -281,7 +281,7 @@ class Wheather:
     url = 'http://api.openweathermap.org/data/2.5/weather?q='
     apikey = 'e943e3d03143693768df6ca7c621c8b5'
 
-    def weather_data(self):
+    def getData(self):
         res = requests.get(f'{self.url}{self.city}&APPID={self.apikey}&units=metric')
         print(res.json())
         return res.json()

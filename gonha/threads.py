@@ -102,17 +102,17 @@ class ThreadFast(QtCore.QThread):
 
     def run(self):
         now = datetime.now()
-        dateFormat = self.config.getConfig('dateFormat')
-        if dateFormat == '24 hours':
-            self.message['hour'] = now.strftime('%H')
-            self.message['ampm'] = ''
-        else:
-            self.message['hour'] = now.strftime('%I')
-            self.message['ampm'] = now.strftime('%p')
+        self.message['hour'] = now.strftime('%H')
 
         self.message['min'] = now.strftime('%M')
         self.message['sec'] = now.strftime('%S')
+
         self.message['date'] = now.strftime("%A, %d %B %Y")
+
+        self.message['day'] = now.strftime('%d')
+        self.message['wday'] = now.strftime('%A')
+        self.message['mname'] = now.strftime('%B')
+        self.message['year'] = now.strftime('%Y')
 
         self.message['cpufreq'] = '{:.0f} Mhz'.format(psutil.cpu_freq().current)
         self.message['ramused'] = '{}'.format(humanfriendly.format_size(psutil.virtual_memory().used))

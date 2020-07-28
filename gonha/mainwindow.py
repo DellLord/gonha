@@ -253,24 +253,30 @@ class MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout.addWidget(ifaceGroupBox)
 
     def displayDateTime(self):
-        timeFont = QtGui.QFont('Fira Code', 20)
+        timeFont = QtGui.QFont('Fira Code', 50)
+        dayFont = QtGui.QFont('Fira Code', 20)
+        weekdayFont = QtGui.QFont('Fira Code', 15)
+        dateFont = QtGui.QFont('Fira Code', 12)
+
+        gray = 'color: rgb(143, 143, 143);'
+        right = QtCore.Qt.AlignRight
+        left = QtCore.Qt.AlignLeft
+
+        verticalLayout = QtWidgets.QVBoxLayout()
+        mainHBLayout = QtWidgets.QHBoxLayout()
+        mainHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
+        # Horizontal Layout for time
+        timeHBLayout = QtWidgets.QHBoxLayout()
 
         dateTimeGroupBox = QtWidgets.QGroupBox('datetime')
         dateTimeGroupBox.setFont(self.fontGroupBox)
         dateTimeGroupBox.setStyleSheet(self.groupBoxStyle)
 
-        verticalLayout = QtWidgets.QVBoxLayout()
+        twoPointLabel = QtWidgets.QLabel(':')
+        twoPointLabel.setFont(timeFont)
+        twoPointLabel.setStyleSheet(gray)
 
-        dateTimeHBLayout = QtWidgets.QHBoxLayout()
-        dateTimeHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
-
-        twoPointLabel = [QtWidgets.QLabel(':'), QtWidgets.QLabel(':')]
-        twoPointLabel[0].setFont(timeFont)
-        twoPointLabel[0].setStyleSheet(self.orange)
-        twoPointLabel[1].setFont(timeFont)
-        twoPointLabel[1].setStyleSheet(self.orange)
-
-        hourLabel = QtWidgets.QLabel('02')
+        hourLabel = QtWidgets.QLabel('22')
         hourLabel.setFont(timeFont)
         hourLabel.setStyleSheet(self.white)
         self.dtWidgets['hour'] = hourLabel
@@ -280,40 +286,46 @@ class MainWindow(QtWidgets.QMainWindow):
         minLabel.setStyleSheet(self.white)
         self.dtWidgets['min'] = minLabel
 
-        secLabel = QtWidgets.QLabel('32')
-        secLabel.setFont(timeFont)
-        secLabel.setStyleSheet(self.white)
-        self.dtWidgets['sec'] = secLabel
+        timeHBLayout.addWidget(hourLabel)
+        timeHBLayout.addWidget(twoPointLabel)
+        timeHBLayout.addWidget(minLabel)
 
-        ampmLabel = QtWidgets.QLabel('pm')
-        ampmLabel.setFont(timeFont)
-        ampmLabel.setStyleSheet(self.orange)
-        self.dtWidgets['ampm'] = ampmLabel
+        mainHBLayout.addLayout(timeHBLayout)
 
-        dateTimeHBLayout.addWidget(hourLabel)
-        dateTimeHBLayout.addWidget(twoPointLabel[0])
-        dateTimeHBLayout.addWidget(minLabel)
-        dateTimeHBLayout.addWidget(twoPointLabel[1])
-        dateTimeHBLayout.addWidget(secLabel)
-        dateTimeHBLayout.addWidget(ampmLabel)
-
-        verticalLayout.addLayout(dateTimeHBLayout)
-
-        # Now, add date
+        # date vertical layout
+        dateVBLayout = QtWidgets.QVBoxLayout()
+        # date horizontal layout
         dateHBLayout = QtWidgets.QHBoxLayout()
-        dateHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
+        dateHBLayout.setAlignment(left)
 
-        dateLabel = QtWidgets.QLabel('')
-        dateLabel.setFont(timeFont)
-        dateLabel.setStyleSheet(self.white)
-        self.dtWidgets['date'] = dateLabel
+        dayLabel = QtWidgets.QLabel('05')
+        dayLabel.setFont(dayFont)
+        dayLabel.setStyleSheet(self.orange)
 
-        dateHBLayout.addWidget(dateLabel)
+        dateStrLabel = QtWidgets.QLabel('June 2019')
+        dateStrLabel.setFont(dateFont)
+        dateStrLabel.setStyleSheet(self.white)
 
-        verticalLayout.addLayout(dateHBLayout)
+        dateHBLayout.addWidget(dayLabel)
+        dateHBLayout.addWidget(dateStrLabel)
+
+        dateVBLayout.addLayout(dateHBLayout)
+
+        weekdayHBLayout = QtWidgets.QHBoxLayout()
+
+        weekdayLabel = QtWidgets.QLabel('Saturday')
+        weekdayLabel.setFont(weekdayFont)
+        weekdayLabel.setStyleSheet(self.white)
+
+        weekdayHBLayout.addWidget(weekdayLabel)
+
+        dateVBLayout.addLayout(weekdayHBLayout)
+
+        mainHBLayout.addLayout(dateVBLayout)
+
+        verticalLayout.addLayout(mainHBLayout)
 
         dateTimeGroupBox.setLayout(verticalLayout)
-        dateTimeGroupBox.setMinimumHeight(40)
         self.verticalLayout.addWidget(dateTimeGroupBox)
 
     def displaySystem(self):
@@ -645,11 +657,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.systemWidgets['extip'].setText(ipaddrs['extip'])
 
     def receiveThreadFastfinish(self, message):
-        self.dtWidgets['hour'].setText(message['hour'])
-        self.dtWidgets['min'].setText(message['min'])
-        self.dtWidgets['sec'].setText(message['sec'])
-        self.dtWidgets['ampm'].setText(message['ampm'])
-        self.dtWidgets['date'].setText(message['date'])
+        # self.dtWidgets['hour'].setText(message['hour'])
+        # self.dtWidgets['min'].setText(message['min'])
+        # self.dtWidgets['sec'].setText(message['sec'])
+        # self.dtWidgets['ampm'].setText(message['ampm'])
+        # self.dtWidgets['date'].setText(message['date'])
         # --------------------------------------------------------
         # update cpu load
         self.systemWidgets['cpuProgressBar'].setValue(message['cpuProgressBar'])
