@@ -25,6 +25,7 @@
       <w>donwload</w>
       <w>especific</w>
       <w>ewmh</w>
+      <w>extip</w>
       <w>fastfinish</w>
       <w>fcaebc</w>
       <w>fira</w>
@@ -37,12 +38,19 @@
       <w>humanfriendly</w>
       <w>iconfile</w>
       <w>iface</w>
+      <w>inpint</w>
+      <w>intint</w>
+      <w>intip</w>
+      <w>ipaddrs</w>
+      <w>ipint</w>
       <w>lsbconfig</w>
       <w>lsbrelease</w>
       <w>mainwindow</w>
       <w>mensagem</w>
       <w>mountpoint</w>
       <w>mountpoints</w>
+      <w>netifaces</w>
+      <w>niface</w>
       <w>pathlib</w>
       <w>proc</w>
       <w>psutil</w>

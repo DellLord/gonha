@@ -43,7 +43,8 @@ setuptools.setup(
         'colr',
         'distro',
         'py-cpuinfo',
-        'requests'
+        'requests',
+        'netifaces'
     ],
     include_package_data=True,
     zip_safe=False,

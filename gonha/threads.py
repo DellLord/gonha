@@ -1,5 +1,6 @@
 from PyQt5 import QtCore
 from gonha.util import Config
+from gonha.util import GeoIp
 import psutil
 import time
 import humanfriendly
@@ -40,6 +41,7 @@ class ThreadNetworkStats(QtCore.QThread):
 
 
 class ThreadSlow(QtCore.QThread):
+    geoip = GeoIp()
     signal = QtCore.pyqtSignal(list, name='ThreadSlowFinish')
 
     def __init__(self, parent=None):
@@ -50,18 +52,25 @@ class ThreadSlow(QtCore.QThread):
     def threadFinished(self):
         self.start()
 
+    def getIpAddrs(self):
+        ipDict = dict()
+        ipDict['extip'] = self.geoip.getExtIp()
+        ipDict['intip'] = self.geoip.getIntIp()
+        ipDict['gw'] = self.geoip.getGw()
+        return ipDict
+
     def getPartitions(self):
-        msg = []
+        msg = list()
         for mntPoint in self.config.getConfig('filesystems'):
             disk_usage = psutil.disk_usage(mntPoint)
-            msg.append({
-                'mountpoint': mntPoint,
-                'total': '{}'.format(humanfriendly.format_size(disk_usage.total)),
-                'used': '{}'.format(humanfriendly.format_size(disk_usage.used)),
-                'free': '{}'.format(humanfriendly.format_size(disk_usage.free)),
-                'percentUsed': disk_usage.percent,
-                'percentFree': 100 - int(disk_usage.percent)
-            })
+            tempDict = dict()
+            tempDict['mountpoint'] = mntPoint
+            tempDict['total'] = '{}'.format(humanfriendly.format_size(disk_usage.total))
+            tempDict['used'] = '{}'.format(humanfriendly.format_size(disk_usage.used))
+            tempDict['free'] = '{}'.format(humanfriendly.format_size(disk_usage.free))
+            tempDict['percentUsed'] = disk_usage.percent
+            tempDict['percentFree'] = 100 - int(disk_usage.percent)
+            msg.append(tempDict)
 
         return msg
 

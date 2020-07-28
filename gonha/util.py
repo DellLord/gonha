@@ -10,31 +10,7 @@ import distro
 import platform
 import requests
 import subprocess
-
-
-class GeoIp:
-    apiKey = 'at_cY0kTF6KP8LuMrXidniTMnkOa7XTE'
-    url = 'https://ip-geolocation.whoisxmlapi.com/api/v1'
-    myExtIp = subprocess.getoutput('curl -s ifconfig.me')
-    outJson = {'city': None, 'region': None, 'country': None}
-
-    def getData(self):
-        response = requests.get(f"{self.url}?apiKey={self.apiKey}&ipAddress={self.myExtIp}")
-
-        if response.status_code == 200:
-            self.outJson.clear()
-            tempJson = json.loads(response.text)
-            self.outJson.update(
-                {
-                    'city': tempJson['location']['city'],
-                    'region': tempJson['location']['region'],
-                    'country': tempJson['location']['country'],
-                    'lat': tempJson['location']['lat'],
-                    'lng': tempJson['location']['lng']
-                }
-            )
-
-        return self.outJson
+import netifaces
 
 
 class VirtualMachine:
@@ -259,3 +235,41 @@ class Config:
     @staticmethod
     def getVersion():
         return '1.0.9'
+
+
+class GeoIp:
+    config = Config()
+    apiKey = 'at_cY0kTF6KP8LuMrXidniTMnkOa7XTE'
+    url = 'https://ip-geolocation.whoisxmlapi.com/api/v1'
+    myExtIp = subprocess.getoutput('curl -s ifconfig.me')
+    outJson = {'city': None, 'region': None, 'country': None}
+
+    def getExtIp(self):
+        return self.myExtIp
+
+    def getIntIp(self):
+        eth = netifaces.ifaddresses(self.config.getConfig('iface'))
+        return eth[netifaces.AF_INET][0]['addr']
+
+    @staticmethod
+    def getGw():
+        gws = netifaces.gateways()
+        return gws['default'][netifaces.AF_INET][0]
+
+    def getData(self):
+        response = requests.get(f"{self.url}?apiKey={self.apiKey}&ipAddress={self.myExtIp}")
+
+        if response.status_code == 200:
+            self.outJson.clear()
+            tempJson = json.loads(response.text)
+            self.outJson.update(
+                {
+                    'city': tempJson['location']['city'],
+                    'region': tempJson['location']['region'],
+                    'country': tempJson['location']['country'],
+                    'lat': tempJson['location']['lat'],
+                    'lng': tempJson['location']['lng']
+                }
+            )
+
+        return self.outJson

@@ -129,9 +129,41 @@ class MainWindow(QtWidgets.QMainWindow):
         ifaceGroupBox.setFont(self.fontGroupBox)
         ifaceGroupBox.setStyleSheet(self.groupBoxStyle)
         verticalLayout = QtWidgets.QVBoxLayout()
-        horizontalLayout = QtWidgets.QHBoxLayout()
+        # ---------------------------------------------------
+        # Ip int Label
+        ipintHBLayout = QtWidgets.QHBoxLayout()
 
+        intipLabel = QtWidgets.QLabel('int. IP:')
+        intipLabel.setFont(self.fontDefault)
+        intipLabel.setStyleSheet(self.orange)
+
+        ipintHBLayout.addWidget(intipLabel)
+
+        # ip int value label
+        intipValueLabel = QtWidgets.QLabel('192.168.4.5')
+        intipValueLabel.setFont(self.fontDefault)
+        self.systemWidgets['intip'] = intipValueLabel
+        intipValueLabel.setStyleSheet(self.white)
+
+        ipintHBLayout.addWidget(intipValueLabel)
+
+        # Ext Ip
+        extipLabel = QtWidgets.QLabel('ext. IP:')
+        extipLabel.setFont(self.fontDefault)
+        extipLabel.setStyleSheet(self.orange)
+
+        ipintHBLayout.addWidget(extipLabel)
+
+        extipValueLabel = QtWidgets.QLabel('200.154.2.54')
+        extipValueLabel.setFont(self.fontDefault)
+        self.systemWidgets['extip'] = extipValueLabel
+        extipValueLabel.setStyleSheet(self.white)
+
+        ipintHBLayout.addWidget(extipValueLabel)
+
+        verticalLayout.addLayout(ipintHBLayout)
         # -------------------------------------------------
+        horizontalLayout = QtWidgets.QHBoxLayout()
         # iface Label
         ifaceLabel = QtWidgets.QLabel('interface:')
         ifaceLabel.setFont(self.fontDefault)
@@ -556,17 +588,14 @@ class MainWindow(QtWidgets.QMainWindow):
             # ----------------------------------------------------------
 
             height = height + 105
-
-            self.partitionsWidgets.append(
-                {
-                    'mountpointValueLabel': mountpointValueLabel,
-                    'totalValueLabel': totalValueLabel,
-                    'usedValueLabel': usedValueLabel,
-                    'usedPB': usedPB,
-                    'freeValueLabel': freeValueLabel,
-                    'freePB': freePB
-                }
-            )
+            tempDict = dict()
+            tempDict['mountpointValueLabel'] = mountpointValueLabel
+            tempDict['totalValueLabel'] = totalValueLabel
+            tempDict['usedValueLabel'] = usedValueLabel
+            tempDict['usedPB'] = usedPB
+            tempDict['freeValueLabel'] = freeValueLabel
+            tempDict['freePB'] = freePB
+            self.partitionsWidgets.append(tempDict)
 
         diskGroupBox.setLayout(verticalLayout)
         diskGroupBox.setMinimumHeight(height)
@@ -602,13 +631,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.move(rect.width() - win.width(), 0)
 
     def receiveThreadSlowFinish(self, message):
-        for i, widget in enumerate(self.partitionsWidgets):
-            widget['mountpointValueLabel'].setText(message[i]['mountpoint'])
-            widget['totalValueLabel'].setText(message[i]['total'])
-            widget['usedValueLabel'].setText(message[i]['used'])
-            widget['usedPB'].setValue(message[i]['percentUsed'])
-            widget['freeValueLabel'].setText(message[i]['free'])
-            widget['freePB'].setValue(message[i]['percentFree'])
+        for i, msg in enumerate(message):
+            self.partitionsWidgets[i]['mountpointValueLabel'].setText(msg['mountpoint'])
+            self.partitionsWidgets[i]['totalValueLabel'].setText(msg['total'])
+            self.partitionsWidgets[i]['usedValueLabel'].setText(msg['used'])
+            self.partitionsWidgets[i]['usedPB'].setValue(msg['percentUsed'])
+            self.partitionsWidgets[i]['freeValueLabel'].setText(msg['free'])
+            self.partitionsWidgets[i]['freePB'].setValue(msg['percentFree'])
+
+        ipaddrs = self.threadSlow.getIpAddrs()
+        self.systemWidgets['intip'].setText(ipaddrs['intip'])
+        self.systemWidgets['extip'].setText(ipaddrs['extip'])
 
     def receiveThreadFastfinish(self, message):
         self.dtWidgets['hour'].setText(message['hour'])
