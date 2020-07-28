@@ -5,6 +5,7 @@
       <w>addr</w>
       <w>addrs</w>
       <w>ampm</w>
+      <w>bfcc</w>
       <w>boottime</w>
       <w>centralwidget</w>
       <w>childs</w>
@@ -20,14 +21,19 @@
       <w>distrib</w>
       <w>distro</w>
       <w>distros</w>
+      <w>dmshc</w>
       <w>donwload</w>
       <w>especific</w>
       <w>ewmh</w>
       <w>fastfinish</w>
+      <w>fcaebc</w>
       <w>fira</w>
       <w>fstype</w>
+      <w>geoipify</w>
+      <w>geolocalization</w>
       <w>gonha</w>
       <w>hbox</w>
+      <w>hellcife</w>
       <w>humanfriendly</w>
       <w>iconfile</w>
       <w>iface</w>
@@ -42,6 +48,7 @@
       <w>psutil</w>
       <w>pyhton</w>
       <w>ramused</w>
+      <w>rapidapi</w>
       <w>recebendo</w>
       <w>rgba</w>
       <w>shutil</w>
@@ -60,6 +67,7 @@
       <w>vbox</w>
       <w>virt</w>
       <w>vmtemp</w>
+      <w>xidni</w>
     </words>
   </dictionary>
 </component>

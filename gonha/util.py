@@ -1,4 +1,3 @@
-import subprocess
 import os
 from pathlib import Path
 from colr import color
@@ -9,6 +8,33 @@ import sys
 from cpuinfo import get_cpu_info
 import distro
 import platform
+import requests
+import subprocess
+
+
+class GeoIp:
+    apiKey = 'at_cY0kTF6KP8LuMrXidniTMnkOa7XTE'
+    url = 'https://ip-geolocation.whoisxmlapi.com/api/v1'
+    myExtIp = subprocess.getoutput('curl -s ifconfig.me')
+    outJson = {'city': None, 'region': None, 'country': None}
+
+    def getData(self):
+        response = requests.get(f"{self.url}?apiKey={self.apiKey}&ipAddress={self.myExtIp}")
+
+        if response.status_code == 200:
+            self.outJson.clear()
+            tempJson = json.loads(response.text)
+            self.outJson.update(
+                {
+                    'city': tempJson['location']['city'],
+                    'region': tempJson['location']['region'],
+                    'country': tempJson['location']['country'],
+                    'lat': tempJson['location']['lat'],
+                    'lng': tempJson['location']['lng']
+                }
+            )
+
+        return self.outJson
 
 
 class VirtualMachine:
@@ -80,6 +106,36 @@ class Config:
         print(color('Starting Wizard...', fore=14))
         print('')
 
+        print(color('retrieving info about your geolocalization : ', fore=11))
+        geoData = GeoIp().getData()
+        print(color('Next...', fore=10))
+        geoQuestions = [
+            {
+                'type': 'input',
+                'name': 'city',
+                'message': 'What\'s your city name',
+                'default': geoData['city'],
+                'filter': lambda val: str(val, 'utf-8')
+            },
+            {
+                'type': 'input',
+                'name': 'region',
+                'message': 'What\'s your region',
+                'default': geoData['region'],
+                'filter': lambda val: str(val, 'utf-8')
+            },
+            {
+                'type': 'input',
+                'name': 'country',
+                'message': 'What\'s your country code',
+                'default': geoData['country'],
+                'filter': lambda val: str(val, 'utf-8')
+            }
+        ]
+
+        geoResponse = prompt(geoQuestions)
+        self.updateConfig(geoResponse)
+        # ----------------------------------------
         # Position Question
         positionQuestions = [
             {

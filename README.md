@@ -30,6 +30,7 @@ Contributors
 1. Pyhton 3.8 or later
 2. python3-devel 
 3. Fira Code Font
+4. curl >=7.68 
 
 ### Installing Fira Code Font
 

@@ -42,7 +42,8 @@ setuptools.setup(
         'PyInquirer',
         'colr',
         'distro',
-        'py-cpuinfo'
+        'py-cpuinfo',
+        'requests'
     ],
     include_package_data=True,
     zip_safe=False,
