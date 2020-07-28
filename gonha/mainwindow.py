@@ -255,8 +255,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def displayDateTime(self):
         timeFont = QtGui.QFont('Fira Code', 20)
 
-        Wheather().weather_data()
-
         dateTimeGroupBox = QtWidgets.QGroupBox('datetime')
         dateTimeGroupBox.setFont(self.fontGroupBox)
         dateTimeGroupBox.setStyleSheet(self.groupBoxStyle)
