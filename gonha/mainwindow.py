@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets, QtGui
 from ewmh import EWMH
 from gonha.threads import *
 from colr import color
+from gonha.util import Wheather
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -253,6 +254,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def displayDateTime(self):
         timeFont = QtGui.QFont('Fira Code', 20)
+
+        Wheather().weather_data()
 
         dateTimeGroupBox = QtWidgets.QGroupBox('datetime')
         dateTimeGroupBox.setFont(self.fontGroupBox)

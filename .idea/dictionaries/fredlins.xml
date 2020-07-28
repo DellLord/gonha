@@ -5,6 +5,8 @@
       <w>addr</w>
       <w>addrs</w>
       <w>ampm</w>
+      <w>apikey</w>
+      <w>appid</w>
       <w>bfcc</w>
       <w>boottime</w>
       <w>centralwidget</w>
@@ -75,6 +77,7 @@
       <w>vbox</w>
       <w>virt</w>
       <w>vmtemp</w>
+      <w>wheather</w>
       <w>xidni</w>
     </words>
   </dictionary>
