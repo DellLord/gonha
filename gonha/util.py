@@ -29,6 +29,10 @@ class Config:
     distrosDir = f'{resource_path}/images/distros'
     cfgFile = f'{Path.home()}/.config/gonha/config.json'
     globalJSON = dict()
+    apiKey = 'at_cY0kTF6KP8LuMrXidniTMnkOa7XTE'
+    url = 'https://ip-geolocation.whoisxmlapi.com/api/v1'
+    myExtIp = subprocess.getoutput('curl -s ifconfig.me')
+    outJson = {'city': None, 'region': None, 'country': None}
 
     def __init__(self):
         self.version = self.getVersion()
@@ -84,7 +88,7 @@ class Config:
         print('')
 
         print(color('retrieving info about your geolocalization : ', fore=11))
-        geoData = GeoIp().getData()
+        geoData = self.getWeatherData()
         print(color('Next...', fore=10))
         geoQuestions = [
             {
@@ -235,21 +239,13 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.0.9'
-
-
-class GeoIp:
-    config = Config()
-    apiKey = 'at_cY0kTF6KP8LuMrXidniTMnkOa7XTE'
-    url = 'https://ip-geolocation.whoisxmlapi.com/api/v1'
-    myExtIp = subprocess.getoutput('curl -s ifconfig.me')
-    outJson = {'city': None, 'region': None, 'country': None}
+        return '1.1.0'
 
     def getExtIp(self):
         return self.myExtIp
 
     def getIntIp(self):
-        eth = netifaces.ifaddresses(self.config.getConfig('iface'))
+        eth = netifaces.ifaddresses(self.getConfig('iface'))
         return eth[netifaces.AF_INET][0]['addr']
 
     @staticmethod
@@ -257,7 +253,7 @@ class GeoIp:
         gws = netifaces.gateways()
         return gws['default'][netifaces.AF_INET][0]
 
-    def getData(self):
+    def getWeatherData(self):
         response = requests.get(f"{self.url}?apiKey={self.apiKey}&ipAddress={self.myExtIp}")
 
         if response.status_code == 200:
@@ -302,3 +298,5 @@ class Weather:
     @staticmethod
     def printException(e):
         print(color('Error! ', fore=11), color('[ ', fore=14), e, color('Error! ', fore=9), color(' ]', fore=14))
+
+

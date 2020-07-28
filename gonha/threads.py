@@ -1,6 +1,5 @@
 from PyQt5 import QtCore, QtGui
 from gonha.util import Config
-from gonha.util import GeoIp
 import psutil
 import time
 import humanfriendly
@@ -10,7 +9,6 @@ import random
 from gonha.util import Weather
 from unit_convert import UnitConvert
 import portolan
-from colr import color
 
 
 class ThreadWeather(QtCore.QThread):
@@ -79,7 +77,6 @@ class ThreadNetworkStats(QtCore.QThread):
 
 
 class ThreadSlow(QtCore.QThread):
-    geoip = GeoIp()
     signal = QtCore.pyqtSignal(list, name='ThreadSlowFinish')
 
     def __init__(self, parent=None):
@@ -92,9 +89,9 @@ class ThreadSlow(QtCore.QThread):
 
     def getIpAddrs(self):
         ipDict = dict()
-        ipDict['extip'] = self.geoip.getExtIp()
-        ipDict['intip'] = self.geoip.getIntIp()
-        ipDict['gw'] = self.geoip.getGw()
+        ipDict['extip'] = self.config.getExtIp()
+        ipDict['intip'] = self.config.getIntIp()
+        ipDict['gw'] = self.config.getGw()
         return ipDict
 
     def getPartitions(self):
