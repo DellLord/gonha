@@ -1,4 +1,4 @@
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from gonha.util import Config
 from gonha.util import GeoIp
 import psutil
@@ -30,6 +30,9 @@ class ThreadWeather(QtCore.QThread):
         message['visibility'] = f"{visibilityAsKm}Km"
         windDir = portolan.abbr(float(data['wind']['deg']))
         message['wind'] = f"{data['wind']['speed']}m/s {windDir}"
+        pixmap = QtGui.QPixmap()
+        pixmap.loadFromData(self.weather.getIcon(data['weather'][0]['icon']))
+        message['icon'] = pixmap
         self.signal.emit(message)
         self.start()
 

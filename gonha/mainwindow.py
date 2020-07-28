@@ -122,13 +122,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayIface()
         self.displayPartitions()
 
-    def receiveThreadNetworkStats(self, message):
-        self.upDownRateWidgets[0].setText(message['iface'])
-        self.upDownRateWidgets[1].setText('{}/s'.format(humanfriendly.format_size(message['downSpeed'])))
-        self.upDownRateWidgets[2].setText('{}/s'.format(humanfriendly.format_size(message['upSpeed'])))
-        self.upDownRateWidgets[3].setText(humanfriendly.format_size(message['bytesRcv']))
-        self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesSent']))
-
     def displayIface(self):
         ifaceGroupBox = QtWidgets.QGroupBox('net')
         ifaceGroupBox.setFont(self.fontGroupBox)
@@ -139,30 +132,26 @@ class MainWindow(QtWidgets.QMainWindow):
         ipintHBLayout = QtWidgets.QHBoxLayout()
 
         intipLabel = QtWidgets.QLabel('int. IP:')
-        intipLabel.setFont(self.fontDefault)
-        intipLabel.setStyleSheet(self.orange)
+        self.setLabel(intipLabel, self.orange, self.fontDefault)
 
         ipintHBLayout.addWidget(intipLabel)
 
         # ip int value label
         intipValueLabel = QtWidgets.QLabel('192.168.4.5')
-        intipValueLabel.setFont(self.fontDefault)
+        self.setLabel(intipValueLabel, self.white, self.fontDefault)
         self.systemWidgets['intip'] = intipValueLabel
-        intipValueLabel.setStyleSheet(self.white)
 
         ipintHBLayout.addWidget(intipValueLabel)
 
         # Ext Ip
         extipLabel = QtWidgets.QLabel('ext. IP:')
-        extipLabel.setFont(self.fontDefault)
-        extipLabel.setStyleSheet(self.orange)
+        self.setLabel(extipLabel, self.orange, self.fontDefault)
 
         ipintHBLayout.addWidget(extipLabel)
 
         extipValueLabel = QtWidgets.QLabel('200.154.2.54')
-        extipValueLabel.setFont(self.fontDefault)
+        self.setLabel(extipValueLabel, self.white, self.fontDefault)
         self.systemWidgets['extip'] = extipValueLabel
-        extipValueLabel.setStyleSheet(self.white)
 
         ipintHBLayout.addWidget(extipValueLabel)
 
@@ -171,16 +160,14 @@ class MainWindow(QtWidgets.QMainWindow):
         horizontalLayout = QtWidgets.QHBoxLayout()
         # iface Label
         ifaceLabel = QtWidgets.QLabel('interface:')
-        ifaceLabel.setFont(self.fontDefault)
-        ifaceLabel.setStyleSheet(self.orange)
+        self.setLabel(ifaceLabel, self.orange, self.fontDefault)
         ifaceLabel.setAlignment(QtCore.Qt.AlignLeft)
         horizontalLayout.addWidget(ifaceLabel)
 
         # -------------------------------------------------
         # ifaceValueLabel
         ifaceValueLabel = QtWidgets.QLabel('enp6s1')
-        ifaceValueLabel.setFont(self.fontDefault)
-        ifaceValueLabel.setStyleSheet(self.white)
+        self.setLabel(ifaceValueLabel, self.white, self.fontDefault)
         ifaceValueLabel.setAlignment(QtCore.Qt.AlignLeft)
         self.upDownRateWidgets.append(ifaceValueLabel)
         horizontalLayout.addWidget(ifaceValueLabel)
@@ -195,8 +182,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # ---------------------------------------------------
         # download rate label
         ifaceDownRateLabel = QtWidgets.QLabel('480 kb/s')
-        ifaceDownRateLabel.setFont(self.fontDefault)
-        ifaceDownRateLabel.setStyleSheet(self.white)
+        self.setLabel(ifaceDownRateLabel, self.white, self.fontDefault)
         ifaceDownRateLabel.setAlignment(QtCore.Qt.AlignRight)
         ifaceDownRateLabel.setFixedWidth(110)
         self.upDownRateWidgets.append(ifaceDownRateLabel)
@@ -213,8 +199,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # ---------------------------------------------------
         # upload rate label
         ifaceUpRateLabel = QtWidgets.QLabel('180 kb/s')
-        ifaceUpRateLabel.setFont(self.fontDefault)
-        ifaceUpRateLabel.setStyleSheet(self.white)
+        self.setLabel(ifaceUpRateLabel, self.white, self.fontDefault)
         ifaceUpRateLabel.setAlignment(QtCore.Qt.AlignRight)
         ifaceUpRateLabel.setFixedWidth(110)
         self.upDownRateWidgets.append(ifaceUpRateLabel)
@@ -227,26 +212,22 @@ class MainWindow(QtWidgets.QMainWindow):
         bytesSentRcvHLayout = QtWidgets.QHBoxLayout()
 
         bytesRcvLabel = QtWidgets.QLabel('total in:')
-        bytesRcvLabel.setFont(self.fontDefault)
-        bytesRcvLabel.setStyleSheet(self.orange)
+        self.setLabel(bytesRcvLabel, self.orange, self.fontDefault)
         bytesSentRcvHLayout.addWidget(bytesRcvLabel)
 
         bytesRcvValueLabel = QtWidgets.QLabel('123 bytes')
-        bytesRcvValueLabel.setFont(self.fontDefault)
-        bytesRcvValueLabel.setStyleSheet(self.white)
+        self.setLabel(bytesRcvValueLabel, self.white, self.fontDefault)
         bytesRcvValueLabel.setAlignment(QtCore.Qt.AlignRight)
         self.upDownRateWidgets.append(bytesRcvValueLabel)
         bytesSentRcvHLayout.addWidget(bytesRcvValueLabel)
 
         # Total out
         bytesSentLabel = QtWidgets.QLabel('total out:')
-        bytesSentLabel.setFont(self.fontDefault)
-        bytesSentLabel.setStyleSheet(self.orange)
+        self.setLabel(bytesSentLabel, self.orange, self.fontDefault)
         bytesSentRcvHLayout.addWidget(bytesSentLabel)
 
         bytesSentValueLabel = QtWidgets.QLabel('423 bytes')
-        bytesSentValueLabel.setFont(self.fontDefault)
-        bytesSentValueLabel.setStyleSheet(self.white)
+        self.setLabel(bytesSentValueLabel, self.white, self.fontDefault)
         bytesSentValueLabel.setAlignment(QtCore.Qt.AlignRight)
         self.upDownRateWidgets.append(bytesSentValueLabel)
         bytesSentRcvHLayout.addWidget(bytesSentValueLabel)
@@ -286,14 +267,12 @@ class MainWindow(QtWidgets.QMainWindow):
             label.setFixedHeight(timeHeight)
 
         hourLabel = QtWidgets.QLabel('22')
-        hourLabel.setFont(timeFont)
-        hourLabel.setStyleSheet(self.white)
+        self.setLabel(hourLabel, self.white, timeFont)
         hourLabel.setFixedHeight(timeHeight)
         self.dtwWidgets['hour'] = hourLabel
 
         minLabel = QtWidgets.QLabel('24')
-        minLabel.setFont(timeFont)
-        minLabel.setStyleSheet(self.white)
+        self.setLabel(minLabel, self.white, timeFont)
         minLabel.setFixedHeight(timeHeight)
         self.dtwWidgets['min'] = minLabel
 
@@ -321,19 +300,18 @@ class MainWindow(QtWidgets.QMainWindow):
         dateHBLayout.setAlignment(QtCore.Qt.AlignLeft)
 
         dayLabel = QtWidgets.QLabel('05')
-        dayLabel.setFont(dayFont)
-        dayLabel.setStyleSheet(self.orange)
+        self.setLabel(dayLabel, self.orange, dayFont)
         dayLabel.setFixedHeight(dateHeight)
 
         monthLabel = QtWidgets.QLabel('June')
-        monthLabel.setFont(monthFont)
-        monthLabel.setStyleSheet(self.white)
+        self.setLabel(monthLabel, self.white, monthFont)
         monthLabel.setFixedHeight(dateHeight)
         monthLabel.setAlignment(QtCore.Qt.AlignBottom)
 
         yearLabel = QtWidgets.QLabel('2020')
         yearLabel.setFont(yearFont)
         yearLabel.setStyleSheet(self.white)
+        self.setLabel(yearLabel, self.white, yearFont)
         yearLabel.setFixedHeight(dateHeight)
         yearLabel.setAlignment(QtCore.Qt.AlignBottom)
 
@@ -349,8 +327,7 @@ class MainWindow(QtWidgets.QMainWindow):
         weekdayHBLayout = QtWidgets.QHBoxLayout()
 
         weekdayLabel = QtWidgets.QLabel('Saturday')
-        weekdayLabel.setFont(weekdayFont)
-        weekdayLabel.setStyleSheet(self.white)
+        self.setLabel(weekdayLabel, self.white, weekdayFont)
         weekdayLabel.setFixedHeight(20)
 
         weekdayHBLayout.addWidget(weekdayLabel)
@@ -369,8 +346,7 @@ class MainWindow(QtWidgets.QMainWindow):
         weatherVBLayout.setAlignment(QtCore.Qt.AlignVCenter)
 
         tempLabel = QtWidgets.QLabel('22°C')
-        tempLabel.setFont(timeFont)
-        tempLabel.setStyleSheet(self.white)
+        self.setLabel(tempLabel, self.white, timeFont)
         tempLabel.setFixedHeight(tempHeight)
         self.dtwWidgets['temp'] = tempLabel
 
@@ -384,7 +360,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cloudIconLabel.setPixmap(pixmap)
         cloudIconLabel.setFixedHeight(42)
         cloudIconLabel.setFixedHeight(tempHeight)
-        self.dtwWidgets['cloudpixmark'] = cloudIconLabel.pixmap()
+        self.dtwWidgets['cloudicon'] = cloudIconLabel
 
         weatherHBLayout.addWidget(cloudIconLabel)
         weatherHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
@@ -397,6 +373,7 @@ class MainWindow(QtWidgets.QMainWindow):
         countryLabel = QtWidgets.QLabel(countries[self.config.getConfig('location')['country']])
         countryLabel.setFont(self.fontDefault)
         countryLabel.setStyleSheet(self.white)
+        self.setLabel(countryLabel, self.white, self.fontDefault)
 
         weatherVBLayout.addWidget(cityRegionLabel)
         weatherVBLayout.addWidget(countryLabel)
@@ -430,23 +407,19 @@ class MainWindow(QtWidgets.QMainWindow):
         # ---------------------------------------------------------------------
 
         humidityLabel = QtWidgets.QLabel('12%')
-        humidityLabel.setFont(self.fontDefault)
-        humidityLabel.setStyleSheet(self.white)
+        self.setLabel(humidityLabel, self.white, self.fontDefault)
         self.dtwWidgets['humidity'] = humidityLabel
 
         pressureLabel = QtWidgets.QLabel('1000hPa')
-        pressureLabel.setFont(self.fontDefault)
-        pressureLabel.setStyleSheet(self.white)
+        self.setLabel(pressureLabel, self.white, self.fontDefault)
         self.dtwWidgets['pressure'] = pressureLabel
 
         visibilityLabel = QtWidgets.QLabel('2Km')
-        visibilityLabel.setFont(self.fontDefault)
-        visibilityLabel.setStyleSheet(self.white)
+        self.setLabel(visibilityLabel, self.white, self.fontDefault)
         self.dtwWidgets['visibility'] = visibilityLabel
 
         windLabel = QtWidgets.QLabel('5m/s SE')
-        windLabel.setFont(self.fontDefault)
-        windLabel.setStyleSheet(self.white)
+        self.setLabel(windLabel, self.white, self.fontDefault)
         self.dtwWidgets['wind'] = windLabel
 
         weatherGridLayout.addWidget(humidityLabel, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
@@ -487,19 +460,16 @@ class MainWindow(QtWidgets.QMainWindow):
         # ---------------------------------------------------------------------------
         # Distro label
         distroLabel = QtWidgets.QLabel(distroStr)
-        distroLabel.setFont(self.fontDefault)
-        distroLabel.setStyleSheet(self.white)
+        self.setLabel(distroLabel, self.white, self.fontDefault)
         # ---------------------------------------------------------------------------
         # kernel label
         platJson = self.config.getConfig('platform')
         kernelLabel = QtWidgets.QLabel(f"Kernel {platJson['release']}")
-        kernelLabel.setFont(self.fontDefault)
-        kernelLabel.setStyleSheet(self.white)
+        self.setLabel(kernelLabel, self.white, self.fontDefault)
         # ---------------------------------------------------------------------------
         # Machine Label
         machineLabel = QtWidgets.QLabel(f"node {platJson['node']} arch {platJson['machine']}")
-        machineLabel.setFont(self.fontDefault)
-        machineLabel.setStyleSheet(self.white)
+        self.setLabel(machineLabel, self.white, self.fontDefault)
         # ---------------------------------------------------------------------------
         distroVBLayout.addWidget(distroLabel)
         distroVBLayout.addWidget(kernelLabel)
@@ -513,8 +483,7 @@ class MainWindow(QtWidgets.QMainWindow):
         bootTimeHboxLayout = QtWidgets.QHBoxLayout()
 
         bootTimeValueLabel = QtWidgets.QLabel()
-        bootTimeValueLabel.setFont(self.fontDefault)
-        bootTimeValueLabel.setStyleSheet(self.white)
+        self.setLabel(bootTimeValueLabel, self.white, self.fontDefault)
         bootTimeValueLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.systemWidgets['boottime'] = bootTimeValueLabel
         bootTimeHboxLayout.addWidget(bootTimeValueLabel)
@@ -524,8 +493,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cpuHBLayout = QtWidgets.QHBoxLayout()
 
         cpuBrandLabel = QtWidgets.QLabel(self.config.getConfig('cpuinfo'))
-        cpuBrandLabel.setFont(self.fontDefault)
-        cpuBrandLabel.setStyleSheet(self.white)
+        self.setLabel(cpuBrandLabel, self.white, self.fontDefault)
         cpuBrandLabel.setAlignment(QtCore.Qt.AlignHCenter)
         cpuHBLayout.addWidget(cpuBrandLabel)
 
@@ -535,8 +503,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cpuLoadHBLayout = QtWidgets.QHBoxLayout()
         cpuLoadLabel = QtWidgets.QLabel('cpu:')
         cpuLoadLabel.setFixedWidth(labelDefaultWidth)
-        cpuLoadLabel.setFont(self.fontDefault)
-        cpuLoadLabel.setStyleSheet(self.orange)
+        self.setLabel(cpuLoadLabel, self.orange, self.fontDefault)
         cpuLoadHBLayout.addWidget(cpuLoadLabel)
 
         cpuProgressBar = QtWidgets.QProgressBar()
@@ -548,9 +515,8 @@ class MainWindow(QtWidgets.QMainWindow):
         cpuLoadHBLayout.addWidget(cpuProgressBar)
 
         cpuFreqLabel = QtWidgets.QLabel('14343.34 Mhz')
-        cpuFreqLabel.setFont(self.fontDefault)
+        self.setLabel(cpuFreqLabel, self.white, self.fontDefault)
         self.systemWidgets['cpufreq'] = cpuFreqLabel
-        cpuFreqLabel.setStyleSheet(self.white)
 
         cpuLoadHBLayout.addWidget(cpuFreqLabel)
 
@@ -562,8 +528,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         ramLoadLabel = QtWidgets.QLabel('ram:')
         ramLoadLabel.setFixedWidth(labelDefaultWidth)
-        ramLoadLabel.setFont(self.fontDefault)
-        ramLoadLabel.setStyleSheet(self.orange)
+        self.setLabel(ramLoadLabel, self.orange, self.fontDefault)
 
         ramLoadHBLayout.addWidget(ramLoadLabel)
 
@@ -576,8 +541,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ramLoadHBLayout.addWidget(ramProgressBar)
 
         ramUsedLabel = QtWidgets.QLabel('15443 MB')
-        ramUsedLabel.setFont(self.fontDefault)
-        ramUsedLabel.setStyleSheet(self.white)
+        self.setLabel(ramUsedLabel, self.white, self.fontDefault)
         self.systemWidgets['ramused'] = ramUsedLabel
 
         ramLoadHBLayout.addWidget(ramUsedLabel)
@@ -589,8 +553,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         swapLabel = QtWidgets.QLabel('swap:')
         swapLabel.setFixedWidth(labelDefaultWidth)
-        swapLabel.setFont(self.fontDefault)
-        swapLabel.setStyleSheet(self.orange)
+        self.setLabel(swapLabel, self.orange, self.fontDefault)
 
         swapHBLayout.addWidget(swapLabel)
 
@@ -603,8 +566,7 @@ class MainWindow(QtWidgets.QMainWindow):
         swapHBLayout.addWidget(swapProgressBar)
 
         swapUsedLabel = QtWidgets.QLabel('16654 MB')
-        swapUsedLabel.setFont(self.fontDefault)
-        swapUsedLabel.setStyleSheet(self.white)
+        self.setLabel(swapUsedLabel, self.white, self.fontDefault)
         self.systemWidgets['swapused'] = swapUsedLabel
 
         swapHBLayout.addWidget(swapUsedLabel)
@@ -617,29 +579,25 @@ class MainWindow(QtWidgets.QMainWindow):
 
         tempLabel = QtWidgets.QLabel('temp:')
         tempLabel.setFixedWidth(labelDefaultWidth)
-        tempLabel.setFont(self.fontDefault)
-        tempLabel.setStyleSheet(self.orange)
+        self.setLabel(tempLabel, self.orange, self.fontDefault)
 
         tempHBLayout.addWidget(tempLabel)
 
         tempValueLabel = QtWidgets.QLabel('label')
         self.systemWidgets['label'] = tempValueLabel
-        tempValueLabel.setFont(self.fontDefault)
-        tempValueLabel.setStyleSheet(self.white)
+        self.setLabel(tempValueLabel, self.white, self.fontDefault)
 
         tempHBLayout.addWidget(tempValueLabel)
 
         tempCurrentLabel = QtWidgets.QLabel('current:')
-        tempCurrentLabel.setFont(self.fontDefault)
         tempCurrentLabel.setFixedWidth(labelDefaultWidth)
-        tempCurrentLabel.setStyleSheet(self.orange)
+        self.setLabel(tempCurrentLabel, self.orange, self.fontDefault)
 
         tempHBLayout.addWidget(tempCurrentLabel)
 
         tempCurrentValueLabel = QtWidgets.QLabel('30C')
-        tempCurrentValueLabel.setFont(self.fontDefault)
+        self.setLabel(tempCurrentValueLabel, self.white, self.fontDefault)
         self.systemWidgets['current'] = tempCurrentValueLabel
-        tempCurrentValueLabel.setStyleSheet(self.white)
 
         tempHBLayout.addWidget(tempCurrentValueLabel)
 
@@ -666,13 +624,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # ------------- mountpoint ----------------------
             mountpointValueLabel = QtWidgets.QLabel(mntPoint['mountpoint'])
-            mountpointValueLabel.setFont(self.fontDefault)
-            mountpointValueLabel.setStyleSheet(self.white)
+            self.setLabel(mountpointValueLabel, self.white, self.fontDefault)
             mountpointHorizontalLayout.addWidget(mountpointValueLabel)
 
             totalValueLabel = QtWidgets.QLabel(mntPoint['total'])
-            totalValueLabel.setFont(self.fontDefault)
-            totalValueLabel.setStyleSheet(self.white)
+            self.setLabel(totalValueLabel, self.white, self.fontDefault)
             totalValueLabel.setAlignment(QtCore.Qt.AlignRight)
             mountpointHorizontalLayout.addWidget(totalValueLabel)
 
@@ -681,8 +637,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # used stats
             usedHorizontalLayout = QtWidgets.QHBoxLayout()
             usedLabel = QtWidgets.QLabel('used:')
-            usedLabel.setFont(self.fontDefault)
-            usedLabel.setStyleSheet(self.orange)
+            self.setLabel(usedLabel, self.orange, self.fontDefault)
             usedLabel.setFixedWidth(labelDefaultWidth)
             usedHorizontalLayout.addWidget(usedLabel)
 
@@ -696,8 +651,7 @@ class MainWindow(QtWidgets.QMainWindow):
             usedHorizontalLayout.addWidget(usedPB)
 
             usedValueLabel = QtWidgets.QLabel(mntPoint['used'])
-            usedValueLabel.setFont(self.fontDefault)
-            usedValueLabel.setStyleSheet(self.white)
+            self.setLabel(usedValueLabel, self.white, self.fontDefault)
             usedValueLabel.setAlignment(labelAlignment)
 
             usedHorizontalLayout.addWidget(usedValueLabel)
@@ -707,8 +661,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # free stats
             freeHorizontalLayout = QtWidgets.QHBoxLayout()
             freeLabel = QtWidgets.QLabel('free:')
-            freeLabel.setFont(self.fontDefault)
-            freeLabel.setStyleSheet(self.orange)
+            self.setLabel(freeLabel, self.orange, self.fontDefault)
             freeLabel.setFixedWidth(labelDefaultWidth)
             freeHorizontalLayout.addWidget(freeLabel)
 
@@ -722,8 +675,7 @@ class MainWindow(QtWidgets.QMainWindow):
             freeHorizontalLayout.addWidget(freePB)
 
             freeValueLabel = QtWidgets.QLabel(mntPoint['free'])
-            freeValueLabel.setFont(self.fontDefault)
-            freeValueLabel.setStyleSheet(self.white)
+            self.setLabel(freeValueLabel, self.white, self.fontDefault)
             freeValueLabel.setAlignment(labelAlignment)
             freeHorizontalLayout.addWidget(freeValueLabel)
 
@@ -792,8 +744,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dtwWidgets['hour'].setText(message['hour'])
         self.dtwWidgets['min'].setText(message['min'])
         # self.dtwWidgets['sec'].setText(message['sec'])
-        self.dtwWidgets['day'].setText(f"{message['day']},")
-        self.dtwWidgets['month'].setText(f" {message['month']} ")
+        self.dtwWidgets['day'].setText(f"{message['day']}")
+        self.dtwWidgets['month'].setText(f", {message['month']} ")
         self.dtwWidgets['year'].setText(message['year'])
         self.dtwWidgets['weekday'].setText(message['weekday'])
         # --------------------------------------------------------
@@ -820,8 +772,22 @@ class MainWindow(QtWidgets.QMainWindow):
             self.systemWidgets['current'].setStyleSheet(self.green)
 
     def receiveThreadWeatherFinish(self, message):
+        print(message)
         self.dtwWidgets['temp'].setText(message['temp'])
         self.dtwWidgets['humidity'].setText(message['humidity'])
         self.dtwWidgets['pressure'].setText(message['pressure'])
         self.dtwWidgets['visibility'].setText(message['visibility'])
         self.dtwWidgets['wind'].setText(message['wind'])
+        self.dtwWidgets['cloudicon'].setPixmap(message['icon'])
+
+    @staticmethod
+    def setLabel(label, labelcolor, font):
+        label.setFont(font)
+        label.setStyleSheet(labelcolor)
+
+    def receiveThreadNetworkStats(self, message):
+        self.upDownRateWidgets[0].setText(message['iface'])
+        self.upDownRateWidgets[1].setText('{}/s'.format(humanfriendly.format_size(message['downSpeed'])))
+        self.upDownRateWidgets[2].setText('{}/s'.format(humanfriendly.format_size(message['upSpeed'])))
+        self.upDownRateWidgets[3].setText(humanfriendly.format_size(message['bytesRcv']))
+        self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesSent']))

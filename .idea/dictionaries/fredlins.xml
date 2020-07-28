@@ -12,6 +12,8 @@
       <w>centralwidget</w>
       <w>childs</w>
       <w>cinammon</w>
+      <w>cloudicon</w>
+      <w>cloudpixma</w>
       <w>cloudpixmark</w>
       <w>colr</w>
       <w>configobj</w>
@@ -49,6 +51,7 @@
       <w>intip</w>
       <w>ipaddrs</w>
       <w>ipint</w>
+      <w>labelcolor</w>
       <w>lsbconfig</w>
       <w>lsbrelease</w>
       <w>mainwindow</w>
