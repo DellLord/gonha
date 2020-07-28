@@ -285,9 +285,20 @@ class Weather:
     iconUrlSuffix = '@2x.png'
 
     def getData(self):
-        res = requests.get(f'{self.url}{self.city}&APPID={self.apikey}&units=metric')
-        return res.json()
+        try:
+            res = requests.get(f'{self.url}{self.city}&APPID={self.apikey}&units=metric')
+            return res.json()
+        except Exception as e:
+            self.printException(e)
 
     def getIcon(self, iconStr):
-        with urllib.request.urlopen(f"{self.iconUrlPrefix}{iconStr}{self.iconUrlSuffix}") as response:
-            return response.read()
+        try:
+            with urllib.request.urlopen(f"{self.iconUrlPrefix}{iconStr}{self.iconUrlSuffix}") as response:
+                return response.read()
+        except Exception as e:
+            self.printException(e)
+            return None
+
+    @staticmethod
+    def printException(e):
+        print(color('Error! ', fore=11), color('[ ', fore=14), e, color('Error! ', fore=9), color(' ]', fore=14))

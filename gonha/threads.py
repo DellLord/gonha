@@ -10,6 +10,7 @@ import random
 from gonha.util import Weather
 from unit_convert import UnitConvert
 import portolan
+from colr import color
 
 
 class ThreadWeather(QtCore.QThread):
@@ -22,17 +23,23 @@ class ThreadWeather(QtCore.QThread):
 
     def updateWeather(self):
         message = dict()
-        data = self.weather.getData()
-        message['temp'] = f"{data['main']['temp']}°C"
-        message['humidity'] = f"{data['main']['humidity']}%"
-        message['pressure'] = f"{data['main']['pressure']}hPa"
-        visibilityAsKm = UnitConvert(metres=int(data['visibility'])).kilometres
-        message['visibility'] = f"{visibilityAsKm}Km"
-        windDir = portolan.abbr(float(data['wind']['deg']))
-        message['wind'] = f"{data['wind']['speed']}m/s {windDir}"
-        pixmap = QtGui.QPixmap()
-        pixmap.loadFromData(self.weather.getIcon(data['weather'][0]['icon']))
-        message['icon'] = pixmap
+        try:
+            data = self.weather.getData()
+            message['temp'] = f"{data['main']['temp']}°C"
+            message['humidity'] = f"{data['main']['humidity']}%"
+            message['pressure'] = f"{data['main']['pressure']}hPa"
+            visibilityAsKm = UnitConvert(metres=int(data['visibility'])).kilometres
+            message['visibility'] = f"{visibilityAsKm}Km"
+            windDir = portolan.abbr(float(data['wind']['deg']))
+            message['wind'] = f"{data['wind']['speed']}m/s {windDir}"
+            pixmap = QtGui.QPixmap()
+            data = self.weather.getIcon(data['weather'][0]['icon'])
+            pixmap.loadFromData(data)
+            message['icon'] = pixmap
+        except Exception as e:
+            self.weather.printException(e)
+            message.update({'temp': '', 'humidity': '', 'pressure': '', 'visibility': '', 'wind': ''})
+
         self.signal.emit(message)
         self.start()
 

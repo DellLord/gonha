@@ -772,7 +772,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.systemWidgets['current'].setStyleSheet(self.green)
 
     def receiveThreadWeatherFinish(self, message):
-        print(message)
+        # print(message)
         self.dtwWidgets['temp'].setText(message['temp'])
         self.dtwWidgets['humidity'].setText(message['humidity'])
         self.dtwWidgets['pressure'].setText(message['pressure'])
