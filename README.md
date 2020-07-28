@@ -66,7 +66,7 @@ See the example above in Cinammon Startup Applications Settings
 $ sudo dnf install python3-devel
 ```
 
-### Ubuntu or MxLinux Requirements
+### Ubuntu, PopOS or MxLinux Requirements
 
 ```bash
 $ sudo apt install libxcb-xinerama0
