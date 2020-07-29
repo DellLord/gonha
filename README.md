@@ -27,11 +27,12 @@ Contributors
 
 ## Dependencies
 
-1. Pyhton 3.8 or later
-2. python3-devel 
-3. Fira Code Font
-4. curl >=7.68 
-5. hddtemp >=0.3 :: you need run hddtemp as daemon on your system. Install ***hddtemp***, edit the file ***/etc/default/hddtemp*** and 
+1. FullHD Display 1920 x 1080 pixels. 
+2. Pyhton 3.8 or later
+3. python3-devel 
+4. Fira Code Font
+5. curl >=7.68 
+6. hddtemp >=0.3 :: you need run hddtemp as daemon on your system. Install ***hddtemp***, edit the file ***/etc/default/hddtemp*** and 
 change the line ***RUN_DAEMON="false"*** to ***RUN_DAEMON="true"***. Gonha will connect with hddtemp default port ***7634***, please ***don´t change*** port number
 config param. 
 
