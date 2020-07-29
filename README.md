@@ -31,6 +31,9 @@ Contributors
 2. python3-devel 
 3. Fira Code Font
 4. curl >=7.68 
+5. hddtemp >=0.3 :: you need run hddtemp as daemon on your system. Install ***hddtemp***, edit the file ***/etc/default/hddtemp*** and 
+change the line ***RUN_DAEMON="false"*** to ***RUN_DAEMON="true"***. Gonha will connect with hddtemp default port ***7634***, please ***don´t change*** port number
+config param. 
 
 ### Installing Fira Code Font
 
