@@ -67,6 +67,8 @@
       <w>mountpoints</w>
       <w>netcard</w>
       <w>netifaces</w>
+      <w>newarr</w>
+      <w>newarray</w>
       <w>niface</w>
       <w>pathlib</w>
       <w>pixmap</w>

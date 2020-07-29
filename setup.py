@@ -47,7 +47,8 @@ setuptools.setup(
         'netifaces',
         'country_list',
         'portolan',
-        'unit-convert'
+        'unit-convert',
+        'numpy'
     ],
     include_package_data=True,
     zip_safe=False,

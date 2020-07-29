@@ -6,6 +6,7 @@ distro
 ewmh
 humanfriendly
 netifaces
+numpy
 pathlib
 portolan
 psutil
