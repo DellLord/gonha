@@ -132,22 +132,8 @@ class Config:
         # -------------------------------------------------------------------------
         # Cpu Info
         self.updateConfig({'cpuinfo': cpuInfo['brand_raw']})
-        # -------------------------------------------------------------------------
-        # Date Format Question
-        dateFormatQuestions = [
-            {
-                'type': 'list',
-                'name': 'dateFormat',
-                'message': 'Select time format',
-                'choices': [
-                    '12 hours',
-                    '24 hours',
-                ]
-            }
-        ]
-        dateFormatResponse = prompt(dateFormatQuestions)
-        self.updateConfig(dateFormatResponse)
 
+        # -------------------------------------------------------------------------
         # if Inside virtual machine, so bypass
         if not VirtualMachine().getStatus():
             # Temperature Question
@@ -240,7 +226,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.1.1'
+        return '1.1.2'
 
     def getExtIp(self):
         return self.myExtIp
