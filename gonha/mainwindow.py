@@ -193,11 +193,11 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout.addLayout(ipintHBLayout)
         # -------------------------------------------------
         horizontalLayout = QtWidgets.QHBoxLayout()
-        # iface Label
-        ifaceLabel = QtWidgets.QLabel('interface:')
-        self.setLabel(ifaceLabel, self.orange, self.fontDefault)
-        ifaceLabel.setAlignment(QtCore.Qt.AlignLeft)
-        horizontalLayout.addWidget(ifaceLabel)
+
+        netCardIcon = QtWidgets.QLabel()
+        netCardIcon.setPixmap(QtGui.QPixmap(f"{self.config.resource_path}/images/netcard.png"))
+        netCardIcon.setFixedSize( 24, 24)
+        horizontalLayout.addWidget(netCardIcon)
 
         # -------------------------------------------------
         # ifaceValueLabel
@@ -529,10 +529,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Cpu load
         cpuLoadHBLayout = QtWidgets.QHBoxLayout()
-        cpuLoadLabel = QtWidgets.QLabel('cpu:')
-        cpuLoadLabel.setFixedWidth(labelDefaultWidth)
-        self.setLabel(cpuLoadLabel, self.orange, self.fontDefault)
-        cpuLoadHBLayout.addWidget(cpuLoadLabel)
+
+        cpuIcon = QtWidgets.QLabel()
+        cpuIcon.setPixmap(QtGui.QPixmap(f"{self.config.resource_path}/images/cpu.png"))
+        cpuIcon.setFixedSize(labelDefaultWidth, 24)
+        cpuLoadHBLayout.addWidget(cpuIcon)
 
         cpuProgressBar = QtWidgets.QProgressBar()
         cpuProgressBar.setFont(self.fontDefault)
@@ -554,11 +555,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # ram load
         ramLoadHBLayout = QtWidgets.QHBoxLayout()
 
-        ramLoadLabel = QtWidgets.QLabel('ram:')
-        ramLoadLabel.setFixedWidth(labelDefaultWidth)
-        self.setLabel(ramLoadLabel, self.orange, self.fontDefault)
-
-        ramLoadHBLayout.addWidget(ramLoadLabel)
+        ramIcon = QtWidgets.QLabel()
+        ramIcon.setPixmap(QtGui.QPixmap(f"{self.config.resource_path}/images/ram.png"))
+        ramIcon.setFixedSize(labelDefaultWidth, 24)
+        ramLoadHBLayout.addWidget(ramIcon)
 
         ramProgressBar = QtWidgets.QProgressBar()
         ramProgressBar.setFont(self.fontDefault)
@@ -579,11 +579,11 @@ class MainWindow(QtWidgets.QMainWindow):
         # swap load
         swapHBLayout = QtWidgets.QHBoxLayout()
 
-        swapLabel = QtWidgets.QLabel('swap:')
-        swapLabel.setFixedWidth(labelDefaultWidth)
-        self.setLabel(swapLabel, self.orange, self.fontDefault)
+        swapIcon = QtWidgets.QLabel()
+        swapIcon.setPixmap(QtGui.QPixmap(f"{self.config.resource_path}/images/swap.png"))
+        swapIcon.setFixedSize(labelDefaultWidth, 24)
 
-        swapHBLayout.addWidget(swapLabel)
+        swapHBLayout.addWidget(swapIcon)
 
         swapProgressBar = QtWidgets.QProgressBar()
         swapProgressBar.setFont(self.fontDefault)

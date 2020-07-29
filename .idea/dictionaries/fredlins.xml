@@ -64,6 +64,7 @@
       <w>modl</w>
       <w>mountpoint</w>
       <w>mountpoints</w>
+      <w>netcard</w>
       <w>netifaces</w>
       <w>niface</w>
       <w>pathlib</w>
