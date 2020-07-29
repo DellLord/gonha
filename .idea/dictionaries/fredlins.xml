@@ -5,6 +5,7 @@
       <w>addr</w>
       <w>addrs</w>
       <w>ampm</w>
+      <w>analize</w>
       <w>apikey</w>
       <w>appid</w>
       <w>bfcc</w>
@@ -20,6 +21,7 @@
       <w>cpufreq</w>
       <w>cpuinfo</w>
       <w>crit</w>
+      <w>dest</w>
       <w>devel</w>
       <w>diferents</w>
       <w>diskstats</w>
@@ -40,6 +42,7 @@
       <w>geolocalization</w>
       <w>gonha</w>
       <w>hbox</w>
+      <w>hddtemp</w>
       <w>hellcife</w>
       <w>hpvw</w>
       <w>humanfriendly</w>
@@ -57,6 +60,7 @@
       <w>mainwindow</w>
       <w>mensagem</w>
       <w>mname</w>
+      <w>modl</w>
       <w>mountpoint</w>
       <w>mountpoints</w>
       <w>netifaces</w>

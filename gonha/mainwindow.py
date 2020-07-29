@@ -4,6 +4,7 @@ from ewmh import EWMH
 from gonha.threads import *
 from colr import color
 from gonha.util import Weather
+from gonha.util import Smart
 from country_list import countries_for_language
 
 
@@ -18,6 +19,7 @@ class MainWindow(QtWidgets.QMainWindow):
     threadweather = ThreadWeather()
     partitionsWidgets = []
     upDownRateWidgets = []
+    diskWidgets = []
     dtwWidgets = dict()
     systemWidgets = dict()
     verticalLayout = QtWidgets.QVBoxLayout()
@@ -613,6 +615,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout.addWidget(systemGroupBox)
 
     def displayPartitions(self):
+        smart = Smart()
+
         mntPoints = self.threadSlow.getPartitions()
         diskGroupBox = QtWidgets.QGroupBox('disks')
         diskGroupBox.setFont(self.fontGroupBox)
@@ -623,6 +627,35 @@ class MainWindow(QtWidgets.QMainWindow):
         pbFixedWidth = 260
         labelAlignment = (QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         labelDefaultWidth = 80
+
+        # Devices Health
+        devices = smart.getDevicesHealth()
+
+        for d in devices:
+            deviceHBLayout = QtWidgets.QHBoxLayout()
+            deviceHBLayout.setAlignment(QtCore.Qt.AlignLeft)
+
+            deviceIcon = QtWidgets.QLabel()
+            deviceIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/hddtemp.png'))
+            deviceIcon.setFixedHeight(24)
+            deviceIcon.setFixedWidth(24)
+            deviceHBLayout.addWidget(deviceIcon)
+
+            deviceLabel = QtWidgets.QLabel(d['device'])
+            self.setLabel(deviceLabel, self.white, self.fontDefault)
+            deviceHBLayout.addWidget(deviceLabel)
+
+            deviceModelLabel = QtWidgets.QLabel(d['model'])
+            self.setLabel(deviceModelLabel, self.white, self.fontDefault)
+            deviceHBLayout.addWidget(deviceModelLabel)
+
+            deviceTempLabel = QtWidgets.QLabel(f"{d['temp']}°C")
+            self.setLabel(deviceTempLabel, self.white, self.fontDefault)
+            deviceHBLayout.addWidget(deviceTempLabel)
+
+            self.diskWidgets.append({'device': deviceLabel, 'model': deviceModelLabel, 'temp': deviceTempLabel})
+
+            verticalLayout.addLayout(deviceHBLayout)
 
         for mntPoint in mntPoints:
             mountpointHorizontalLayout = QtWidgets.QHBoxLayout()
@@ -769,11 +802,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.systemWidgets['boottime'].setText(message['boottime'])
 
         current = int(''.join(filter(str.isdigit, message['current'])))
-        critical = 80
-        if current >= critical:
-            self.systemWidgets['current'].setStyleSheet(self.red)
-        else:
-            self.systemWidgets['current'].setStyleSheet(self.green)
+        self.analizeTemp(self.systemWidgets['current'], float(current), 85)
+
+        for i, d in enumerate(message['devices']):
+            self.diskWidgets[i]['device'].setText(d['device'])
+            self.diskWidgets[i]['model'].setText(d['model'])
+            self.diskWidgets[i]['temp'].setText(f"{d['temp']}°C")
+            self.analizeTemp(self.diskWidgets[i]['temp'], float(d['temp']), 73.0)
 
     def receiveThreadWeatherFinish(self, message):
         # print(message)
@@ -795,3 +830,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.upDownRateWidgets[2].setText('{}/s'.format(humanfriendly.format_size(message['upSpeed'])))
         self.upDownRateWidgets[3].setText(humanfriendly.format_size(message['bytesRcv']))
         self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesSent']))
+
+    @staticmethod
+    def analizeTemp(label, current, max):
+        colorNormal = 'color: rgb(157, 255, 96);'
+        colorWarning = 'color: rgb(255, 137, 78);'
+        colorAlarm = 'color: rgb(255, 79, 79);'
+        percent30 = max - (max * 0.3)
+        percent10 = max - (max * 0.1)
+        label.setStyleSheet(colorNormal)
+        if current >= percent10:
+            label.setStyleSheet(colorAlarm)
+        elif current >= percent30:
+            label.setStyleSheet(colorWarning)

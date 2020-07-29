@@ -12,6 +12,7 @@ import requests
 import subprocess
 import netifaces
 import urllib.request
+from telnetlib import Telnet
 
 
 class VirtualMachine:
@@ -300,3 +301,22 @@ class Weather:
         print(color('Error! ', fore=11), color('[ ', fore=14), e, color('Error! ', fore=9), color(' ]', fore=14))
 
 
+class Smart:
+
+    @staticmethod
+    def getDevicesHealth():
+        host = '127.0.0.1'
+        port = 7634
+        lines = ''
+        message = list()
+        with Telnet(host, port) as tn:
+            lines = tn.read_all().decode('utf-8')
+
+        if lines != '':
+            for data in lines.splitlines():
+                data = data[1:]  # remove the first character
+                data = ''.join([data[i] for i in range(len(data)) if i != len(data) - 1])  # remove the last character
+                data = data.split('|')  # split in array
+                message.append({'device': data[0], 'model': data[1], 'temp': data[2]})
+
+            return message

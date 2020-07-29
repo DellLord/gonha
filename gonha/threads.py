@@ -7,6 +7,7 @@ from gonha.util import VirtualMachine
 from datetime import datetime
 import random
 from gonha.util import Weather
+from gonha.util import Smart
 from unit_convert import UnitConvert
 import portolan
 
@@ -117,6 +118,7 @@ class ThreadSlow(QtCore.QThread):
 class ThreadFast(QtCore.QThread):
     signal = QtCore.pyqtSignal(dict, name='ThreadFastFinish')
     message = dict()
+    smart = Smart()
 
     def __init__(self, parent=None):
         super(ThreadFast, self).__init__(parent)
@@ -170,6 +172,15 @@ class ThreadFast(QtCore.QThread):
         else:
             self.message['label'] = 'vmtemp'
             self.message['current'] = '{:.0f}°C'.format(random.uniform(1, 100))
+
+        devices = self.smart.getDevicesHealth()
+        self.message['devices'] = list()
+        for d in devices:
+            tempDict = dict()
+            tempDict['device'] = d['device']
+            tempDict['model'] = d['model']
+            tempDict['temp'] = d['temp']
+            self.message['devices'].append(tempDict)
 
         time.sleep(1)
         self.signal.emit(self.message)
