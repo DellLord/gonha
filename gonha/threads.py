@@ -15,6 +15,7 @@ import portolan
 class ThreadWeather(QtCore.QThread):
     signal = QtCore.pyqtSignal(dict, name='ThreadWeatherFinish')
     weather = Weather()
+    config = Config()
 
     def __init__(self, parent=None):
         super(ThreadWeather, self).__init__(parent)
@@ -22,24 +23,26 @@ class ThreadWeather(QtCore.QThread):
 
     def updateWeather(self):
         message = dict()
-        try:
-            data = self.weather.getData()
-            message['temp'] = f"{data['main']['temp']}°C"
-            message['humidity'] = f"{data['main']['humidity']}%"
-            message['pressure'] = f"{data['main']['pressure']}hPa"
-            visibilityAsKm = UnitConvert(metres=int(data['visibility'])).kilometres
-            message['visibility'] = f"{visibilityAsKm}Km"
-            windDir = portolan.abbr(float(data['wind']['deg']))
-            message['wind'] = f"{data['wind']['speed']}m/s {windDir}"
-            pixmap = QtGui.QPixmap()
-            data = self.weather.getIcon(data['weather'][0]['icon'])
-            pixmap.loadFromData(data)
-            message['icon'] = pixmap
-        except Exception as e:
-            self.weather.printException(e)
-            message.update({'temp': '', 'humidity': '', 'pressure': '', 'visibility': '', 'wind': ''})
+        if self.config.isOnline():
+            try:
+                data = self.weather.getData()
+                message['temp'] = f"{data['main']['temp']}°C"
+                message['humidity'] = f"{data['main']['humidity']}%"
+                message['pressure'] = f"{data['main']['pressure']}hPa"
+                visibilityAsKm = UnitConvert(metres=int(data['visibility'])).kilometres
+                message['visibility'] = f"{visibilityAsKm}Km"
+                windDir = portolan.abbr(float(data['wind']['deg']))
+                message['wind'] = f"{data['wind']['speed']}m/s {windDir}"
+                pixmap = QtGui.QPixmap()
+                data = self.weather.getIcon(data['weather'][0]['icon'])
+                pixmap.loadFromData(data)
+                message['icon'] = pixmap
+            except Exception as e:
+                self.weather.printException(e)
+                message.update({'temp': '', 'humidity': '', 'pressure': '', 'visibility': '', 'wind': ''})
 
-        self.signal.emit(message)
+            self.signal.emit(message)
+
         self.start()
 
     def run(self):
@@ -59,22 +62,23 @@ class ThreadNetworkStats(QtCore.QThread):
         self.start()
 
     def run(self):
-        counter1 = psutil.net_io_counters(pernic=True)[self.iface]
-        time.sleep(1)
-        counter2 = psutil.net_io_counters(pernic=True)[self.iface]
-        downSpeed = counter2.bytes_recv - counter1.bytes_recv
-        upSpeed = counter2.bytes_sent - counter1.bytes_sent
-        # get io statistics since boot
-        net_io = psutil.net_io_counters(pernic=True)
-        self.signal.emit(
-            {
-                'downSpeed': downSpeed,
-                'upSpeed': upSpeed,
-                'iface': self.iface,
-                'bytesSent': net_io[self.iface].bytes_sent,
-                'bytesRcv': net_io[self.iface].bytes_recv
-            }
-        )
+        if self.config.isOnline():
+            counter1 = psutil.net_io_counters(pernic=True)[self.iface]
+            time.sleep(1)
+            counter2 = psutil.net_io_counters(pernic=True)[self.iface]
+            downSpeed = counter2.bytes_recv - counter1.bytes_recv
+            upSpeed = counter2.bytes_sent - counter1.bytes_sent
+            # get io statistics since boot
+            net_io = psutil.net_io_counters(pernic=True)
+            self.signal.emit(
+                {
+                    'downSpeed': downSpeed,
+                    'upSpeed': upSpeed,
+                    'iface': self.iface,
+                    'bytesSent': net_io[self.iface].bytes_sent,
+                    'bytesRcv': net_io[self.iface].bytes_recv
+                }
+            )
 
 
 class ThreadSlow(QtCore.QThread):
@@ -89,11 +93,12 @@ class ThreadSlow(QtCore.QThread):
         self.start()
 
     def getIpAddrs(self):
-        ipDict = dict()
-        ipDict['extip'] = self.config.getExtIp()
-        ipDict['intip'] = self.config.getIntIp()
-        ipDict['gw'] = self.config.getGw()
-        return ipDict
+        if self.config.isOnline():
+            ipDict = dict()
+            ipDict['extip'] = self.config.getExtIp()
+            ipDict['intip'] = self.config.getIntIp()
+            ipDict['gw'] = self.config.getGw()
+            return ipDict
 
     def getPartitions(self):
         msg = list()

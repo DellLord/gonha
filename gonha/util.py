@@ -88,6 +88,10 @@ class Config:
         print(color('Starting Wizard...', fore=14))
         print('')
 
+        if not self.isOnline():
+            print(color('Error: ', fore=11), color('[ ', fore=14), color('no network connection', fore=9), color(' ]', fore=14))
+            sys.exit(1)
+
         print(color('retrieving info about your geolocalization : ', fore=11))
         geoData = self.getWeatherData()
         print(color('Next...', fore=10))
@@ -257,6 +261,14 @@ class Config:
             )
 
         return self.outJson
+
+    @staticmethod
+    def isOnline():
+        try:
+            if requests.get('https://google.com').ok:
+                return True
+        except Exception as e:
+            return False
 
 
 class Weather:

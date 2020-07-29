@@ -140,7 +140,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ipintHBLayout.addWidget(intipLabel)
 
         # ip int value label
-        intipValueLabel = QtWidgets.QLabel('192.168.4.5')
+        intipValueLabel = QtWidgets.QLabel('')
         self.setLabel(intipValueLabel, self.white, self.fontDefault)
         self.systemWidgets['intip'] = intipValueLabel
 
@@ -152,7 +152,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         ipintHBLayout.addWidget(extipLabel)
 
-        extipValueLabel = QtWidgets.QLabel('200.154.2.54')
+        extipValueLabel = QtWidgets.QLabel('')
         self.setLabel(extipValueLabel, self.white, self.fontDefault)
         self.systemWidgets['extip'] = extipValueLabel
 
@@ -169,7 +169,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # -------------------------------------------------
         # ifaceValueLabel
-        ifaceValueLabel = QtWidgets.QLabel('enp6s1')
+        ifaceValueLabel = QtWidgets.QLabel('')
         self.setLabel(ifaceValueLabel, self.white, self.fontDefault)
         ifaceValueLabel.setAlignment(QtCore.Qt.AlignLeft)
         self.upDownRateWidgets.append(ifaceValueLabel)
@@ -184,7 +184,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # ---------------------------------------------------
         # download rate label
-        ifaceDownRateLabel = QtWidgets.QLabel('480 kb/s')
+        ifaceDownRateLabel = QtWidgets.QLabel('')
         self.setLabel(ifaceDownRateLabel, self.white, self.fontDefault)
         ifaceDownRateLabel.setAlignment(QtCore.Qt.AlignRight)
         ifaceDownRateLabel.setFixedWidth(110)
@@ -201,7 +201,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # ---------------------------------------------------
         # upload rate label
-        ifaceUpRateLabel = QtWidgets.QLabel('180 kb/s')
+        ifaceUpRateLabel = QtWidgets.QLabel('')
         self.setLabel(ifaceUpRateLabel, self.white, self.fontDefault)
         ifaceUpRateLabel.setAlignment(QtCore.Qt.AlignRight)
         ifaceUpRateLabel.setFixedWidth(110)
@@ -218,7 +218,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setLabel(bytesRcvLabel, self.orange, self.fontDefault)
         bytesSentRcvHLayout.addWidget(bytesRcvLabel)
 
-        bytesRcvValueLabel = QtWidgets.QLabel('123 bytes')
+        bytesRcvValueLabel = QtWidgets.QLabel('')
         self.setLabel(bytesRcvValueLabel, self.white, self.fontDefault)
         bytesRcvValueLabel.setAlignment(QtCore.Qt.AlignRight)
         self.upDownRateWidgets.append(bytesRcvValueLabel)
@@ -229,7 +229,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setLabel(bytesSentLabel, self.orange, self.fontDefault)
         bytesSentRcvHLayout.addWidget(bytesSentLabel)
 
-        bytesSentValueLabel = QtWidgets.QLabel('423 bytes')
+        bytesSentValueLabel = QtWidgets.QLabel('')
         self.setLabel(bytesSentValueLabel, self.white, self.fontDefault)
         bytesSentValueLabel.setAlignment(QtCore.Qt.AlignRight)
         self.upDownRateWidgets.append(bytesSentValueLabel)
@@ -279,17 +279,9 @@ class MainWindow(QtWidgets.QMainWindow):
         minLabel.setFixedHeight(timeHeight)
         self.dtwWidgets['min'] = minLabel
 
-        # secLabel = QtWidgets.QLabel('45')
-        # secLabel.setFont(timeFont)
-        # secLabel.setStyleSheet(self.white)
-        # secLabel.setFixedHeight(timeHeight)
-        # self.dtwWidgets['sec'] = secLabel
-
         timeHBLayout.addWidget(hourLabel)
         timeHBLayout.addWidget(twoPointLabel[0])
         timeHBLayout.addWidget(minLabel)
-        # timeHBLayout.addWidget(twoPointLabel[1])
-        # timeHBLayout.addWidget(secLabel)
 
         self.dtwWidgets['hour'] = hourLabel
         self.dtwWidgets['min'] = minLabel
@@ -349,7 +341,7 @@ class MainWindow(QtWidgets.QMainWindow):
         weatherVBLayout.setSpacing(0)
         weatherVBLayout.setAlignment(QtCore.Qt.AlignVCenter)
 
-        tempLabel = QtWidgets.QLabel('22°C')
+        tempLabel = QtWidgets.QLabel('')
         self.setLabel(tempLabel, self.white, timeFont)
         tempLabel.setFixedHeight(tempHeight)
         self.dtwWidgets['temp'] = tempLabel
@@ -357,11 +349,7 @@ class MainWindow(QtWidgets.QMainWindow):
         weatherHBLayout.addWidget(tempLabel)
 
         # Cloud Icon
-        pixmap = QtGui.QPixmap()
-
-        # pixmap.loadFromData(self.weather.getIcon(weatherData['weather'][0]['icon']))
         cloudIconLabel = QtWidgets.QLabel()
-        cloudIconLabel.setPixmap(pixmap)
         cloudIconLabel.setFixedHeight(42)
         cloudIconLabel.setFixedHeight(tempHeight)
         self.dtwWidgets['cloudicon'] = cloudIconLabel
@@ -407,19 +395,19 @@ class MainWindow(QtWidgets.QMainWindow):
         weatherGridLayout.addWidget(windIcon, 0, 3, 1, 1, QtCore.Qt.AlignHCenter)
         # ---------------------------------------------------------------------
 
-        humidityLabel = QtWidgets.QLabel('12%')
+        humidityLabel = QtWidgets.QLabel('')
         self.setLabel(humidityLabel, self.white, self.fontDefault)
         self.dtwWidgets['humidity'] = humidityLabel
 
-        pressureLabel = QtWidgets.QLabel('1000hPa')
+        pressureLabel = QtWidgets.QLabel('')
         self.setLabel(pressureLabel, self.white, self.fontDefault)
         self.dtwWidgets['pressure'] = pressureLabel
 
-        visibilityLabel = QtWidgets.QLabel('2Km')
+        visibilityLabel = QtWidgets.QLabel('')
         self.setLabel(visibilityLabel, self.white, self.fontDefault)
         self.dtwWidgets['visibility'] = visibilityLabel
 
-        windLabel = QtWidgets.QLabel('5m/s SE')
+        windLabel = QtWidgets.QLabel('')
         self.setLabel(windLabel, self.white, self.fontDefault)
         self.dtwWidgets['wind'] = windLabel
 
@@ -781,9 +769,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.partitionsWidgets[i]['freeValueLabel'].setText(msg['free'])
             self.partitionsWidgets[i]['freePB'].setValue(msg['percentFree'])
 
-        ipaddrs = self.threadSlow.getIpAddrs()
-        self.systemWidgets['intip'].setText(ipaddrs['intip'])
-        self.systemWidgets['extip'].setText(ipaddrs['extip'])
+        if self.config.isOnline():
+            ipaddrs = self.threadSlow.getIpAddrs()
+            self.systemWidgets['intip'].setText(ipaddrs['intip'])
+            self.systemWidgets['extip'].setText(ipaddrs['extip'])
 
     def receiveThreadFastfinish(self, message):
 
