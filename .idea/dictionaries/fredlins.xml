@@ -55,6 +55,7 @@
       <w>ipaddrs</w>
       <w>ipint</w>
       <w>labelcolor</w>
+      <w>lenght</w>
       <w>lsbconfig</w>
       <w>lsbrelease</w>
       <w>mainwindow</w>
@@ -94,6 +95,7 @@
       <w>vbox</w>
       <w>virt</w>
       <w>visitibility</w>
+      <w>vmsda</w>
       <w>vmtemp</w>
       <w>wday</w>
       <w>wheater</w>
