@@ -221,7 +221,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.2.1'
+        return '1.2.2'
 
     def getExtIp(self):
         return self.myExtIp
@@ -290,6 +290,7 @@ class Weather:
 class Smart:
     host = '127.0.0.1'
     port = 7634
+    vm = VirtualMachine()
 
     def hddtempIsOk(self):
         try:
@@ -302,14 +303,18 @@ class Smart:
         lines = ''
         message = list()
         if self.hddtempIsOk():
-            with Telnet(self.host, self.port) as tn:
-                lines = tn.read_all().decode('utf-8')
+            if not self.vm.getStatus():
+                with Telnet(self.host, self.port) as tn:
+                    lines = tn.read_all().decode('utf-8')
 
-            if lines != '':
-                for data in lines.splitlines():
-                    data = data[1:]  # remove the first character
-                    data = ''.join([data[i] for i in range(len(data)) if i != len(data) - 1])
-                    data = data.split('|')  # split in array
-                    message.append({'device': data[0], 'model': data[1], 'temp': data[2]})
+                if lines != '':
+                    for data in lines.splitlines():
+                        data = data[1:]  # remove the first character
+                        data = ''.join([data[i] for i in range(len(data)) if i != len(data) - 1])
+                        data = data.split('|')  # split in array
+                        message.append({'device': data[0], 'model': data[1], 'temp': data[2]})
+            else:
+                # Append fake data to virtual machine
+                message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38'})
 
             return message

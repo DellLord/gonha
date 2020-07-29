@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import gonha
 import sys
 from gonha.mainwindow import MainWindow
 from gonha.util import Config

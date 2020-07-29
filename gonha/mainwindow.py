@@ -662,12 +662,10 @@ class MainWindow(QtWidgets.QMainWindow):
             deviceHBLayout = QtWidgets.QHBoxLayout()
             deviceHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
 
-            tempIcon = QtWidgets.QLabel()
-            tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/hddtemp.png'))
-            tempIcon.setFixedHeight(24)
-            tempIcon.setFixedWidth(24)
-
-            deviceHBLayout.addWidget(tempIcon)
+            ssdIcon = QtWidgets.QLabel()
+            ssdIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/ssd.png'))
+            ssdIcon.setFixedSize(24, 24)
+            deviceHBLayout.addWidget(ssdIcon)
 
             deviceLabel = QtWidgets.QLabel(d['device'])
             self.setLabel(deviceLabel, self.white, self.fontDefault)
@@ -676,6 +674,13 @@ class MainWindow(QtWidgets.QMainWindow):
             deviceModelLabel = QtWidgets.QLabel(d['model'])
             self.setLabel(deviceModelLabel, self.white, self.fontDefault)
             deviceHBLayout.addWidget(deviceModelLabel)
+
+            tempIcon = QtWidgets.QLabel()
+            tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/hddtemp.png'))
+            tempIcon.setFixedHeight(24)
+            tempIcon.setFixedWidth(24)
+
+            deviceHBLayout.addWidget(tempIcon)
 
             deviceTempLabel = QtWidgets.QLabel(f"{d['temp']}°C")
             self.setLabel(deviceTempLabel, self.white, self.fontDefault)
