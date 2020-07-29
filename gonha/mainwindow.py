@@ -84,6 +84,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.white = 'color: rgb(255, 255, 255);'
         self.green = 'color: rgb(34, 255, 19);'
         self.red = 'color: rgb(255, 48, 79);'
+
         # ---------------------------------------------------------------------
         # Default font
         self.fontDefault = QtGui.QFont('Fira Code', 11)
@@ -583,11 +584,18 @@ class MainWindow(QtWidgets.QMainWindow):
         # ---------------------------------------------------------------------------
         # Temperature
         tempHBLayout = QtWidgets.QHBoxLayout()
+        tempHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
 
-        tempLabel = QtWidgets.QLabel('temp:')
-        tempLabel.setFixedWidth(labelDefaultWidth)
+        tempIcon = QtWidgets.QLabel()
+        tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/hddtemp.png'))
+        tempIcon.setFixedHeight(24)
+        tempIcon.setFixedWidth(24)
+
+        tempLabel = QtWidgets.QLabel('label:')
+        # tempLabel.setFixedWidth(labelDefaultWidth)
         self.setLabel(tempLabel, self.orange, self.fontDefault)
 
+        tempHBLayout.addWidget(tempIcon)
         tempHBLayout.addWidget(tempLabel)
 
         tempValueLabel = QtWidgets.QLabel('label')
@@ -597,7 +605,7 @@ class MainWindow(QtWidgets.QMainWindow):
         tempHBLayout.addWidget(tempValueLabel)
 
         tempCurrentLabel = QtWidgets.QLabel('current:')
-        tempCurrentLabel.setFixedWidth(labelDefaultWidth)
+        # tempCurrentLabel.setFixedWidth(labelDefaultWidth)
         self.setLabel(tempCurrentLabel, self.orange, self.fontDefault)
 
         tempHBLayout.addWidget(tempCurrentLabel)
@@ -633,13 +641,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         for d in devices:
             deviceHBLayout = QtWidgets.QHBoxLayout()
-            deviceHBLayout.setAlignment(QtCore.Qt.AlignLeft)
+            deviceHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
 
-            deviceIcon = QtWidgets.QLabel()
-            deviceIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/hddtemp.png'))
-            deviceIcon.setFixedHeight(24)
-            deviceIcon.setFixedWidth(24)
-            deviceHBLayout.addWidget(deviceIcon)
+            tempIcon = QtWidgets.QLabel()
+            tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/hddtemp.png'))
+            tempIcon.setFixedHeight(24)
+            tempIcon.setFixedWidth(24)
+
+            deviceHBLayout.addWidget(tempIcon)
 
             deviceLabel = QtWidgets.QLabel(d['device'])
             self.setLabel(deviceLabel, self.white, self.fontDefault)
@@ -808,7 +817,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.diskWidgets[i]['device'].setText(d['device'])
             self.diskWidgets[i]['model'].setText(d['model'])
             self.diskWidgets[i]['temp'].setText(f"{d['temp']}°C")
-            self.analizeTemp(self.diskWidgets[i]['temp'], float(d['temp']), 73.0)
+            maxtemp = 73.0
+            self.analizeTemp(self.diskWidgets[i]['device'], float(d['temp']), maxtemp)
+            self.analizeTemp(self.diskWidgets[i]['temp'], float(d['temp']), maxtemp)
 
     def receiveThreadWeatherFinish(self, message):
         # print(message)
