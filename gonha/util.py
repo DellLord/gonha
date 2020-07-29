@@ -221,7 +221,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.2.3'
+        return '1.2.4'
 
     def getExtIp(self):
         return self.myExtIp
@@ -315,6 +315,8 @@ class Smart:
                     data = ''.join([data[i] for i in range(len(data)) if i != len(data) - 1])
                     # replace double || by one |
                     data = data.replace('||', '|')
+                    # remove |C|
+                    data = data.replace('|C|', '|')
                     # convert to array
                     data = data.split('|')
                     dataLen = len(data)
