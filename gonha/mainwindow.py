@@ -81,7 +81,7 @@ class MainWindow(QtWidgets.QMainWindow):
         }
         QProgressBar::chunk {
             background: rgb(255, 51, 0);
-            border-radius: 3px;
+            border-radius: 3px;            
         }
         """
         self.greenPBStyle = """
