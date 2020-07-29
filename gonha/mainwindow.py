@@ -141,7 +141,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Show in all workspaces
         self.ew = EWMH()
         self.all_wins = self.ew.getClientList()
-        self.wins = filter(lambda w: w.get_wm_class()[1] == 'gonha', self.all_wins)
+        self.wins = filter(lambda wHandle: wHandle.get_wm_class()[1] == 'gonha', self.all_wins)
         for w in self.wins:
             self.ew.setWmDesktop(w, 0xffffffff)
 
@@ -196,7 +196,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         netCardIcon = QtWidgets.QLabel()
         netCardIcon.setPixmap(QtGui.QPixmap(f"{self.config.resource_path}/images/netcard.png"))
-        netCardIcon.setFixedSize( 24, 24)
+        netCardIcon.setFixedSize(24, 24)
         horizontalLayout.addWidget(netCardIcon)
 
         # -------------------------------------------------
@@ -277,7 +277,6 @@ class MainWindow(QtWidgets.QMainWindow):
         timeHeight = 50
         dateHeight = 25
         tempHeight = 60
-        labelDefaultHeight = 15
 
         timeFont = QtGui.QFont('Fira Code', 45)
         dayFont = QtGui.QFont('Fira Code', 20)
@@ -653,7 +652,7 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout.setAlignment(QtCore.Qt.AlignTop)
         height = 0
         pbFixedWidth = 260
-        labelAlignment = (QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        labelAlignment = QtCore.Qt.AlignRight
         labelDefaultWidth = 80
 
         # Devices Health
@@ -864,12 +863,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesSent']))
 
     @staticmethod
-    def analizeTemp(label, current, max):
+    def analizeTemp(label, current, maxValue):
         colorNormal = 'color: rgb(157, 255, 96);'
         colorWarning = 'color: rgb(255, 137, 78);'
         colorAlarm = 'color: rgb(255, 79, 79);'
-        percent30 = max - (max * 0.3)
-        percent10 = max - (max * 0.1)
+        percent30 = maxValue - (maxValue * 0.3)
+        percent10 = maxValue - (maxValue * 0.1)
         label.setStyleSheet(colorNormal)
         if current >= percent10:
             label.setStyleSheet(colorAlarm)
