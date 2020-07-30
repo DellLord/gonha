@@ -2,10 +2,8 @@
 import sys
 from gonha.mainwindow import MainWindow
 from gonha.util import Config
-import os
 
 if __name__ == '__main__':
-    os.environ['QT_LOGGING_RULES'] = "qt5ct.debug=false"
     if len(sys.argv) > 1:
         if sys.argv[1] == '--config':
             print('Entering config mode...')
