@@ -92,6 +92,7 @@
       <w>rgba</w>
       <w>shutil</w>
       <w>smartctl</w>
+      <w>smartmontools</w>
       <w>subcontrol</w>
       <w>swapused</w>
       <w>systemd</w>
