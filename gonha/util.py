@@ -53,10 +53,9 @@ class Smart:
                     model = model.lstrip()
                     printawk = "awk '{print $4}'"
                     temp = subprocess.getoutput(f"sudo smartctl -a /dev/{storage['name']} | grep 'Temperature_Celsius' | {printawk}")
+                    temp = int(temp)
 
-                print(f"id [{storage['id']}] name [{storage['name']}] model [{model}] temp [{int(temp)}]")
-
-            message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+                message.append({'device': '/dev/{}'.format(storage['name']), 'model': model, 'temp': str(temp), 'scale': 'C'})
         else:
             # Append fake data to virtual machine
             message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
