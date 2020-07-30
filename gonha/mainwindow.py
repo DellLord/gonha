@@ -299,6 +299,7 @@ class MainWindow(QtWidgets.QMainWindow):
         monthFont = QtGui.QFont('Fira Code', 12)
 
         gray = 'color: rgb(143, 143, 143);'
+        gray = 'color: rgb(143, 143, 143);'
 
         mainHBLayout = QtWidgets.QHBoxLayout()
         mainHBLayout.setSpacing(0)
@@ -618,7 +619,7 @@ class MainWindow(QtWidgets.QMainWindow):
         tempHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
 
         tempIcon = QtWidgets.QLabel()
-        tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/hddtemp.png'))
+        tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/temp.png'))
         tempIcon.setFixedHeight(24)
         tempIcon.setFixedWidth(24)
 
@@ -667,10 +668,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Devices Health
         devices = smart.getDevicesHealth()
-
-        for d in devices:
+        for i, d in enumerate(devices):
             deviceHBLayout = QtWidgets.QHBoxLayout()
-            deviceHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
+            # deviceHBLayout.setAlignment(QtCore.Qt.AlignRight)
 
             ssdIcon = QtWidgets.QLabel()
             ssdIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/ssd.png'))
@@ -678,18 +678,19 @@ class MainWindow(QtWidgets.QMainWindow):
             deviceHBLayout.addWidget(ssdIcon)
 
             deviceLabel = QtWidgets.QLabel(d['device'])
+            deviceLabel.setFixedWidth(120)
             self.setLabel(deviceLabel, self.white, self.fontDefault)
             deviceHBLayout.addWidget(deviceLabel)
 
             deviceModelLabel = QtWidgets.QLabel(d['model'])
+            deviceModelLabel.setFixedWidth(220)
             self.setLabel(deviceModelLabel, self.white, self.fontDefault)
             deviceHBLayout.addWidget(deviceModelLabel)
 
             tempIcon = QtWidgets.QLabel()
-            tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/hddtemp.png'))
-            tempIcon.setFixedHeight(24)
-            tempIcon.setFixedWidth(24)
-
+            tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/temp.png'))
+            tempIcon.setFixedHeight(20)
+            tempIcon.setFixedWidth(20)
             deviceHBLayout.addWidget(tempIcon)
 
             deviceTempLabel = QtWidgets.QLabel(f"{d['temp']}")
@@ -697,10 +698,11 @@ class MainWindow(QtWidgets.QMainWindow):
             deviceHBLayout.addWidget(deviceTempLabel)
 
             deviceScaleLabel = QtWidgets.QLabel(f"°{d['scale']}")
-            self.setLabel(deviceScaleLabel, self.white, self.fontDefault)
-            deviceHBLayout.addWidget(deviceScaleLabel)
+            # self.setLabel(deviceScaleLabel, self.white, self.fontDefault)
+            # deviceHBLayout.addWidget(deviceScaleLabel)
 
-            self.diskWidgets.append({'device': deviceLabel, 'model': deviceModelLabel, 'temp': deviceTempLabel, 'scale': deviceScaleLabel})
+            self.diskWidgets.append(
+                {'device': deviceLabel, 'model': deviceModelLabel, 'temp': deviceTempLabel, 'scale': deviceScaleLabel})
 
             verticalLayout.addLayout(deviceHBLayout)
 
