@@ -131,13 +131,6 @@ class MainWindow(QtWidgets.QMainWindow):
             dialog.exec_()
             sys.exit()
         # ------------------------------------------------------------------------
-        # Check for hddtemp
-        if not Smart().hddtempIsOk():
-            dialog = Alert('hddtemp as daemon is not present in your system. Please, install hddtemp as daemon.')
-            dialog.exec_()
-            sys.exit()
-
-        # ------------------------------------------------------------------------
         # Show in all workspaces
         self.ew = EWMH()
         self.all_wins = self.ew.getClientList()

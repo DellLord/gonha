@@ -54,6 +54,10 @@ class Config:
         # update with current version
         self.updateConfig({'version': self.getVersion()})
         # ----------------------------------------------------------------
+        # disks config
+        diskList = list()
+        self.updateConfig({'storages': diskList})
+        # ----------------------------------------------------------------
         # get Platform especific details
         plat = platform.uname()
         self.updateConfig({
@@ -97,14 +101,12 @@ class Config:
                 {
                     'type': 'checkbox',
                     'name': 'gpus',
-                    'message': 'Select which partitions you want to display',
+                    'message': 'Select the Nvidia GPU you want to display',
                     'choices': gpuChoices,
                 }
             ]
 
             gpuResponse = prompt(gpuQuestions)
-            print(gpuResponse)
-
             self.updateConfig(gpuResponse)
 
         if not self.isOnline():
@@ -317,43 +319,14 @@ class Weather:
 
 
 class Smart:
-    host = '127.0.0.1'
-    port = 7634
     vm = VirtualMachine()
 
-    def hddtempIsOk(self):
-        try:
-            socket.create_connection((self.host, self.port))
-            return True
-        except OSError:
-            return False
-
     def getDevicesHealth(self):
-        lines = ''
         message = list()
-        if self.hddtempIsOk():
-            if not self.vm.getStatus():
-                with Telnet(self.host, self.port) as tn:
-                    lines = tn.read_all().decode('utf-8')
+        if not self.vm.getStatus():
+            message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+        else:
+            # Append fake data to virtual machine
+            message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
 
-                if lines != '':
-                    data = lines
-                    # remove first char
-                    data = data[1:]
-                    # remove the last char
-                    data = ''.join([data[i] for i in range(len(data)) if i != len(data) - 1])
-                    # replace double || by one |
-                    data = data.replace('||', '|')
-                    # convert to array
-                    data = data.split('|')
-                    dataLen = len(data)
-                    forLenght = int(dataLen / 4)
-                    newarray = np.array_split(data, forLenght)
-                    for na in newarray:
-                        message.append({'device': na[0], 'model': na[1], 'temp': na[2], 'scale': na[3]})
-
-            else:
-                # Append fake data to virtual machine
-                message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
-
-            return message
+        return message
