@@ -8,8 +8,11 @@
       <w>analize</w>
       <w>apikey</w>
       <w>appid</w>
+      <w>availables</w>
       <w>bfcc</w>
+      <w>blockdevices</w>
       <w>boottime</w>
+      <w>celsiusf</w>
       <w>centralwidget</w>
       <w>childs</w>
       <w>cinammon</w>
@@ -45,6 +48,7 @@
       <w>gputil</w>
       <w>hbox</w>
       <w>hddtemp</w>
+      <w>hdparm</w>
       <w>hellcife</w>
       <w>hpvw</w>
       <w>humanfriendly</w>
@@ -60,6 +64,7 @@
       <w>lenght</w>
       <w>lins</w>
       <w>lsbconfig</w>
+      <w>lsblk</w>
       <w>lsbrelease</w>
       <w>mainwindow</w>
       <w>maxtemp</w>
@@ -77,6 +82,7 @@
       <w>pathlib</w>
       <w>pixmap</w>
       <w>portolan</w>
+      <w>printawk</w>
       <w>proc</w>
       <w>psutil</w>
       <w>pyhton</w>
@@ -85,6 +91,7 @@
       <w>recebendo</w>
       <w>rgba</w>
       <w>shutil</w>
+      <w>smartctl</w>
       <w>subcontrol</w>
       <w>swapused</w>
       <w>systemd</w>

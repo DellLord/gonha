@@ -11,10 +11,8 @@ import platform
 import requests
 import subprocess
 import netifaces
-from telnetlib import Telnet
 import socket
 import urllib.request
-import numpy as np
 import GPUtil
 
 
@@ -28,6 +26,56 @@ class VirtualMachine:
             return True
 
 
+class Smart:
+    vm = VirtualMachine()
+
+    def getDevicesHealth(self):
+        message = list()
+        if not self.vm.getStatus():
+            storages = self.getStorages()
+            for storage in storages:
+                # test if storage is nvme
+                tempDict = dict()
+                if 'nvme' in storage['name']:
+                    # fetch nvme model
+                    printawk = "awk '{ print $3 }'"
+                    model = subprocess.getoutput(f"sudo nvme list | grep '{storage['name']}' | {printawk}")
+                    # fetch nvme temp
+                    printawk = "awk '{print $3}'"
+                    temp = subprocess.getoutput(
+                        f"sudo nvme smart-log '/dev/{storage['name']}' | grep 'temperature' | {printawk}")
+                else:
+                    # fetch the sata
+                    # sudo hdparm -I /dev/sda | grep 'Model Number:' | sed -e "s/[[:space:]]\+/ /g" | cut -d ':' -f 2
+                    model = subprocess.getoutput(
+                        f"sudo smartctl -a /dev/sda | grep 'Device Model' |cut -d ':' -f 2")
+                    # remove tabs from start of string
+                    model = model.lstrip()
+                    printawk = "awk '{print $4}'"
+                    temp = subprocess.getoutput(f"sudo smartctl -a /dev/{storage['name']} | grep 'Temperature_Celsius' | {printawk}")
+
+                print(f"id [{storage['id']}] name [{storage['name']}] model [{model}] temp [{int(temp)}]")
+
+            message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+        else:
+            # Append fake data to virtual machine
+            message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+
+        return message
+
+    @staticmethod
+    def getStorages():
+        storageJson = json.loads(subprocess.getoutput('lsblk --json'))
+        storageRet = list()
+        for i, storage in enumerate(storageJson['blockdevices']):
+            tempDict = dict()
+            tempDict['id'] = i
+            tempDict['name'] = storage['name']
+            storageRet.append(tempDict)
+
+        return storageRet
+
+
 class Config:
     resource_path = os.path.dirname(__file__)
     distrosDir = f'{resource_path}/images/distros'
@@ -37,6 +85,7 @@ class Config:
     url = 'https://ip-geolocation.whoisxmlapi.com/api/v1'
     myExtIp = subprocess.getoutput('curl -s ifconfig.me')
     outJson = {'city': None, 'region': None, 'country': None}
+    smart = Smart()
 
     def __init__(self):
         self.version = self.getVersion()
@@ -54,9 +103,10 @@ class Config:
         # update with current version
         self.updateConfig({'version': self.getVersion()})
         # ----------------------------------------------------------------
-        # disks config
-        diskList = list()
-        self.updateConfig({'storages': diskList})
+        # create storages config file
+        storages = self.smart.getStorages()
+        # update config with available disk list
+        self.updateConfig({'storages': storages})
         # ----------------------------------------------------------------
         # get Platform especific details
         plat = platform.uname()
@@ -316,17 +366,3 @@ class Weather:
     @staticmethod
     def printException(e):
         print(color('Error! ', fore=11), color('[ ', fore=14), e, color('Error! ', fore=9), color(' ]', fore=14))
-
-
-class Smart:
-    vm = VirtualMachine()
-
-    def getDevicesHealth(self):
-        message = list()
-        if not self.vm.getStatus():
-            message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
-        else:
-            # Append fake data to virtual machine
-            message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
-
-        return message

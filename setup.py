@@ -48,7 +48,6 @@ setuptools.setup(
         'country_list',
         'portolan',
         'unit-convert',
-        'numpy',
         'gputil'
     ],
     include_package_data=True,
