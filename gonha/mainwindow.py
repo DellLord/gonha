@@ -699,11 +699,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
             deviceHBLayout.addWidget(tempIcon)
 
-            deviceTempLabel = QtWidgets.QLabel(f"{d['temp']}°C")
+            deviceTempLabel = QtWidgets.QLabel(f"{d['temp']}")
             self.setLabel(deviceTempLabel, self.white, self.fontDefault)
             deviceHBLayout.addWidget(deviceTempLabel)
 
-            self.diskWidgets.append({'device': deviceLabel, 'model': deviceModelLabel, 'temp': deviceTempLabel})
+            deviceScaleLabel = QtWidgets.QLabel(f"°{d['scale']}")
+            self.setLabel(deviceScaleLabel, self.white, self.fontDefault)
+            deviceHBLayout.addWidget(deviceScaleLabel)
+
+            self.diskWidgets.append({'device': deviceLabel, 'model': deviceModelLabel, 'temp': deviceTempLabel, 'scale': deviceScaleLabel})
 
             verticalLayout.addLayout(deviceHBLayout)
 
