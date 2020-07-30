@@ -21,6 +21,7 @@ gonha/images/humidity.png
 gonha/images/logo.png
 gonha/images/logo.xcf
 gonha/images/netcard.png
+gonha/images/nvidia.png
 gonha/images/pressure.png
 gonha/images/ram.png
 gonha/images/shot.png

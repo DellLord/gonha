@@ -222,7 +222,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.2.8'
+        return '1.3.0'
 
     def getExtIp(self):
         return self.myExtIp
@@ -310,8 +310,6 @@ class Smart:
 
                 if lines != '':
                     data = lines
-                    # remove | C | |
-                    data = data.replace('|C||', '|')
                     # remove first char
                     data = data[1:]
                     # remove the last char
@@ -324,9 +322,10 @@ class Smart:
                     forLenght = int(dataLen / 4)
                     newarray = np.array_split(data, forLenght)
                     for na in newarray:
-                        message.append({'device': na[0], 'model': na[1], 'temp': na[2]})
+                        message.append({'device': na[0], 'model': na[1], 'temp': na[2], 'scale': na[3]})
+                    
             else:
                 # Append fake data to virtual machine
-                message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38'})
+                message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
 
             return message

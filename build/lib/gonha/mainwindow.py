@@ -154,13 +154,34 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadPosition()
         self.displayDTWeather()
         self.displaySystem()
+        # self.displayNvidia()
         self.displayIface()
         self.displayPartitions()
 
+    def getDefaultGb(self, title):
+        defaultGb = QtWidgets.QGroupBox(title)
+        defaultGb.setFont(self.fontGroupBox)
+        defaultGb.setStyleSheet(self.groupBoxStyle)
+        return defaultGb
+
+    def displayNvidia(self):
+        nvidiaGroupBox = self.getDefaultGb('nvidia')
+        verticalLayout = QtWidgets.QVBoxLayout()
+        # ---------------------------------------------------
+        # nvidia data
+        nvidiaHBLayout = QtWidgets.QHBoxLayout()
+
+        nvidiaLabel = QtWidgets.QLabel()
+        nvidiaLabel.setPixmap(QtGui.QPixmap(f"{self.config.resource_path}/images/nvidia.png"))
+        nvidiaHBLayout.addWidget(nvidiaLabel)
+
+        verticalLayout.addLayout(nvidiaHBLayout)
+
+        nvidiaGroupBox.setLayout(verticalLayout)
+        self.verticalLayout.addWidget(nvidiaGroupBox)
+
     def displayIface(self):
-        ifaceGroupBox = QtWidgets.QGroupBox('net')
-        ifaceGroupBox.setFont(self.fontGroupBox)
-        ifaceGroupBox.setStyleSheet(self.groupBoxStyle)
+        ifaceGroupBox = self.getDefaultGb('net')
         verticalLayout = QtWidgets.QVBoxLayout()
         # ---------------------------------------------------
         # Ip int Label
@@ -456,9 +477,7 @@ class MainWindow(QtWidgets.QMainWindow):
         labelDefaultWidth = 80
         labelDefaultHeight = 15
 
-        systemGroupBox = QtWidgets.QGroupBox('system')
-        systemGroupBox.setFont(self.fontGroupBox)
-        systemGroupBox.setStyleSheet(self.groupBoxStyle)
+        systemGroupBox = self.getDefaultGb('system')
 
         verticalLayout = QtWidgets.QVBoxLayout()
 
@@ -645,9 +664,7 @@ class MainWindow(QtWidgets.QMainWindow):
         smart = Smart()
 
         mntPoints = self.threadSlow.getPartitions()
-        diskGroupBox = QtWidgets.QGroupBox('disks')
-        diskGroupBox.setFont(self.fontGroupBox)
-        diskGroupBox.setStyleSheet(self.groupBoxStyle)
+        diskGroupBox = self.getDefaultGb('disks')
         verticalLayout = QtWidgets.QVBoxLayout()
         verticalLayout.setAlignment(QtCore.Qt.AlignTop)
         height = 0
@@ -682,11 +699,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
             deviceHBLayout.addWidget(tempIcon)
 
-            deviceTempLabel = QtWidgets.QLabel(f"{d['temp']}°C")
+            deviceTempLabel = QtWidgets.QLabel(f"{d['temp']}")
             self.setLabel(deviceTempLabel, self.white, self.fontDefault)
             deviceHBLayout.addWidget(deviceTempLabel)
 
-            self.diskWidgets.append({'device': deviceLabel, 'model': deviceModelLabel, 'temp': deviceTempLabel})
+            deviceScaleLabel = QtWidgets.QLabel(f"°{d['scale']}")
+            self.setLabel(deviceScaleLabel, self.white, self.fontDefault)
+            deviceHBLayout.addWidget(deviceScaleLabel)
+
+            self.diskWidgets.append({'device': deviceLabel, 'model': deviceModelLabel, 'temp': deviceTempLabel, 'scale': deviceScaleLabel})
 
             verticalLayout.addLayout(deviceHBLayout)
 

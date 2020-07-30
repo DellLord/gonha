@@ -154,7 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadPosition()
         self.displayDTWeather()
         self.displaySystem()
-        self.displayNvidia()
+        # self.displayNvidia()
         self.displayIface()
         self.displayPartitions()
 

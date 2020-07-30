@@ -15,8 +15,10 @@ Contributors
 * [About](#about)
 * [Dependencies](#dependencies)
 * [Install](#install)
-* [License](#license)
+* [How to Upgrade](#howtoupgrade)
+* [Screenshot](#screenshot)
 * [Contributors](#contributors)
+* [License](#license)
 * [Buy me a Coffee](#buy-me-a-coffee)
 
 ## About
@@ -75,6 +77,15 @@ $ sudo dnf install python3-devel
 ```bash
 $ sudo apt install libxcb-xinerama0
 ```
+
+## How to Upgrade
+
+To upgrade gonha run the following command in the terminal:
+
+```bash
+$ pip3 install gonha --upgrade
+```
+
 
 ## Screenshot
 
