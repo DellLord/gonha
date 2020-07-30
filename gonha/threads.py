@@ -26,7 +26,8 @@ class ThreadWeather(QtCore.QThread):
         if self.config.isOnline():
             try:
                 data = self.weather.getData()
-                message['temp'] = f"{data['main']['temp']}°C"
+                tempInteger = int(data['main']['temp'])
+                message['temp'] = f"{tempInteger}°C"
                 message['humidity'] = f"{data['main']['humidity']}%"
                 message['pressure'] = f"{data['main']['pressure']}hPa"
                 visibilityAsKm = UnitConvert(metres=int(data['visibility'])).kilometres
