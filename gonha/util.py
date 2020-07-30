@@ -15,6 +15,7 @@ from telnetlib import Telnet
 import socket
 import urllib.request
 import numpy as np
+import GPUtil
 
 
 class VirtualMachine:
@@ -78,6 +79,33 @@ class Config:
         # ----------------------------------------------------------------
         print(color('Starting Wizard...', fore=14))
         print('')
+
+        # GPuDialog
+        gpus = GPUtil.getGPUs()
+        if len(gpus) > 0:
+            gpuChoices = []
+            # Filesystem sections
+            for gpu in gpus:
+                gpuChoices.append(
+                    {
+                        'name': '{}'.format(gpu.name),
+                        'value': gpu.id
+                    }
+                )
+
+            gpuQuestions = [
+                {
+                    'type': 'checkbox',
+                    'name': 'gpus',
+                    'message': 'Select which partitions you want to display',
+                    'choices': gpuChoices,
+                }
+            ]
+
+            gpuResponse = prompt(gpuQuestions)
+            print(gpuResponse)
+
+            self.updateConfig(gpuResponse)
 
         if not self.isOnline():
             print(color('Error: ', fore=11), color('[ ', fore=14), color('you are offline', fore=9),
@@ -323,7 +351,7 @@ class Smart:
                     newarray = np.array_split(data, forLenght)
                     for na in newarray:
                         message.append({'device': na[0], 'model': na[1], 'temp': na[2], 'scale': na[3]})
-                    
+
             else:
                 # Append fake data to virtual machine
                 message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
