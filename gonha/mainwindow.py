@@ -47,6 +47,7 @@ class MainWindow(QtWidgets.QMainWindow):
     weather = Weather()
     debugRed = 'background-color: rgb(255, 48, 79);'
     nvidia = Nvidia()
+    pbDefaultHeight = 20
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -537,7 +538,6 @@ class MainWindow(QtWidgets.QMainWindow):
         labelDefaultHeight = 15
         labelDefaultAlignment = QtCore.Qt.AlignRight
         pbDefaultWidth = 180
-        pbDefaultHeight = 20
         systemGroupBox = self.getDefaultGb('system')
 
         verticalLayout = QtWidgets.QVBoxLayout()
@@ -616,7 +616,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cpuLoadHBLayout.addWidget(cpuIcon)
 
         cpuProgressBar = QtWidgets.QProgressBar()
-        cpuProgressBar.setFixedHeight(pbDefaultHeight)
+        cpuProgressBar.setFixedHeight(self.pbDefaultHeight)
         cpuProgressBar.setFixedWidth(pbDefaultWidth)
         cpuProgressBar.setFont(self.fontDefault)
         cpuProgressBar.setStyleSheet(self.greenPBStyle)
@@ -644,7 +644,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ramLoadHBLayout.addWidget(ramIcon)
 
         ramProgressBar = QtWidgets.QProgressBar()
-        ramProgressBar.setFixedHeight(pbDefaultHeight)
+        ramProgressBar.setFixedHeight(self.pbDefaultHeight)
         ramProgressBar.setFixedWidth(pbDefaultWidth)
         ramProgressBar.setFont(self.fontDefault)
         ramProgressBar.setStyleSheet(self.greenPBStyle)
@@ -672,7 +672,7 @@ class MainWindow(QtWidgets.QMainWindow):
         swapHBLayout.addWidget(swapIcon)
 
         swapProgressBar = QtWidgets.QProgressBar()
-        swapProgressBar.setFixedHeight(pbDefaultHeight)
+        swapProgressBar.setFixedHeight(self.pbDefaultHeight)
         swapProgressBar.setFixedWidth(pbDefaultWidth)
         swapProgressBar.setFont(self.fontDefault)
         swapProgressBar.setStyleSheet(self.greenPBStyle)
@@ -807,6 +807,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # ProgressBar
             usedPB = QtWidgets.QProgressBar()
+            usedPB.setFixedHeight(self.pbDefaultHeight)
             usedPB.setFont(self.fontDefault)
             usedPB.setStyleSheet(self.redPBStyle)
             usedPB.setFixedWidth(pbFixedWidth)
@@ -830,6 +831,7 @@ class MainWindow(QtWidgets.QMainWindow):
             freeHorizontalLayout.addWidget(freeLabel)
 
             freePB = QtWidgets.QProgressBar()
+            freePB.setFixedHeight(self.pbDefaultHeight)
             freePB.setFont(self.fontDefault)
             freePB.setStyleSheet(self.greenPBStyle)
             freePB.setFixedWidth(pbFixedWidth)
@@ -847,7 +849,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # ----------------------------------------------------------
 
-            height = height + 105
             tempDict = dict()
             tempDict['mountpointValueLabel'] = mountpointValueLabel
             tempDict['totalValueLabel'] = totalValueLabel
@@ -858,7 +859,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.partitionsWidgets.append(tempDict)
 
         diskGroupBox.setLayout(verticalLayout)
-        diskGroupBox.setMinimumHeight(height)
         self.verticalLayout.addWidget(diskGroupBox)
 
     def loadPosition(self):
@@ -974,7 +974,7 @@ class MainWindow(QtWidgets.QMainWindow):
     @staticmethod
     def analizeTemp(label, current, maxValue):
         colorNormal = 'color: rgb(157, 255, 96);'
-        colorWarning = 'color: rgb(255, 137, 78);'
+        colorWarning = 'color: rgb(255, 255, 153);'
         colorAlarm = 'color: rgb(255, 79, 79);'
         percent30 = maxValue - (maxValue * 0.3)
         percent10 = maxValue - (maxValue * 0.1)
