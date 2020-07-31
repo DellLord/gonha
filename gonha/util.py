@@ -189,14 +189,35 @@ class Config:
         self.updateConfig({'cpuinfo': cpuInfo['brand_raw']})
 
         # -------------------------------------------------------------------------
+        # temparature Scale Question
+        temparatureScaleQuestions = [
+            {
+                'type': 'list',
+                'name': 'scale',
+                'message': 'What temperature scale do you want to show?',
+                'choices': [
+                    'Celsius',
+                    'Fahrenheit',
+                ],
+            }
+        ]
+        temperatureScaleResponse = prompt(temparatureScaleQuestions)
+        self.updateConfig({'temperature': temperatureScaleResponse})
+        # -------------------------------------------------------------------------
         # if Inside virtual machine, so bypass
+        if temperatureScaleResponse['scale'] == 'Fahrenheit':
+            fahrenheit = True
+        else:
+            fahrenheit = False
         if not VirtualMachine().getStatus():
             # Temperature Question
-            sensors = psutil.sensors_temperatures()
+
+            sensors = psutil.sensors_temperatures(fahrenheit=fahrenheit)
             tempUserChoices = []
             for i, key in enumerate(sensors):
+                print(temperatureScaleResponse['scale'])
                 tempUserChoices.append(
-                    '{} - [{}] current temp: {:.0f}°C'.format(i, key, float(sensors[key][0].current))
+                    '{} - [{}] current temp: {:.0f}°{}'.format(i, key, float(sensors[key][0].current),temperatureScaleResponse['scale'][0])
                 )
 
             # Temperature Questions
@@ -338,6 +359,9 @@ class Config:
 
 class Weather:
     config = Config()
+    units = 'metric'
+    if config.getConfig('temperature')['scale'] == 'Fahrenheit':
+        units = 'imperial'
     city = config.getConfig('location')['city']
     url = 'http://api.openweathermap.org/data/2.5/weather?q='
     apikey = 'e943e3d03143693768df6ca7c621c8b5'
@@ -346,7 +370,7 @@ class Weather:
 
     def getData(self):
         try:
-            res = requests.get(f'{self.url}{self.city}&APPID={self.apikey}&units=metric')
+            res = requests.get(f'{self.url}{self.city}&APPID={self.apikey}&units={self.units}')
             return res.json()
         except Exception as e:
             self.printException(e)

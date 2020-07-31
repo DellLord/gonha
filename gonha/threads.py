@@ -44,8 +44,10 @@ class ThreadWeather(QtCore.QThread):
         if self.config.isOnline():
             try:
                 data = self.weather.getData()
+                print(data)
                 tempInteger = int(data['main']['temp'])
-                message['temp'] = f"{tempInteger}°C"
+                scale = self.config.getConfig('temperature')['scale'][0]
+                message['temp'] = f"{tempInteger}°{scale}"
                 message['humidity'] = f"{data['main']['humidity']}%"
                 message['pressure'] = f"{data['main']['pressure']}hPa"
                 visibilityAsKm = UnitConvert(metres=int(data['visibility'])).kilometres
@@ -194,15 +196,18 @@ class ThreadFast(QtCore.QThread):
         # if inside virtual machine , so bypass sensor
         if not VirtualMachine().getStatus():
             sensorIndex = int(self.config.getConfig('temp'))
-            sensors = psutil.sensors_temperatures()
+            fahrenheit = False
+            if self.config.getConfig('temperature')['scale'] == 'Fahrenheit':
+                fahrenheit = True
+            sensors = psutil.sensors_temperatures(fahrenheit=fahrenheit)
             for i, key in enumerate(sensors):
                 if i == sensorIndex:
                     self.message['label'] = sensors[key][0].label
-                    self.message['current'] = '{:.0f}°C'.format(float(sensors[key][0].current))
+                    self.message['current'] = '{:.0f}°{}'.format(float(sensors[key][0].current),self.config.getConfig('temperature')['scale'][0])
                     break
         else:
             self.message['label'] = 'vmtemp'
-            self.message['current'] = '{:.0f}°C'.format(random.uniform(1, 100))
+            self.message['current'] = '{:.0f}°{}'.format(random.uniform(1, 100), self.config.getConfig('temperature')['scale'][0])
 
         # Storages
         devices = self.smart.getDevicesHealth()
