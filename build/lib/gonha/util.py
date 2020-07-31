@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from colr import color
 from PyInquirer import prompt
 import psutil
 import json
@@ -14,6 +13,11 @@ import netifaces
 import socket
 import urllib.request
 import GPUtil
+import coloredlogs
+import logging
+
+logger = logging.getLogger(__name__)
+coloredlogs.install()
 
 
 class VirtualMachine:
@@ -35,7 +39,6 @@ class Smart:
             storages = self.getStorages()
             for storage in storages:
                 # test if storage is nvme
-                tempDict = dict()
                 if 'nvme' in storage['name']:
                     # fetch nvme model
                     printawk = "awk '{ print $3 }'"
@@ -133,8 +136,8 @@ class Config:
         }
         self.updateConfig(dist)
         # ----------------------------------------------------------------
-        print(color('Starting Wizard...', fore=14))
-        print('')
+        logger.info('Starting Wizard...')
+        logger.info('')
 
         # GPuDialog
         gpus = GPUtil.getGPUs()
@@ -162,13 +165,12 @@ class Config:
             self.updateConfig(gpuResponse)
 
         if not self.isOnline():
-            print(color('Error: ', fore=11), color('[ ', fore=14), color('you are offline', fore=9),
-                  color(' ]', fore=14))
+            logger.info('Error: you are offline')
             sys.exit(1)
 
-        print(color('retrieving info about your geolocalization : ', fore=11))
+        logger.info('retrieving info about your geolocalization : ')
         geoData = self.getWeatherData()
-        print(color('Next...', fore=10))
+        logger.info('Next...')
         geoQuestions = [
             {
                 'type': 'input',
@@ -275,12 +277,11 @@ class Config:
         self.updateConfig(ifaceResponse)
 
         # Write json global
-        # print(self.globalJSON)
+        # logger.info(self.globalJSON)
         self.writeConfig()
 
-        print(color("That´s ", fore=10), color('OK', fore=11))
-        print(color('Now, you can running', fore=10), color('gonha', fore=11),
-              color('command again with all config options for your system!', fore=10))
+        logger.info('That´s OK')
+        logger.info('Now, you can running gonha command again with all config options for your system!')
         # ----------------------------------------
         sys.exit()
 
@@ -304,7 +305,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.5.3'
+        return '1.5.4'
 
     def getExtIp(self):
         return self.myExtIp
@@ -367,7 +368,7 @@ class Weather:
 
     @staticmethod
     def printException(e):
-        print(color('Error! ', fore=11), color('[ ', fore=14), e, color('Error! ', fore=9), color(' ]', fore=14))
+        logger.info(f'Error! {e}')
 
 
 class Nvidia:
@@ -379,7 +380,7 @@ class Nvidia:
             if len(devices) >= 1:
                 return True
         except Exception as e:
-            print('no nvidia', e)
+            logger.info('no nvidia', e)
 
         return False
 

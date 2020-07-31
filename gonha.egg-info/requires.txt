@@ -1,6 +1,6 @@
 PyInquirer
 PyQt5
-colr
+coloredlogs
 country_list
 distro
 ewmh
