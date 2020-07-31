@@ -305,7 +305,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.5.4'
+        return '1.5.5'
 
     def getExtIp(self):
         return self.myExtIp
@@ -380,7 +380,7 @@ class Nvidia:
             if len(devices) >= 1:
                 return True
         except Exception as e:
-            logger.info('no nvidia', e)
+            logger.info(f'no nvidia {e}')
 
         return False
 
