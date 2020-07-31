@@ -737,6 +737,7 @@ class MainWindow(QtWidgets.QMainWindow):
         mntPoints = self.threadSlow.getPartitions()
         diskGroupBox = self.getDefaultGb('disks')
         verticalLayout = QtWidgets.QVBoxLayout()
+        verticalLayout.setSpacing(0)
         verticalLayout.setAlignment(QtCore.Qt.AlignTop)
         height = 0
         pbFixedWidth = 260

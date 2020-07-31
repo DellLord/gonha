@@ -737,6 +737,7 @@ class MainWindow(QtWidgets.QMainWindow):
         mntPoints = self.threadSlow.getPartitions()
         diskGroupBox = self.getDefaultGb('disks')
         verticalLayout = QtWidgets.QVBoxLayout()
+        verticalLayout.setSpacing(0)
         verticalLayout.setAlignment(QtCore.Qt.AlignTop)
         height = 0
         pbFixedWidth = 260
@@ -974,7 +975,7 @@ class MainWindow(QtWidgets.QMainWindow):
     @staticmethod
     def analizeTemp(label, current, maxValue):
         colorNormal = 'color: rgb(157, 255, 96);'
-        colorWarning = 'color: rgb(255, 137, 78);'
+        colorWarning = 'color: rgb(255, 255, 153);'
         colorAlarm = 'color: rgb(255, 79, 79);'
         percent30 = maxValue - (maxValue * 0.3)
         percent10 = maxValue - (maxValue * 0.1)
