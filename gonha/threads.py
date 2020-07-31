@@ -175,12 +175,19 @@ class ThreadFast(QtCore.QThread):
         self.message['month'] = now.strftime('%B')
         self.message['year'] = now.strftime('%Y')
 
-        self.message['cpufreq'] = '{:.0f} Mhz'.format(psutil.cpu_freq().current)
-        self.message['ramused'] = '{}'.format(humanfriendly.format_size(psutil.virtual_memory().used))
-        self.message['swapused'] = '{}'.format(humanfriendly.format_size(psutil.swap_memory().used))
+        cpuFreq = psutil.cpu_freq()
+        ram = psutil.virtual_memory()
+        swap = psutil.swap_memory()
+
+        self.message['cpufreq'] = '{:.0f}'.format(cpuFreq.current)
+        self.message['cpufreqMax'] = '{:.0f}'.format(cpuFreq.max)
+        self.message['ramused'] = '{}'.format(humanfriendly.format_size(ram.used))
+        self.message['ramTotal'] = '{}'.format(humanfriendly.format_size(ram.total))
+        self.message['swapused'] = '{}'.format(humanfriendly.format_size(swap.used))
+        self.message['swapTotal'] = '{}'.format(humanfriendly.format_size(swap.total))
         self.message['cpuProgressBar'] = psutil.cpu_percent()
-        self.message['ramProgressBar'] = psutil.virtual_memory().percent
-        self.message['swapProgressBar'] = psutil.swap_memory().percent
+        self.message['ramProgressBar'] = ram.percent
+        self.message['swapProgressBar'] = swap.percent
         self.message['boottime'] = self.getUpTime()
 
         # --------------------------------------------------------

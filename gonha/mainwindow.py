@@ -535,10 +535,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def displaySystem(self):
         labelDefaultWidth = 80
         labelDefaultHeight = 15
-
+        labelDefaultAlignment = QtCore.Qt.AlignRight
+        pbDefaultWidth = 180
+        pbDefaultHeight = 20
         systemGroupBox = self.getDefaultGb('system')
 
         verticalLayout = QtWidgets.QVBoxLayout()
+        verticalLayout.setSpacing(0)
 
         # distro Label
         distroJson = self.config.getConfig('distro')
@@ -613,6 +616,8 @@ class MainWindow(QtWidgets.QMainWindow):
         cpuLoadHBLayout.addWidget(cpuIcon)
 
         cpuProgressBar = QtWidgets.QProgressBar()
+        cpuProgressBar.setFixedHeight(pbDefaultHeight)
+        cpuProgressBar.setFixedWidth(pbDefaultWidth)
         cpuProgressBar.setFont(self.fontDefault)
         cpuProgressBar.setStyleSheet(self.greenPBStyle)
         cpuProgressBar.setValue(12)
@@ -621,6 +626,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cpuLoadHBLayout.addWidget(cpuProgressBar)
 
         cpuFreqLabel = QtWidgets.QLabel('14343.34 Mhz')
+        cpuFreqLabel.setAlignment(labelDefaultAlignment)
         self.setLabel(cpuFreqLabel, self.white, self.fontDefault)
         self.systemWidgets['cpufreq'] = cpuFreqLabel
 
@@ -638,6 +644,8 @@ class MainWindow(QtWidgets.QMainWindow):
         ramLoadHBLayout.addWidget(ramIcon)
 
         ramProgressBar = QtWidgets.QProgressBar()
+        ramProgressBar.setFixedHeight(pbDefaultHeight)
+        ramProgressBar.setFixedWidth(pbDefaultWidth)
         ramProgressBar.setFont(self.fontDefault)
         ramProgressBar.setStyleSheet(self.greenPBStyle)
         self.systemWidgets['ramProgressBar'] = ramProgressBar
@@ -646,6 +654,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ramLoadHBLayout.addWidget(ramProgressBar)
 
         ramUsedLabel = QtWidgets.QLabel('15443 MB')
+        ramUsedLabel.setAlignment(labelDefaultAlignment)
         self.setLabel(ramUsedLabel, self.white, self.fontDefault)
         self.systemWidgets['ramused'] = ramUsedLabel
 
@@ -663,6 +672,8 @@ class MainWindow(QtWidgets.QMainWindow):
         swapHBLayout.addWidget(swapIcon)
 
         swapProgressBar = QtWidgets.QProgressBar()
+        swapProgressBar.setFixedHeight(pbDefaultHeight)
+        swapProgressBar.setFixedWidth(pbDefaultWidth)
         swapProgressBar.setFont(self.fontDefault)
         swapProgressBar.setStyleSheet(self.greenPBStyle)
         self.systemWidgets['swapProgressBar'] = swapProgressBar
@@ -671,6 +682,7 @@ class MainWindow(QtWidgets.QMainWindow):
         swapHBLayout.addWidget(swapProgressBar)
 
         swapUsedLabel = QtWidgets.QLabel('16654 MB')
+        swapUsedLabel.setAlignment(labelDefaultAlignment)
         self.setLabel(swapUsedLabel, self.white, self.fontDefault)
         self.systemWidgets['swapused'] = swapUsedLabel
 
@@ -910,9 +922,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.systemWidgets['label'].setText(message['label'])
         self.systemWidgets['current'].setText(message['current'])
 
-        self.systemWidgets['cpufreq'].setText(message['cpufreq'])
-        self.systemWidgets['ramused'].setText(message['ramused'])
-        self.systemWidgets['swapused'].setText(message['swapused'])
+        self.systemWidgets['cpufreq'].setText(f"{message['cpufreq']}/{message['cpufreqMax']} Mhz")
+        self.systemWidgets['ramused'].setText(f"{message['ramused']}/{message['ramTotal']}")
+        self.systemWidgets['swapused'].setText(f"{message['swapused']}/{message['swapTotal']}")
 
         self.systemWidgets['boottime'].setText(message['boottime'])
 
