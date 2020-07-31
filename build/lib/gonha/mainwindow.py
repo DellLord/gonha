@@ -716,6 +716,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Temperature
         tempHBLayout = QtWidgets.QHBoxLayout()
         tempHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
+        tempHBLayout.setSpacing(5)
 
         tempIcon = QtWidgets.QLabel()
         tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/temp.png'))
@@ -736,7 +737,6 @@ class MainWindow(QtWidgets.QMainWindow):
         tempHBLayout.addWidget(tempValueLabel)
 
         tempCurrentLabel = QtWidgets.QLabel('current:')
-        # tempCurrentLabel.setFixedWidth(labelDefaultWidth)
         self.setLabel(tempCurrentLabel, self.orange, self.fontDefault)
 
         tempHBLayout.addWidget(tempCurrentLabel)
@@ -757,7 +757,7 @@ class MainWindow(QtWidgets.QMainWindow):
         mntPoints = self.threadSlow.getPartitions()
         diskGroupBox = self.getDefaultGb('disks')
         verticalLayout = QtWidgets.QVBoxLayout()
-        verticalLayout.setSpacing(0)
+        verticalLayout.setSpacing(3)
         verticalLayout.setAlignment(QtCore.Qt.AlignTop)
         pbFixedWidth = 260
         labelAlignment = QtCore.Qt.AlignRight
