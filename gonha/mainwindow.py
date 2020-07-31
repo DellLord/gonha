@@ -366,7 +366,6 @@ class MainWindow(QtWidgets.QMainWindow):
         monthFont = QtGui.QFont('Fira Code', 12)
 
         gray = 'color: rgb(143, 143, 143);'
-        gray = 'color: rgb(143, 143, 143);'
 
         mainHBLayout = QtWidgets.QHBoxLayout()
         mainHBLayout.setSpacing(0)
@@ -484,6 +483,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # ---------------------------------------------------------------------
         # humidity, pressure, visibility,  wind,
         weatherGridLayout = QtWidgets.QGridLayout()
+        weatherGridLayout.setSpacing(0)
 
         # humidityIcon
         humidityIcon = QtWidgets.QLabel()
@@ -740,7 +740,6 @@ class MainWindow(QtWidgets.QMainWindow):
         verticalLayout = QtWidgets.QVBoxLayout()
         verticalLayout.setSpacing(0)
         verticalLayout.setAlignment(QtCore.Qt.AlignTop)
-        height = 0
         pbFixedWidth = 260
         labelAlignment = QtCore.Qt.AlignRight
         labelDefaultWidth = 80
