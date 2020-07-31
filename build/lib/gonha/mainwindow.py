@@ -956,6 +956,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.nvidiaWidgets[idx]['load'].setText(f"{str(msg['load'])}%")
             self.nvidiaWidgets[idx]['usedTotalMemory'].setText(f"{msg['memoryUsed']}MB/{msg['memoryTotal']}MB")
             self.nvidiaWidgets[idx]['temp'].setText(f"{msg['temp']}°C")
+            maxtemp = 80.0
+            self.analizeTemp(self.nvidiaWidgets[idx]['temp'], float(msg['temp']), maxtemp)
 
     @staticmethod
     def analizeTemp(label, current, maxValue):

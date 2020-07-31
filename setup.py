@@ -1,11 +1,22 @@
 import setuptools
 import re
+import os
+import shutil
+
+currentDir = os.getcwd()
+distDir = f'{currentDir}/dist'
+buildDir = f'{currentDir}/build'
+
+if os.path.isdir(distDir):
+    shutil.rmtree(distDir)
+
+if os.path.isdir(buildDir):
+    shutil.rmtree(buildDir)
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-
-pattern = "([0-9]+.[0-9]+)"
+pattern = "([0-9]+.[0-9]+.[0-9]+)"
 utilFile = 'gonha/util.py'
 version = ''
 with open(utilFile, 'r') as f:
