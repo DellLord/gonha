@@ -15,6 +15,7 @@ import urllib.request
 import GPUtil
 import coloredlogs
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 coloredlogs.install()
@@ -32,9 +33,14 @@ class VirtualMachine:
 
 class Smart:
     vm = VirtualMachine()
+    model = str()
+    temp = 0
+    message = list()
+    storageType = 'sata'
 
     def getDevicesHealth(self):
-        message = list()
+        self.message.clear()
+        sataPattern = "(sd[a-z])"
         if not self.vm.getStatus():
             storages = self.getStorages()
             for storage in storages:
@@ -42,30 +48,57 @@ class Smart:
                 if 'nvme' in storage['name']:
                     # fetch nvme model
                     printawk = "awk '{ print $3 }'"
-                    model = subprocess.getoutput(f"sudo nvme list | grep '{storage['name']}' | {printawk}")
+                    self.model = subprocess.getoutput(f"sudo nvme list | grep '{storage['name']}' | {printawk}")
                     # fetch nvme temp
                     printawk = "awk '{print $3}'"
-                    temp = subprocess.getoutput(
+                    self.temp = subprocess.getoutput(
                         f"sudo nvme smart-log '/dev/{storage['name']}' | grep 'temperature' | {printawk}")
-                else:
+                    self.storageType = 'nvme'
+
+                if re.search(sataPattern, storage['name']):
                     # fetch the sata
-                    # sudo hdparm -I /dev/sda | grep 'Model Number:' | sed -e "s/[[:space:]]\+/ /g" | cut -d ':' -f 2
-                    model = subprocess.getoutput(
+                    self.model = subprocess.getoutput(
                         f"sudo smartctl -a /dev/sda | grep 'Device Model' |cut -d ':' -f 2")
                     # remove tabs from start of string
-                    model = model.lstrip()
+                    self.model = self.model.lstrip()
                     printawk = "awk '{print $4}'"
-                    temp = subprocess.getoutput(
+                    self.temp = subprocess.getoutput(
                         f"sudo smartctl -a /dev/{storage['name']} | grep 'Temperature_Celsius' | {printawk}")
-                    temp = int(temp)
+                    self.temp = int(self.temp)
+                    self.storageType = 'sata'
 
-                message.append(
-                    {'device': '/dev/{}'.format(storage['name']), 'model': model, 'temp': str(temp), 'scale': 'C'})
+                self.message.append(
+                    {
+                        'device': '/dev/{}'.format(storage['name']),
+                        'type': self.storageType,
+                        'model': self.model,
+                        'temp': str(self.temp),
+                        'scale': 'C'
+                    }
+                )
         else:
             # Append fake data to virtual machine
-            message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+            self.message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
 
-        return message
+        return self.message
+
+    @staticmethod
+    def checkNvmeCliStatus():
+        retNvmeStatus = False
+        out = subprocess.getstatusoutput('sudo nvme')
+        if out[0] == 0:
+            retNvmeStatus = True
+
+        return retNvmeStatus
+
+    @staticmethod
+    def checkSmartCtlStatus():
+        retSmartCtlStatus = False
+        out = subprocess.getstatusoutput('sudo smartctl')
+        if not ('sudo: a terminal is required to read the password' in out[1]):
+            retSmartCtlStatus = True
+
+        return retSmartCtlStatus
 
     @staticmethod
     def getStorages():
@@ -236,7 +269,7 @@ class Config:
             ]
             tempResponse = prompt(tempQuestions)
             self.updateConfig(tempResponse)
-
+        # -----------------------------------------------------------------------------------------------------
         partitionsChoices = []
         # Filesystem sections
         for partition in psutil.disk_partitions():
@@ -259,6 +292,7 @@ class Config:
         ]
         partitionsResponse = prompt(partitionQuestions)
         self.updateConfig(partitionsResponse)
+        # -----------------------------------------------------------------------------------------------------
 
         # Interface Name
         ifaceChoices = []
@@ -380,7 +414,7 @@ class Nvidia:
             if len(devices) >= 1:
                 return True
         except Exception as e:
-            logger.info(f'no nvidia {e}')
+            logger.info(f'No {e} gpu card found in your system.')
 
         return False
 

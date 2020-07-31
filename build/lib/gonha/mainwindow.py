@@ -749,7 +749,7 @@ class MainWindow(QtWidgets.QMainWindow):
         labelDefaultWidth = 80
 
         # Devices Health
-        devices = smart.getDevicesHealth()
+        devices = smart.getDevicesHealth
         for i, d in enumerate(devices):
             deviceHBLayout = QtWidgets.QHBoxLayout()
             # deviceHBLayout.setAlignment(QtCore.Qt.AlignRight)

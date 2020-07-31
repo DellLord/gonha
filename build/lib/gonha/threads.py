@@ -205,7 +205,7 @@ class ThreadFast(QtCore.QThread):
             self.message['current'] = '{:.0f}°C'.format(random.uniform(1, 100))
 
         # Storages
-        devices = self.smart.getDevicesHealth()
+        devices = self.smart.getDevicesHealth
         self.message['devices'] = list()
         for d in devices:
             tempDict = dict()
