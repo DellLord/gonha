@@ -182,47 +182,16 @@ class MainWindow(QtWidgets.QMainWindow):
             infoHLayout = QtWidgets.QHBoxLayout()
 
             nameLabel = QtWidgets.QLabel(gpu['name'])
-            nameLabel.setFixedWidth(240)
+            nameLabel.setFixedWidth(220)
             nameLabel.setAlignment(QtCore.Qt.AlignLeft)
             self.setLabel(nameLabel, self.white, self.fontDefault)
             infoHLayout.addWidget(nameLabel)
 
-            loadLabel = QtWidgets.QLabel('load:')
-            loadLabel.setAlignment(QtCore.Qt.AlignRight)
-            self.setLabel(loadLabel, self.orange, self.fontDefault)
+            loadLabel = QtWidgets.QLabel(f"{gpu['load']}%")
+            self.setLabel(loadLabel, self.white, self.fontDefault)
             infoHLayout.addWidget(loadLabel)
 
-            loadValueLabel = QtWidgets.QLabel(f"{gpu['load']}%")
-            loadValueLabel.setAlignment(QtCore.Qt.AlignRight)
-            self.setLabel(loadValueLabel, self.white, self.fontDefault)
-            infoHLayout.addWidget(loadValueLabel)
-
             infoVLayout.addLayout(infoHLayout)
-
-            mtempHLayout = QtWidgets.QHBoxLayout()
-
-            memoryLabel = QtWidgets.QLabel('memory:')
-            memoryLabel.setFixedWidth(70)
-            self.setLabel(memoryLabel, self.orange, self.fontDefault)
-            mtempHLayout.addWidget(memoryLabel)
-
-            usedTotalMemLabel = QtWidgets.QLabel(f"{gpu['memoryUsed']}MB/{gpu['memoryTotal']}MB")
-            self.setLabel(usedTotalMemLabel, self.white, self.fontDefault)
-            mtempHLayout.addWidget(usedTotalMemLabel)
-
-            tempIcon = QtWidgets.QLabel()
-            tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/temp.png'))
-            tempIcon.setFixedHeight(24)
-            tempIcon.setFixedWidth(24)
-            mtempHLayout.addWidget(tempIcon)
-
-            tempLabel = QtWidgets.QLabel(f"{gpu['temp']}°C")
-            self.setLabel(tempLabel, self.white, self.fontDefault)
-            tempLabel.setAlignment(QtCore.Qt.AlignRight)
-            tempLabel.setFixedWidth(70)
-            mtempHLayout.addWidget(tempLabel)
-
-            infoVLayout.addLayout(mtempHLayout)
 
         nvidiaHBLayout.addLayout(infoVLayout)
         verticalLayout.addLayout(nvidiaHBLayout)
