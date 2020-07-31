@@ -51,13 +51,13 @@ class MainWindow(QtWidgets.QMainWindow):
     weather = Weather()
     debugRed = 'background-color: rgb(255, 48, 79);'
     nvidia = Nvidia()
+    smart = Smart()
     pbDefaultHeight = 20
 
     def __init__(self):
         super(MainWindow, self).__init__()
         logger.info(f':: Gonha - {self.version} ::')
         logger.info('Starting...')
-        logger.info('')
         # -------------------------------------------------------------
         # Window Flags
         flags = QtCore.Qt.FramelessWindowHint
@@ -118,7 +118,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fontGroupBox = QtGui.QFont('Fira Code', 14)
         # -------------------------------------------------------------
         self.verticalLayout.setAlignment(QtCore.Qt.AlignTop)
-
         # --------------------------------------------------------------
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
@@ -131,15 +130,11 @@ class MainWindow(QtWidgets.QMainWindow):
         centralWidGet = QtWidgets.QWidget(self)
         centralWidGet.setLayout(self.verticalLayout)
         self.setCentralWidget(centralWidGet)
+        # -----------------------------------------------------------------------------------------------
+        # before show main window, check all dependencies and refuse if any thing wrong
+        self.checkDependencies()
+        #
         self.show()
-        # ------------------------------------------------------------------------
-        # Check if user need update config file
-        oldVersion = self.config.getConfig('version')
-        if self.config.getVersion() != oldVersion:
-            dialog = Alert('You need run "gonha --config" on terminal')
-            dialog.exec_()
-            sys.exit()
-        # ------------------------------------------------------------------------
         # Show in all workspaces
         self.ew = EWMH()
         self.all_wins = self.ew.getClientList()
@@ -161,6 +156,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.displayIface()
         self.displayPartitions()
+
+    def checkDependencies(self):
+        # ------------------------------------------------------------------------
+        # Check if user need update config file
+        oldVersion = self.config.getConfig('version')
+        if self.config.getVersion() != oldVersion:
+            dialog = Alert('You need run "gonha --config" on terminal')
+            dialog.exec_()
+            sys.exit()
+        # ------------------------------------------------------------------------
+        # Check if user have privileged sudo without password
+        if not self.smart.checkSmartCtlStatus():
+            dialog = Alert(
+                'You need enable smartmontools to run without sudo. Please read the README.md (install instructions)')
+            dialog.exec_()
+            sys.exit()
+
+        if not self.smart.checkNvmeCliStatus():
+            dialog = Alert(
+                'You need enable nvme-cli to run without sudo. Please read the README.md (install instructions)')
+            dialog.exec_()
+            sys.exit()
 
     def getDefaultGb(self, title):
         defaultGb = QtWidgets.QGroupBox(title)
@@ -737,8 +754,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout.addWidget(systemGroupBox)
 
     def displayPartitions(self):
-        smart = Smart()
-
         mntPoints = self.threadSlow.getPartitions()
         diskGroupBox = self.getDefaultGb('disks')
         verticalLayout = QtWidgets.QVBoxLayout()
@@ -749,10 +764,9 @@ class MainWindow(QtWidgets.QMainWindow):
         labelDefaultWidth = 80
 
         # Devices Health
-        devices = smart.getDevicesHealth
+        devices = self.smart.getDevicesHealth()
         for i, d in enumerate(devices):
             deviceHBLayout = QtWidgets.QHBoxLayout()
-            # deviceHBLayout.setAlignment(QtCore.Qt.AlignRight)
 
             ssdIcon = QtWidgets.QLabel()
             ssdIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/ssd.png'))
@@ -780,8 +794,6 @@ class MainWindow(QtWidgets.QMainWindow):
             deviceHBLayout.addWidget(deviceTempLabel)
 
             deviceScaleLabel = QtWidgets.QLabel(f"°{d['scale']}")
-            # self.setLabel(deviceScaleLabel, self.white, self.fontDefault)
-            # deviceHBLayout.addWidget(deviceScaleLabel)
 
             self.diskWidgets.append(
                 {'device': deviceLabel, 'model': deviceModelLabel, 'temp': deviceTempLabel, 'scale': deviceScaleLabel})
