@@ -180,11 +180,11 @@ class MainWindow(QtWidgets.QMainWindow):
         infoVLayout.setAlignment(QtCore.Qt.AlignVCenter)
         for gpu in gpuMessage:
             infoHLayout = QtWidgets.QHBoxLayout()
+
             nameLabel = QtWidgets.QLabel(gpu['name'])
-            nameLabel.setFixedWidth(120)
+            nameLabel.setFixedWidth(220)
             nameLabel.setAlignment(QtCore.Qt.AlignLeft)
             self.setLabel(nameLabel, self.white, self.fontDefault)
-            nameLabel.setStyleSheet(self.debugRed)
             infoHLayout.addWidget(nameLabel)
 
             loadLabel = QtWidgets.QLabel(f"{gpu['load']}%")

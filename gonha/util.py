@@ -69,10 +69,11 @@ class Smart:
         storageJson = json.loads(subprocess.getoutput('lsblk --json'))
         storageRet = list()
         for i, storage in enumerate(storageJson['blockdevices']):
-            tempDict = dict()
-            tempDict['id'] = i
-            tempDict['name'] = storage['name']
-            storageRet.append(tempDict)
+            if not('loop' in storage['name']):
+                tempDict = dict()
+                tempDict['id'] = i
+                tempDict['name'] = storage['name']
+                storageRet.append(tempDict)
 
         return storageRet
 
@@ -399,4 +400,3 @@ class Nvidia:
                     message.append(tempDict)
 
         return message
-
