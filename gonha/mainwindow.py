@@ -2,11 +2,15 @@ import sys
 from PyQt5 import QtWidgets
 from ewmh import EWMH
 from gonha.threads import *
-from colr import color
 from gonha.util import Weather
 from gonha.util import Smart
 from gonha.util import Nvidia
 from country_list import countries_for_language
+import logging
+import coloredlogs
+
+logger = logging.getLogger(__name__)
+coloredlogs.install()
 
 
 class Alert(QtWidgets.QDialog):
@@ -51,9 +55,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        print(color(':: ', fore=11), color(f'Gonha {self.version}', fore=14, back=0), color(' ::', fore=11))
-        print('Starting...')
-        print()
+        logger.info(f':: Gonha - {self.version} ::')
+        logger.info('Starting...')
+        logger.info('')
         # -------------------------------------------------------------
         # Window Flags
         flags = QtCore.Qt.FramelessWindowHint
@@ -881,11 +885,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def moveTopRight(self):
         screen = self.app.primaryScreen()
-        print('Screen: %s' % screen.name())
+        logger.info('Screen: {}'.format(screen.name()))
         size = screen.size()
-        print('Screen Resolution: %d x %d' % (size.width(), size.height()))
+        logger.info('Screen Resolution: {} x {}'.format(size.width(), size.height()))
         rect = screen.availableGeometry()
-        print('Available space for gonha: %d x %d' % (rect.width(), rect.height()))
+        logger.info('Available space for gonha: {} x {}'.format(rect.width(), rect.height()))
         # move window to top right
         win = self.geometry()
         self.move(rect.width() - win.width(), 0)
@@ -941,7 +945,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.analizeTemp(self.diskWidgets[i]['temp'], float(d['temp']), maxtemp)
 
     def receiveThreadWeatherFinish(self, message):
-        # print(message)
+        # logger.info(message)
         self.dtwWidgets['temp'].setText(message['temp'])
         self.dtwWidgets['humidity'].setText(message['humidity'])
         self.dtwWidgets['pressure'].setText(message['pressure'])

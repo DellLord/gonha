@@ -51,7 +51,6 @@ setuptools.setup(
         'humanfriendly',
         'pathlib',
         'PyInquirer',
-        'colr',
         'distro',
         'py-cpuinfo',
         'requests',
@@ -59,7 +58,8 @@ setuptools.setup(
         'country_list',
         'portolan',
         'unit-convert',
-        'gputil'
+        'gputil',
+        'coloredlogs'
     ],
     include_package_data=True,
     zip_safe=False,
