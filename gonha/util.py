@@ -26,7 +26,7 @@ class VirtualMachine:
     @staticmethod
     def getStatus():
         outCmd = subprocess.getoutput('systemd-detect-virt')
-        outCmd = Flase if outCmd == 'none' else True
+        outCmd = False if outCmd == 'none' else True
 
 class Config:
     resource_path = os.path.dirname(__file__)
