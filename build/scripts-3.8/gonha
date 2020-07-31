@@ -1,0 +1,14 @@
+#!python
+import sys
+from gonha.mainwindow import MainWindow
+from gonha.util import Config
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '--config':
+            print('Entering config mode...')
+            Config().wizard()
+    else:
+        app = MainWindow.app
+        window = MainWindow()
+        app.exec_()

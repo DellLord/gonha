@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
-pattern = "([0-9]+.[0-9]+.[0-9]+)"
+pattern = "([0-9]+.[0-9]+)"
 utilFile = 'gonha/util.py'
 version = ''
 with open(utilFile, 'r') as f:
