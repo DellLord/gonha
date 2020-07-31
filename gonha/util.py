@@ -26,11 +26,7 @@ class VirtualMachine:
     @staticmethod
     def getStatus():
         outCmd = subprocess.getoutput('systemd-detect-virt')
-        if outCmd == 'none':
-            return False
-        else:
-            return True
-
+        outCmd = Flase if outCmd == 'none' else True
 
 class Config:
     resource_path = os.path.dirname(__file__)
@@ -205,17 +201,13 @@ class Config:
         self.updateConfig({'temperature': temperatureScaleResponse})
         # -------------------------------------------------------------------------
         # if Inside virtual machine, so bypass
-        if temperatureScaleResponse['scale'] == 'Fahrenheit':
-            fahrenheit = True
-        else:
-            fahrenheit = False
+        fahrenheit = True if temperatureScaleResponse['scale'] == 'Fahrenheit' else False
         if not VirtualMachine().getStatus():
             # Temperature Question
 
             sensors = psutil.sensors_temperatures(fahrenheit=fahrenheit)
             tempUserChoices = []
             for i, key in enumerate(sensors):
-                print(temperatureScaleResponse['scale'])
                 tempUserChoices.append(
                     '{} - [{}] current temp: {:.0f}°{}'.format(i, key, float(sensors[key][0].current),temperatureScaleResponse['scale'][0])
                 )
@@ -359,9 +351,7 @@ class Config:
 
 class Weather:
     config = Config()
-    units = 'metric'
-    if config.getConfig('temperature')['scale'] == 'Fahrenheit':
-        units = 'imperial'
+    units = 'imperial' if config.getConfig('temperature')['scale'] == 'Fahrenheit' else 'metric'
     city = config.getConfig('location')['city']
     url = 'http://api.openweathermap.org/data/2.5/weather?q='
     apikey = 'e943e3d03143693768df6ca7c621c8b5'

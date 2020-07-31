@@ -44,7 +44,6 @@ class ThreadWeather(QtCore.QThread):
         if self.config.isOnline():
             try:
                 data = self.weather.getData()
-                print(data)
                 tempInteger = int(data['main']['temp'])
                 scale = self.config.getConfig('temperature')['scale'][0]
                 message['temp'] = f"{tempInteger}°{scale}"
