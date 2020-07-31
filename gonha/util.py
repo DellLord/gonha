@@ -52,10 +52,12 @@ class Smart:
                     # remove tabs from start of string
                     model = model.lstrip()
                     printawk = "awk '{print $4}'"
-                    temp = subprocess.getoutput(f"sudo smartctl -a /dev/{storage['name']} | grep 'Temperature_Celsius' | {printawk}")
+                    temp = subprocess.getoutput(
+                        f"sudo smartctl -a /dev/{storage['name']} | grep 'Temperature_Celsius' | {printawk}")
                     temp = int(temp)
 
-                message.append({'device': '/dev/{}'.format(storage['name']), 'model': model, 'temp': str(temp), 'scale': 'C'})
+                message.append(
+                    {'device': '/dev/{}'.format(storage['name']), 'model': model, 'temp': str(temp), 'scale': 'C'})
         else:
             # Append fake data to virtual machine
             message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
@@ -149,7 +151,7 @@ class Config:
             gpuQuestions = [
                 {
                     'type': 'checkbox',
-                    'name': 'gpus',
+                    'name': 'nvidia',
                     'message': 'Select the Nvidia GPU you want to display',
                     'choices': gpuChoices,
                 }
@@ -365,3 +367,36 @@ class Weather:
     @staticmethod
     def printException(e):
         print(color('Error! ', fore=11), color('[ ', fore=14), e, color('Error! ', fore=9), color(' ]', fore=14))
+
+
+class Nvidia:
+    config = Config()
+
+    def getStatus(self):
+        devices = self.config.getConfig('nvidia')
+        if len(devices) >= 1:
+            return True
+        else:
+            return False
+
+    def getDeviceHealth(self):
+        gpus = GPUtil.getGPUs()
+        idxs = self.config.getConfig('nvidia')
+        message = []
+        for idx in idxs:
+            for gpu in gpus:
+                tempDict = dict()
+                if idx == gpu.id:
+                    tempDict.update({
+                        'id': gpu.id,
+                        'name': gpu.name,
+                        'load': gpu.load,
+                        'freeMemory': gpu.memoryFree,
+                        'memoryUsed': gpu.memoryUsed,
+                        'memoryTotal': gpu.memoryTotal,
+                        'temp': gpu.temperature
+                    })
+                    message.append(tempDict)
+
+        return message
+

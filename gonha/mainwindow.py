@@ -5,6 +5,7 @@ from gonha.threads import *
 from colr import color
 from gonha.util import Weather
 from gonha.util import Smart
+from gonha.util import Nvidia
 from country_list import countries_for_language
 
 
@@ -43,6 +44,7 @@ class MainWindow(QtWidgets.QMainWindow):
     verticalLayout = QtWidgets.QVBoxLayout()
     weather = Weather()
     debugRed = 'background-color: rgb(255, 48, 79);'
+    nvidia = Nvidia()
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -147,7 +149,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadPosition()
         self.displayDTWeather()
         self.displaySystem()
-        # self.displayNvidia()
+        if self.nvidia.getStatus():
+            self.displayNvidia()
+
         self.displayIface()
         self.displayPartitions()
 
@@ -158,6 +162,9 @@ class MainWindow(QtWidgets.QMainWindow):
         return defaultGb
 
     def displayNvidia(self):
+        gpuMessage = self.nvidia.getDeviceHealth()
+        print(gpuMessage)
+
         nvidiaGroupBox = self.getDefaultGb('nvidia')
         verticalLayout = QtWidgets.QVBoxLayout()
         # ---------------------------------------------------
@@ -166,8 +173,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
         nvidiaLabel = QtWidgets.QLabel()
         nvidiaLabel.setPixmap(QtGui.QPixmap(f"{self.config.resource_path}/images/nvidia.png"))
+        nvidiaLabel.setFixedWidth(64)
         nvidiaHBLayout.addWidget(nvidiaLabel)
 
+        infoVLayout = QtWidgets.QVBoxLayout()
+        infoVLayout.setAlignment(QtCore.Qt.AlignVCenter)
+        for gpu in gpuMessage:
+            infoHLayout = QtWidgets.QHBoxLayout()
+            nameLabel = QtWidgets.QLabel(gpu['name'])
+            nameLabel.setFixedWidth(120)
+            nameLabel.setAlignment(QtCore.Qt.AlignLeft)
+            self.setLabel(nameLabel, self.white, self.fontDefault)
+            nameLabel.setStyleSheet(self.debugRed)
+            infoHLayout.addWidget(nameLabel)
+
+            loadLabel = QtWidgets.QLabel(f"{gpu['load']}%")
+            self.setLabel(loadLabel, self.white, self.fontDefault)
+            infoHLayout.addWidget(loadLabel)
+
+            infoVLayout.addLayout(infoHLayout)
+
+        nvidiaHBLayout.addLayout(infoVLayout)
         verticalLayout.addLayout(nvidiaHBLayout)
 
         nvidiaGroupBox.setLayout(verticalLayout)
