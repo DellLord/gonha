@@ -4,12 +4,30 @@ import psutil
 import time
 import humanfriendly
 from gonha.util import VirtualMachine
+from gonha.util import Nvidia
 from datetime import datetime
 import random
 from gonha.util import Weather
 from gonha.util import Smart
 from unit_convert import UnitConvert
 import portolan
+
+
+class ThreadNvidia(QtCore.QThread):
+    nvidia = Nvidia()
+    signal = QtCore.pyqtSignal(list, name='ThreadNvidiaFinish')
+
+    def __init__(self, parent=None):
+        super(ThreadNvidia, self).__init__(parent)
+        self.finished.connect(self.updateNvidia)
+
+    def updateNvidia(self):
+        gpuMessage = self.nvidia.getDeviceHealth()
+        self.signal.emit(gpuMessage)
+        self.start()
+
+    def run(self):
+        self.sleep(2)  # sleep for 2 sec
 
 
 class ThreadWeather(QtCore.QThread):

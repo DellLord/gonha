@@ -33,6 +33,7 @@ class MainWindow(QtWidgets.QMainWindow):
     version = config.getVersion()
     app = QtWidgets.QApplication(sys.argv)
     threadNetworkStats = ThreadNetworkStats()
+    threadNvidia = ThreadNvidia()
     threadFast = ThreadFast()
     threadSlow = ThreadSlow()
     threadweather = ThreadWeather()
@@ -41,6 +42,7 @@ class MainWindow(QtWidgets.QMainWindow):
     diskWidgets = []
     dtwWidgets = dict()
     systemWidgets = dict()
+    nvidiaWidgets = list()
     verticalLayout = QtWidgets.QVBoxLayout()
     weather = Weather()
     debugRed = 'background-color: rgb(255, 48, 79);'
@@ -120,7 +122,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadSlow.signal.connect(self.receiveThreadSlowFinish)
         self.threadNetworkStats.signal.connect(self.receiveThreadNetworkStats)
         self.threadweather.signal.connect(self.receiveThreadWeatherFinish)
-
+        self.threadNvidia.signal.connect(self.receiveThreadNvidia)
         centralWidGet = QtWidgets.QWidget(self)
         centralWidGet.setLayout(self.verticalLayout)
         self.setCentralWidget(centralWidGet)
@@ -163,7 +165,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def displayNvidia(self):
         gpuMessage = self.nvidia.getDeviceHealth()
-        print(gpuMessage)
 
         nvidiaGroupBox = self.getDefaultGb('nvidia')
         verticalLayout = QtWidgets.QVBoxLayout()
@@ -179,9 +180,11 @@ class MainWindow(QtWidgets.QMainWindow):
         infoVLayout = QtWidgets.QVBoxLayout()
         infoVLayout.setAlignment(QtCore.Qt.AlignVCenter)
         for gpu in gpuMessage:
+            tempDict = dict()
             infoHLayout = QtWidgets.QHBoxLayout()
 
             nameLabel = QtWidgets.QLabel(gpu['name'])
+            tempDict['name'] = nameLabel
             nameLabel.setFixedWidth(240)
             nameLabel.setAlignment(QtCore.Qt.AlignLeft)
             self.setLabel(nameLabel, self.white, self.fontDefault)
@@ -193,6 +196,7 @@ class MainWindow(QtWidgets.QMainWindow):
             infoHLayout.addWidget(loadLabel)
 
             loadValueLabel = QtWidgets.QLabel(f"{gpu['load']}%")
+            tempDict['load'] = loadValueLabel
             loadValueLabel.setAlignment(QtCore.Qt.AlignRight)
             self.setLabel(loadValueLabel, self.white, self.fontDefault)
             infoHLayout.addWidget(loadValueLabel)
@@ -207,6 +211,7 @@ class MainWindow(QtWidgets.QMainWindow):
             mtempHLayout.addWidget(memoryLabel)
 
             usedTotalMemLabel = QtWidgets.QLabel(f"{gpu['memoryUsed']}MB/{gpu['memoryTotal']}MB")
+            tempDict['usedTotalMemory'] = usedTotalMemLabel
             self.setLabel(usedTotalMemLabel, self.white, self.fontDefault)
             mtempHLayout.addWidget(usedTotalMemLabel)
 
@@ -217,18 +222,21 @@ class MainWindow(QtWidgets.QMainWindow):
             mtempHLayout.addWidget(tempIcon)
 
             tempLabel = QtWidgets.QLabel(f"{gpu['temp']}°C")
+            tempDict['temp'] = tempLabel
             self.setLabel(tempLabel, self.white, self.fontDefault)
             tempLabel.setAlignment(QtCore.Qt.AlignRight)
             tempLabel.setFixedWidth(70)
             mtempHLayout.addWidget(tempLabel)
 
             infoVLayout.addLayout(mtempHLayout)
+            self.nvidiaWidgets.append(tempDict)
 
         nvidiaHBLayout.addLayout(infoVLayout)
         verticalLayout.addLayout(nvidiaHBLayout)
 
         nvidiaGroupBox.setLayout(verticalLayout)
         self.verticalLayout.addWidget(nvidiaGroupBox)
+        self.threadNvidia.start()
 
     def displayIface(self):
         ifaceGroupBox = self.getDefaultGb('net')
@@ -939,6 +947,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.upDownRateWidgets[2].setText('{}/s'.format(humanfriendly.format_size(message['upSpeed'])))
         self.upDownRateWidgets[3].setText(humanfriendly.format_size(message['bytesRcv']))
         self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesSent']))
+
+    def receiveThreadNvidia(self, message):
+        for msg in message:
+            print(msg)
+            print(self.nvidiaWidgets)
+            # get the id
+            idx = int(msg['id'])
+            self.nvidiaWidgets[idx]['name'].setText(msg['name'])
+            self.nvidiaWidgets[idx]['load'].setText(f"{str(msg['load'])}%")
+            self.nvidiaWidgets[idx]['usedTotalMemory'].setText(f"{msg['memoryUsed']}MB/{msg['memoryTotal']}MB")
+            self.nvidiaWidgets[idx]['temp'].setText(f"{msg['temp']}°C")
+
+
 
     @staticmethod
     def analizeTemp(label, current, maxValue):
