@@ -179,6 +179,7 @@ class MainWindow(QtWidgets.QMainWindow):
         nvidiaHBLayout.addWidget(nvidiaLabel)
 
         infoVLayout = QtWidgets.QVBoxLayout()
+        infoVLayout.setSpacing(0)
         infoVLayout.setAlignment(QtCore.Qt.AlignVCenter)
         for gpu in gpuMessage:
             tempDict = dict()
