@@ -69,7 +69,7 @@ class Smart:
         storageJson = json.loads(subprocess.getoutput('lsblk --json'))
         storageRet = list()
         for i, storage in enumerate(storageJson['blockdevices']):
-            if not('loop' in storage['name']):
+            if not ('loop' in storage['name']):
                 tempDict = dict()
                 tempDict['id'] = i
                 tempDict['name'] = storage['name']
@@ -374,11 +374,14 @@ class Nvidia:
     config = Config()
 
     def getStatus(self):
-        devices = self.config.getConfig('nvidia')
-        if len(devices) >= 1:
-            return True
-        else:
-            return False
+        try:
+            devices = self.config.getConfig('nvidia')
+            if len(devices) >= 1:
+                return True
+        except Exception as e:
+            print('no nvidia', e)
+
+        return False
 
     def getDeviceHealth(self):
         gpus = GPUtil.getGPUs()
