@@ -950,8 +950,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def receiveThreadNvidia(self, message):
         for msg in message:
-            print(msg)
-            print(self.nvidiaWidgets)
             # get the id
             idx = int(msg['id'])
             self.nvidiaWidgets[idx]['name'].setText(msg['name'])
