@@ -82,32 +82,33 @@ class Config:
         self.updateConfig(dist)
         # ----------------------------------------------------------------
         logger.info('Starting Wizard...')
-        logger.info('')
-
         # ----------------------------------------------------------------
         # Check if nvmes exists
         nvmes = self.getNvmes()
-        # -----------------------------------------------------------------------------------------------------
-        nvmesChoices = []
-        # Filesystem sections
-        for nvme in nvmes:
-            nvmesChoices.append(
-                {
-                    'name': 'device: [{}] [/dev/{}]'.format(nvme['id'], nvme['name']),
-                    'value': nvme['name']
-                }
-            )
+        if len(nvmes) >= 1:
+            # -----------------------------------------------------------------------------------------------------
+            nvmesChoices = []
+            # Filesystem sections
+            for nvme in nvmes:
+                nvmesChoices.append(
+                    {
+                        'name': 'device: [{}] [/dev/{}]'.format(nvme['id'], nvme['name']),
+                        'value': nvme['name']
+                    }
+                )
 
-        nvmesQuestions = [
-            {
-                'type': 'checkbox',
-                'name': 'nvmes',
-                'message': 'You have the following M.2 e NVMe´s, please choose the device you want monitoring:',
-                'choices': nvmesChoices,
-            }
-        ]
-        nvmesResponse = prompt(nvmesQuestions)
-        logger.info(nvmesResponse)
+            nvmesQuestions = [
+                {
+                    'type': 'checkbox',
+                    'name': 'nvmes',
+                    'message': 'You have M.2 NVMe´s, please choose the correct device do you want monitoring:',
+                    'choices': nvmesChoices,
+                }
+            ]
+            nvmesResponse = prompt(nvmesQuestions)
+            logger.info(nvmesResponse)
+        else:
+            nvmesResponse = list()
         # ----------------------------------------------------------------
         # update config with available nvme list
         self.updateConfig({'nvmes': nvmesResponse})
@@ -415,6 +416,18 @@ class Smart:
     def getDevicesHealth(self):
         self.message.clear()
         self.message = self.getHddTemp()
+        devices = self.config.getConfig('nvmes')
+        if len(devices) >= 1:
+            # you have nvme for fun
+            for device in devices['nvmes']:
+                printawk = "awk '{ print $3 }'"
+                self.model = subprocess.getoutput(f"sudo nvme list | grep '{device}' | {printawk}")
+                # fetch nvme temp
+                printawk = "awk '{print $3}'"
+                self.temp = subprocess.getoutput(
+                    f"sudo nvme smart-log '/dev/{device}' | grep 'temperature' | {printawk}")
+                self.message.append({'device': device, 'model': self.model, 'temp': self.temp, 'scale': 'C'})
+
         return self.message
 
     @staticmethod
