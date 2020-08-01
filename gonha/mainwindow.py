@@ -53,6 +53,7 @@ class MainWindow(QtWidgets.QMainWindow):
     nvidia = Nvidia()
     smart = Smart()
     pbDefaultHeight = 20
+    tempLabelWidth = 50
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -228,6 +229,7 @@ class MainWindow(QtWidgets.QMainWindow):
             infoVLayout.addLayout(infoHLayout)
 
             mtempHLayout = QtWidgets.QHBoxLayout()
+            # mtempHLayout.setAlignment(QtCore.Qt.AlignLeft)
 
             memoryLabel = QtWidgets.QLabel('memory:')
             memoryLabel.setFixedWidth(70)
@@ -237,6 +239,7 @@ class MainWindow(QtWidgets.QMainWindow):
             usedTotalMemLabel = QtWidgets.QLabel(f"{gpu['memoryUsed']}MB/{gpu['memoryTotal']}MB")
             tempDict['usedTotalMemory'] = usedTotalMemLabel
             self.setLabel(usedTotalMemLabel, self.white, self.fontDefault)
+            # usedTotalMemLabel.setFixedWidth(250)
             mtempHLayout.addWidget(usedTotalMemLabel)
 
             tempIcon = QtWidgets.QLabel()
@@ -249,7 +252,7 @@ class MainWindow(QtWidgets.QMainWindow):
             tempDict['temp'] = tempLabel
             self.setLabel(tempLabel, self.white, self.fontDefault)
             tempLabel.setAlignment(QtCore.Qt.AlignRight)
-            tempLabel.setFixedWidth(80)
+            tempLabel.setFixedWidth(self.tempLabelWidth)
             mtempHLayout.addWidget(tempLabel)
 
             infoVLayout.addLayout(mtempHLayout)
@@ -716,31 +719,21 @@ class MainWindow(QtWidgets.QMainWindow):
         # ---------------------------------------------------------------------------
         # Temperature
         tempHBLayout = QtWidgets.QHBoxLayout()
-        tempHBLayout.setAlignment(QtCore.Qt.AlignHCenter)
+        tempHBLayout.setAlignment(QtCore.Qt.AlignRight)
         tempHBLayout.setSpacing(5)
+
+        tempValueLabel = QtWidgets.QLabel('')
+        self.systemWidgets['label'] = tempValueLabel
+        self.setLabel(tempValueLabel, self.white, self.fontDefault)
+
+        tempHBLayout.addWidget(tempValueLabel)
 
         tempIcon = QtWidgets.QLabel()
         tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/temp.png'))
         tempIcon.setFixedHeight(24)
         tempIcon.setFixedWidth(24)
 
-        tempLabel = QtWidgets.QLabel('label:')
-        # tempLabel.setFixedWidth(labelDefaultWidth)
-        self.setLabel(tempLabel, self.orange, self.fontDefault)
-
         tempHBLayout.addWidget(tempIcon)
-        tempHBLayout.addWidget(tempLabel)
-
-        tempValueLabel = QtWidgets.QLabel('label')
-        self.systemWidgets['label'] = tempValueLabel
-        self.setLabel(tempValueLabel, self.white, self.fontDefault)
-
-        tempHBLayout.addWidget(tempValueLabel)
-
-        tempCurrentLabel = QtWidgets.QLabel('current:')
-        self.setLabel(tempCurrentLabel, self.orange, self.fontDefault)
-
-        tempHBLayout.addWidget(tempCurrentLabel)
 
         tempCurrentValueLabel = QtWidgets.QLabel('30C')
         self.setLabel(tempCurrentValueLabel, self.white, self.fontDefault)
@@ -780,7 +773,7 @@ class MainWindow(QtWidgets.QMainWindow):
             deviceHBLayout.addWidget(deviceLabel)
 
             deviceModelLabel = QtWidgets.QLabel(d['model'])
-            deviceModelLabel.setFixedWidth(220)
+            deviceModelLabel.setFixedWidth(200)
             self.setLabel(deviceModelLabel, self.white, self.fontDefault)
             deviceHBLayout.addWidget(deviceModelLabel)
 
@@ -792,6 +785,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
             deviceTempLabel = QtWidgets.QLabel(f"{d['temp']}")
             self.setLabel(deviceTempLabel, self.white, self.fontDefault)
+            deviceTempLabel.setAlignment(QtCore.Qt.AlignRight)
+            deviceTempLabel.setFixedWidth(self.tempLabelWidth)
             deviceHBLayout.addWidget(deviceTempLabel)
 
             deviceScaleLabel = QtWidgets.QLabel(f"°{d['scale']}")
