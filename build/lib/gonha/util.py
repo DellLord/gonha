@@ -10,12 +10,13 @@ import platform
 import requests
 import subprocess
 import netifaces
-import socket
 import urllib.request
 import GPUtil
 import coloredlogs
 import logging
-import re
+from telnetlib import Telnet
+import numpy as np
+import socket
 
 logger = logging.getLogger(__name__)
 coloredlogs.install()
@@ -56,12 +57,7 @@ class Config:
         # ----------------------------------------------------------------
         # update with current version
         self.updateConfig({'version': self.getVersion()})
-        # ----------------------------------------------------------------
-        # create storages config file
-        storages = self.getStorages()
-        # update config with available disk list
-        self.updateConfig({'storages': storages})
-        # ----------------------------------------------------------------
+
         # get Platform especific details
         plat = platform.uname()
         self.updateConfig({
@@ -86,7 +82,37 @@ class Config:
         self.updateConfig(dist)
         # ----------------------------------------------------------------
         logger.info('Starting Wizard...')
-        logger.info('')
+        # ----------------------------------------------------------------
+        # Check if nvmes exists
+        nvmes = self.getNvmes()
+        if len(nvmes) >= 1:
+            # -----------------------------------------------------------------------------------------------------
+            nvmesChoices = []
+            # Filesystem sections
+            for nvme in nvmes:
+                nvmesChoices.append(
+                    {
+                        'name': 'device: [{}] [/dev/{}]'.format(nvme['id'], nvme['name']),
+                        'value': nvme['name']
+                    }
+                )
+
+            nvmesQuestions = [
+                {
+                    'type': 'checkbox',
+                    'name': 'nvmes',
+                    'message': 'You have M.2 NVMe´s, please choose the correct device do you want monitoring:',
+                    'choices': nvmesChoices,
+                }
+            ]
+            nvmesResponse = prompt(nvmesQuestions)
+            logger.info(nvmesResponse)
+        else:
+            nvmesResponse = list()
+        # ----------------------------------------------------------------
+        # update config with available nvme list
+        self.updateConfig({'nvmes': nvmesResponse})
+        # ----------------------------------------------------------------
 
         # GPuDialog
         gpus = GPUtil.getGPUs()
@@ -287,18 +313,19 @@ class Config:
 
         return self.outJson
 
+    # Check for nvmes
     @staticmethod
-    def getStorages():
-        storageJson = json.loads(subprocess.getoutput('lsblk --json'))
-        storageRet = list()
-        for i, storage in enumerate(storageJson['blockdevices']):
-            if not ('loop' in storage['name']):
+    def getNvmes():
+        nvmesJson = json.loads(subprocess.getoutput('lsblk --json'))
+        nvmesRet = list()
+        for i, nvme in enumerate(nvmesJson['blockdevices']):
+            if 'nvme' in nvme['name']:
                 tempDict = dict()
                 tempDict['id'] = i
-                tempDict['name'] = storage['name']
-                storageRet.append(tempDict)
+                tempDict['name'] = nvme['name']
+                nvmesRet.append(tempDict)
 
-        return storageRet
+        return nvmesRet
 
     @staticmethod
     def isOnline():
@@ -370,6 +397,8 @@ class Nvidia:
 
 
 class Smart:
+    host = '127.0.0.1'
+    port = 7634
     vm = VirtualMachine()
     model = str()
     temp = 0
@@ -377,47 +406,27 @@ class Smart:
     storageType = 'sata'
     config = Config()
 
+    def hddtempIsOk(self):
+        try:
+            socket.create_connection((self.host, self.port))
+            return True
+        except OSError:
+            return False
+
     def getDevicesHealth(self):
         self.message.clear()
-        sataPattern = "(sd[a-z])"
-        if not self.vm.getStatus():
-            storages = self.config.getConfig('storages')
-            for storage in storages:
-                # test if storage is nvme
-                if 'nvme' in storage['name']:
-                    # fetch nvme model
-                    printawk = "awk '{ print $3 }'"
-                    self.model = subprocess.getoutput(f"sudo nvme list | grep '{storage['name']}' | {printawk}")
-                    # fetch nvme temp
-                    printawk = "awk '{print $3}'"
-                    self.temp = subprocess.getoutput(
-                        f"sudo nvme smart-log '/dev/{storage['name']}' | grep 'temperature' | {printawk}")
-                    self.storageType = 'nvme'
-
-                if re.search(sataPattern, storage['name']):
-                    # fetch the sata
-                    self.model = subprocess.getoutput(
-                        f"sudo smartctl -a /dev/sda | grep 'Device Model' |cut -d ':' -f 2")
-                    # remove tabs from start of string
-                    self.model = self.model.lstrip()
-                    printawk = "awk '{print $4}'"
-                    self.temp = subprocess.getoutput(
-                        f"sudo smartctl -a /dev/{storage['name']} | grep 'Temperature_Celsius' | {printawk}")
-                    self.temp = int(self.temp)
-                    self.storageType = 'sata'
-
-                self.message.append(
-                    {
-                        'device': '/dev/{}'.format(storage['name']),
-                        'type': self.storageType,
-                        'model': self.model,
-                        'temp': str(self.temp),
-                        'scale': 'C'
-                    }
-                )
-        else:
-            # Append fake data to virtual machine
-            self.message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+        self.message = self.getHddTemp()
+        devices = self.config.getConfig('nvmes')
+        if len(devices) >= 1:
+            # you have nvme for fun
+            for device in devices['nvmes']:
+                printawk = "awk '{ print $3 }'"
+                self.model = subprocess.getoutput(f"sudo nvme list | grep '{device}' | {printawk}")
+                # fetch nvme temp
+                printawk = "awk '{print $3}'"
+                self.temp = subprocess.getoutput(
+                    f"sudo nvme smart-log '/dev/{device}' | grep 'temperature' | {printawk}")
+                self.message.append({'device': device, 'model': self.model, 'temp': self.temp, 'scale': 'C'})
 
         return self.message
 
@@ -430,11 +439,31 @@ class Smart:
 
         return retNvmeStatus
 
-    @staticmethod
-    def checkSmartCtlStatus():
-        retSmartCtlStatus = False
-        out = subprocess.getstatusoutput('sudo smartctl')
-        if not ('sudo: a terminal is required to read the password' in out[1]):
-            retSmartCtlStatus = True
+    def getHddTemp(self):
+        message = list()
+        if self.hddtempIsOk():
+            if not self.vm.getStatus():
+                with Telnet(self.host, self.port) as tn:
+                    lines = tn.read_all().decode('utf-8')
 
-        return retSmartCtlStatus
+                if lines != '':
+                    data = lines
+                    # remove first char
+                    data = data[1:]
+                    # remove the last char
+                    data = ''.join([data[i] for i in range(len(data)) if i != len(data) - 1])
+                    # replace double || by one |
+                    data = data.replace('||', '|')
+                    # convert to array
+                    data = data.split('|')
+                    dataLen = len(data)
+                    forLenght = int(dataLen / 4)
+                    newarray = np.array_split(data, forLenght)
+                    for na in newarray:
+                        message.append({'device': na[0], 'model': na[1], 'temp': na[2], 'scale': na[3]})
+
+            else:
+                # Append fake data to virtual machine
+                message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+
+            return message

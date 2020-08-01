@@ -167,15 +167,15 @@ class MainWindow(QtWidgets.QMainWindow):
             sys.exit()
         # ------------------------------------------------------------------------
         # Check if user have privileged sudo without password
-        if not self.smart.checkSmartCtlStatus():
-            dialog = Alert(
-                'You need enable smartmontools to run without sudo. Please read the README.md (install instructions)')
-            dialog.exec_()
-            sys.exit()
-
         if not self.smart.checkNvmeCliStatus():
             dialog = Alert(
                 'You need enable nvme-cli to run without sudo. Please read the README.md (install instructions)')
+            dialog.exec_()
+            sys.exit()
+
+        if not self.smart.hddtempIsOk():
+            dialog = Alert(
+                'You need run hddtemp as daemon. Please read the README.md (install instructions)')
             dialog.exec_()
             sys.exit()
 
