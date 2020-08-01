@@ -56,7 +56,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        logger.info(f':: Gonha - {self.version} ::')
         logger.info('Starting...')
         # -------------------------------------------------------------
         # Window Flags
