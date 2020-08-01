@@ -283,7 +283,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.6.0'
+        return '1.6.1'
 
     def getExtIp(self):
         return self.myExtIp
@@ -435,7 +435,7 @@ class Smart:
             for sensor in sensors:
                 if 'nvme' in sensor:
                     self.model = sensors[sensor][0].label
-                    self.temp = sensors[sensor][0].current
+                    self.temp = int(sensors[sensor][0].current)
                     self.message.append({
                         'device': devices['nvmes'][0],
                         'model': self.model,
