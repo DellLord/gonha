@@ -293,7 +293,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.6.8'
+        return '1.6.9'
 
     def getExtIp(self):
         return self.myExtIp
@@ -347,6 +347,7 @@ class Config:
                     'country': tempJson['location']['country'],
                     'lat': tempJson['location']['lat'],
                     'lng': tempJson['location']['lng']
+
                 }
             )
 

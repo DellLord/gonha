@@ -39,12 +39,24 @@ class ThreadWeather(QtCore.QThread):
         self.finished.connect(self.updateWeather)
 
     def updateWeather(self):
+        tempType = self.config.getConfig('temptype')
         message = dict()
         if self.config.isOnline():
             try:
                 data = self.weather.getData()
-                tempInteger = int(data['main']['temp'])
-                message['temp'] = f"{tempInteger}°C"
+                scale = 'C'
+                temp = float(data['main']['temp'])
+                if tempType == 'Kelvin':
+                    temp = self.config.convertToKelvin(temp)
+                    scale = 'K'
+                elif tempType == 'Fahrenheit':
+                    print('Fahrenheit')
+                    temp = self.config.convertToFahrenheit(temp)
+                    scale = 'F'
+
+                # tempInteger = int(data['main']['temp'])
+                message['temp'] = temp
+                message['scale'] = scale
                 message['humidity'] = f"{data['main']['humidity']}%"
                 message['pressure'] = f"{data['main']['pressure']}hPa"
                 visibilityAsKm = UnitConvert(metres=int(data['visibility'])).kilometres
