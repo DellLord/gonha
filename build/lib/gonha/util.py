@@ -281,7 +281,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.5.8'
+        return '1.5.9'
 
     def getExtIp(self):
         return self.myExtIp
