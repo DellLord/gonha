@@ -217,6 +217,7 @@ class ThreadFast(QtCore.QThread):
                             self.message['scale'] = '{}'.format(scale)
                             break
         else:
+            self.message['label'] = 'vmTdie'
             self.message['current'] = 50.0
             self.message['high'] = 70.0
             self.message['critical'] = 90.0
