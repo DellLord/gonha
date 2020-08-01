@@ -4,15 +4,16 @@ from gonha.mainwindow import MainWindow
 from gonha.util import Config
 import coloredlogs
 import logging
-import os
 
 if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     coloredlogs.install()
+    config = Config()
+    logger.info(f':: Gonha - {config.getVersion()} ::')
     if len(sys.argv) > 1:
         if sys.argv[1] == '--config':
             logger.info('Entering config mode...')
-            Config().wizard()
+            config.wizard()
     else:
         app = MainWindow.app
         window = MainWindow()
