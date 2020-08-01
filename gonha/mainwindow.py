@@ -166,13 +166,7 @@ class MainWindow(QtWidgets.QMainWindow):
             dialog.exec_()
             sys.exit()
         # ------------------------------------------------------------------------
-        # Check if user have privileged sudo without password
-        if not self.smart.checkNvmeCliStatus():
-            dialog = Alert(
-                'You need enable nvme-cli to run without sudo. Please read the README.md (install instructions)')
-            dialog.exec_()
-            sys.exit()
-
+        # check for hddtemp
         if not self.smart.hddtempIsOk():
             dialog = Alert(
                 'You need run hddtemp as daemon. Please read the README.md (install instructions)')

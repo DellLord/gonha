@@ -29,22 +29,17 @@ Contributors
 
 ## Dependencies
 
-1. FullHD Display 1920 x 1080 pixels. 
-2. Pyhton 3.8 or later
-3. python3-devel 
-4. Fira Code Font
-5. curl >=7.68 
-6. hddtemp >=0.3 :: you need run hddtemp as daemon on your system. Install ***hddtemp***, edit the file ***/etc/default/hddtemp*** and 
+1. FullHD Display 1920 x 1080 pixels.
+2. Linux Kernel 5.5.x >= :: Linux Kernel Version 5>= and Major Revision 5>= is required to running this application 
+3. Pyhton 3.8 or later
+4. python3-devel 
+5. Fira Code Font
+6. curl >=7.68 
+7. hddtemp >=0.3 :: you need run hddtemp as daemon on your system. Install ***hddtemp***, edit the file ***/etc/default/hddtemp*** and 
 change the line ***RUN_DAEMON="false"*** to ***RUN_DAEMON="true"***. Gonha will connect with hddtemp default port ***7634***, please ***don´t change*** 
 the default port number config param. 
-7. nvme-cli >= 1.9 :: Add the following line. Remember to substitute **$your_username** by your username, please.
 
- ```bash
-# Enable smartctl and nvme-cli without sudo
-$your_username ALL = NOPASSWD: /usr/sbin/nvme
-```
-
-### Installing Fira Code Font
+ ### Installing Fira Code Font
 
 ```bash
 $ wget https://github.com/tonsky/FiraCode/releases/download/5.2/Fira_Code_v5.2.zip
@@ -56,7 +51,7 @@ $ fc-cache -v
 
 ## Install
 
-Now, you can install gonha! :)
+Now, after install the font you can install gonha! :)
 Remember, ***$HOME/.local/bin*** must be in included in your PATH variable!
 
 ```bash
