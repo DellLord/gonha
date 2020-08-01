@@ -18,7 +18,6 @@ import numpy as np
 import socket
 import platform
 import re
-import sensors
 
 logger = logging.getLogger(__name__)
 coloredlogs.install()
@@ -432,21 +431,13 @@ class Smart:
         self.message = self.getHddTemp()
         devices = self.config.getConfig('nvmes')
         if len(devices) >= 1:
-            # you have nvme for fun
+            sensors = psutil.sensors_temperatures()
             for device in devices['nvmes']:
-                # print(device)
-                sensors.init()
-                try:
-                    for chip in sensors.iter_detected_chips():
-                        if 'nvme' in str(chip):
-                            for feature in chip:
-                                self.model = str(chip)
-                                self.temp = int(feature.get_value())
-
-                finally:
-                    sensors.cleanup()
-
-                self.message.append({'device': device, 'model': self.model, 'temp': self.temp, 'scale': 'C'})
+                for i, key in enumerate(sensors):
+                    if 'nvme' in key:
+                        self.model = sensors[key][0].label
+                        self.temp = sensors[key][0].current
+                        self.message.append({'device': device, 'model': self.model, 'temp': self.temp, 'scale': 'C'})
 
         return self.message
 
