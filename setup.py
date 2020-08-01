@@ -60,8 +60,7 @@ setuptools.setup(
         'unit-convert',
         'gputil',
         'coloredlogs',
-        'numpy',
-        'PySensors'
+        'numpy'
     ],
     include_package_data=True,
     zip_safe=False,
