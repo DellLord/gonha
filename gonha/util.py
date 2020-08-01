@@ -293,7 +293,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.6.7'
+        return '1.6.8'
 
     def getExtIp(self):
         return self.myExtIp
@@ -309,7 +309,7 @@ class Config:
 
     @staticmethod
     def convertToFahrenheit(temp):
-        return 1.8 * (temp + 32)
+        return (temp * 1.8) + 32
 
     @staticmethod
     def convertToKelvin(temp):
@@ -320,7 +320,6 @@ class Config:
         retCurrent = current
         retHigh = high
         retCritical = critical
-        retScale = 'K'
         retScale = 'C'
         if tempConfig == 'Kelvin':
             retCurrent = self.convertToKelvin(current)
