@@ -1,6 +1,5 @@
 PyInquirer
 PyQt5
-PySensors
 coloredlogs
 country_list
 distro

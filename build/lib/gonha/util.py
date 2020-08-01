@@ -194,19 +194,20 @@ class Config:
         # if Inside virtual machine, so bypass
         if not VirtualMachine().getStatus():
             # Temperature Question
-            sensors = psutil.sensors_temperatures()
+            cpuSensors = psutil.sensors_temperatures()
             tempUserChoices = []
-            for i, key in enumerate(sensors):
-                tempUserChoices.append(
-                    '{} - [{}] current temp: {:.0f}°C'.format(i, key, float(sensors[key][0].current))
-                )
+            for i, key in enumerate(cpuSensors):
+                if not ('nvme' in key):
+                    tempUserChoices.append(
+                        '{} - [{}] current temp: {:.0f}°C'.format(i, key, float(cpuSensors[key][0].current))
+                    )
 
             # Temperature Questions
             tempQuestions = [
                 {
                     'type': 'list',
                     'name': 'temp',
-                    'message': 'Select what is temperature sensor you want gonha to show',
+                    'message': 'What is your CPU temperature sensor?',
                     'choices': tempUserChoices,
                     'filter': lambda val: tempUserChoices.index(val)
                 }
@@ -283,7 +284,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.5.10'
+        return '1.5.11'
 
     def getExtIp(self):
         return self.myExtIp
@@ -344,7 +345,8 @@ class Config:
         kernelString = re.search(kernelPattern, kernelString).group(0)
         kernelList = kernelString.split('.')
         kernelDict = dict()
-        kernelDict.update({'kernelVersion': int(kernelList[0]), 'majorRevision': int(kernelList[1]), 'minorRevision': int(kernelList[2])})
+        kernelDict.update({'kernelVersion': int(kernelList[0]), 'majorRevision': int(kernelList[1]),
+                           'minorRevision': int(kernelList[2])})
         return kernelDict
 
 
