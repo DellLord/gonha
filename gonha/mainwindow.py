@@ -229,7 +229,7 @@ class MainWindow(QtWidgets.QMainWindow):
             infoVLayout.addLayout(infoHLayout)
 
             mtempHLayout = QtWidgets.QHBoxLayout()
-            # mtempHLayout.setAlignment(QtCore.Qt.AlignLeft)
+            mtempHLayout.setAlignment(QtCore.Qt.AlignLeft)
 
             memoryLabel = QtWidgets.QLabel('memory:')
             memoryLabel.setFixedWidth(70)
@@ -239,8 +239,8 @@ class MainWindow(QtWidgets.QMainWindow):
             usedTotalMemLabel = QtWidgets.QLabel(f"{gpu['memoryUsed']}MB/{gpu['memoryTotal']}MB")
             tempDict['usedTotalMemory'] = usedTotalMemLabel
             self.setLabel(usedTotalMemLabel, self.white, self.fontDefault)
-            # usedTotalMemLabel.setFixedWidth(250)
             mtempHLayout.addWidget(usedTotalMemLabel)
+            mtempHLayout.addStretch(2)
 
             tempIcon = QtWidgets.QLabel()
             tempIcon.setPixmap(QtGui.QPixmap(f'{self.config.resource_path}/images/temp.png'))
@@ -720,7 +720,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Temperature
         tempHBLayout = QtWidgets.QHBoxLayout()
         tempHBLayout.setAlignment(QtCore.Qt.AlignRight)
-        tempHBLayout.setSpacing(5)
+        # tempHBLayout.setSpacing(5)
 
         tempValueLabel = QtWidgets.QLabel('')
         self.systemWidgets['label'] = tempValueLabel
@@ -736,6 +736,8 @@ class MainWindow(QtWidgets.QMainWindow):
         tempHBLayout.addWidget(tempIcon)
 
         tempCurrentValueLabel = QtWidgets.QLabel('30C')
+        tempCurrentValueLabel.setFixedWidth(self.tempLabelWidth)
+        tempCurrentValueLabel.setAlignment(QtCore.Qt.AlignRight)
         self.setLabel(tempCurrentValueLabel, self.white, self.fontDefault)
         self.systemWidgets['current'] = tempCurrentValueLabel
 
