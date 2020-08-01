@@ -204,6 +204,7 @@ class ThreadFast(QtCore.QThread):
                             current = shwtemp.current
                             high = shwtemp.high
                             critical = shwtemp.critical
+                            scale = 'C'
                             if high is None:
                                 high = 75.0  # 75 celsius for high temp cpu
 
@@ -212,13 +213,20 @@ class ThreadFast(QtCore.QThread):
 
                             if tempType == 'Kelvin':
                                 current = self.config.convertToKelvin(shwtemp.current)
+                                high = self.config.convertToKelvin(high)
+                                critical = self.config.convertToKelvin(critical)
+                                scale = 'K'
                             elif tempType == 'Fahrenheit':
                                 current = self.config.convertToFahrenheit(shwtemp.current)
+                                high = self.config.convertToFahrenheit(high)
+                                critical = self.config.convertToFahrenheit(critical)
+                                scale = 'F'
 
                             self.message['label'] = shwtemp.label
-                            self.message['current'] = '{:.0f}°'.format(current)
-                            self.message['high'] = '{:.0f}°'.format(high)
-                            self.message['critical'] = '{:.0f}°'.format(critical)
+                            self.message['current'] = current
+                            self.message['high'] = high
+                            self.message['critical'] = critical
+                            self.message['scale'] = '{}'.format(scale)
                             break
         else:
             self.message['label'] = 'vmtemp'
@@ -232,6 +240,8 @@ class ThreadFast(QtCore.QThread):
             tempDict['device'] = d['device']
             tempDict['model'] = d['model']
             tempDict['temp'] = d['temp']
+            tempDict['high'] = d['high']
+            tempDict['critical'] = d['critical']
             self.message['devices'].append(tempDict)
 
         time.sleep(1)

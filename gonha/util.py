@@ -413,6 +413,8 @@ class Nvidia:
             for gpu in gpus:
                 tempDict = dict()
                 if idx == gpu.id:
+                    high = gpu.temperature + (gpu.temperature * 0.2)
+                    critical = gpu.temperature + (gpu.temperature * 0.4)
                     tempDict.update({
                         'id': gpu.id,
                         'name': gpu.name,
@@ -420,7 +422,9 @@ class Nvidia:
                         'freeMemory': gpu.memoryFree,
                         'memoryUsed': gpu.memoryUsed,
                         'memoryTotal': gpu.memoryTotal,
-                        'temp': gpu.temperature
+                        'temp': gpu.temperature,
+                        'high': high,
+                        'critical': critical
                     })
                     message.append(tempDict)
 
@@ -439,9 +443,7 @@ class Smart:
     temperature = {
         'format': 'Celsius',
         'scale': 'C',
-        'currentValue': float(),
-        'high': float(),
-        'critical': float()
+        'currentValue': float()
     }
 
     def __init__(self):
@@ -471,6 +473,14 @@ class Smart:
             sensors = psutil.sensors_temperatures()
             for sensor in sensors:
                 if 'nvme' in sensor:
+                    high = sensors[sensor][0].high
+                    if high is None:
+                        high = 72.0
+
+                    critical = sensors[sensor][0].critical
+                    if critical is None:
+                        critical = 85.0
+
                     self.model = sensors[sensor][0].label
                     self.updateTemp(sensors[sensor][0].current)
                     self.message.append({
@@ -478,8 +488,8 @@ class Smart:
                         'model': '{}'.format(devices[0]),
                         'temp': int(self.temperature['currentValue']),
                         'scale': self.temperature['scale'],
-                        'high': self.temperature['high'],
-                        'critical': self.temperature['critical'],
+                        'high': high,
+                        'critical': critical,
                     })
 
         return self.message
@@ -529,6 +539,15 @@ class Smart:
 
             else:
                 # Append fake data to virtual machine
-                message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+                message.append(
+                    {
+                        'device': '/dev/vmsda',
+                        'model': 'VIRTUAL SSD',
+                        'temp': '38',
+                        'high': 70.0,
+                        'critical': 80.0,
+                        'scale': 'C'
+                    }
+                )
 
             return message
