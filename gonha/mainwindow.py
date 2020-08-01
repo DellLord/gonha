@@ -245,11 +245,11 @@ class MainWindow(QtWidgets.QMainWindow):
             tempIcon.setFixedWidth(24)
             mtempHLayout.addWidget(tempIcon)
 
-            tempLabel = QtWidgets.QLabel(f"{gpu['temp']}°C")
+            tempLabel = QtWidgets.QLabel(f"{int(gpu['temp'])}°{gpu['scale']}")
             tempDict['temp'] = tempLabel
             self.setLabel(tempLabel, self.white, self.fontDefault)
             tempLabel.setAlignment(QtCore.Qt.AlignRight)
-            tempLabel.setFixedWidth(70)
+            tempLabel.setFixedWidth(80)
             mtempHLayout.addWidget(tempLabel)
 
             infoVLayout.addLayout(mtempHLayout)
@@ -953,7 +953,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # print(d)
             self.diskWidgets[i]['device'].setText(d['device'])
             self.diskWidgets[i]['model'].setText(d['model'])
-            self.diskWidgets[i]['temp'].setText(f"{d['temp']}°C")
+            self.diskWidgets[i]['temp'].setText(f"{int(d['temp'])}°{message['scale']}")
             self.analizeTemp(self.diskWidgets[i]['temp'], d['temp'], d['high'], d['critical'])
 
     def receiveThreadWeatherFinish(self, message):
@@ -984,7 +984,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.nvidiaWidgets[idx]['name'].setText(msg['name'])
             self.nvidiaWidgets[idx]['load'].setText(f"{str(msg['load'])}%")
             self.nvidiaWidgets[idx]['usedTotalMemory'].setText(f"{msg['memoryUsed']}MB/{msg['memoryTotal']}MB")
-            self.nvidiaWidgets[idx]['temp'].setText(f"{msg['temp']}°C")
+            self.nvidiaWidgets[idx]['temp'].setText(f"{int(msg['temp'])}°{msg['scale']}")
             self.analizeTemp(self.nvidiaWidgets[idx]['temp'], msg['temp'], msg['high'], msg['critical'])
 
     @staticmethod

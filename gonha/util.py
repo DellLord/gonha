@@ -406,6 +406,7 @@ class Nvidia:
         return False
 
     def getDeviceHealth(self):
+        tempConfig = self.config.getConfig('temptype')
         gpus = GPUtil.getGPUs()
         idxs = self.config.getConfig('nvidia')
         message = []
@@ -413,8 +414,22 @@ class Nvidia:
             for gpu in gpus:
                 tempDict = dict()
                 if idx == gpu.id:
+                    current = gpu.temperature
                     high = gpu.temperature + (gpu.temperature * 0.2)
                     critical = gpu.temperature + (gpu.temperature * 0.4)
+                    scale = 'C'
+                    if tempConfig == 'Kelvin':
+                        current = self.config.convertToKelvin(gpu.temperature)
+                        high = self.config.convertToKelvin(high)
+                        critical = self.config.convertToKelvin(critical)
+                        scale = 'K'
+
+                    if tempConfig == 'Fahrenheit':
+                        current = self.config.convertToFahrenheit(gpu.temperature)
+                        high = self.config.convertToFahrenheit(high)
+                        critical = self.config.convertToFahrenheit(critical)
+                        scale = 'F'
+
                     tempDict.update({
                         'id': gpu.id,
                         'name': gpu.name,
@@ -422,9 +437,10 @@ class Nvidia:
                         'freeMemory': gpu.memoryFree,
                         'memoryUsed': gpu.memoryUsed,
                         'memoryTotal': gpu.memoryTotal,
-                        'temp': gpu.temperature,
+                        'temp': current,
                         'high': high,
-                        'critical': critical
+                        'critical': critical,
+                        'scale': scale
                     })
                     message.append(tempDict)
 
@@ -442,8 +458,7 @@ class Smart:
     config = Config()
     temperature = {
         'format': 'Celsius',
-        'scale': 'C',
-        'currentValue': float()
+        'scale': 'C'
     }
 
     def __init__(self):
@@ -473,34 +488,35 @@ class Smart:
             sensors = psutil.sensors_temperatures()
             for sensor in sensors:
                 if 'nvme' in sensor:
+                    current = sensors[sensor][0].current
                     high = sensors[sensor][0].high
                     if high is None:
-                        high = 72.0
+                        high = 70.0
 
                     critical = sensors[sensor][0].critical
                     if critical is None:
-                        critical = 85.0
+                        critical = 82.0
+
+                    if self.temperature['scale'] == 'K':
+                        current = self.config.convertToKelvin(current)
+                        high = self.config.convertToKelvin(high)
+                        critical = self.config.convertToKelvin(critical)
+                    elif self.temperature['scale'] == 'F':
+                        current = self.config.convertToFahrenheit(current)
+                        high = self.config.convertToFahrenheit(high)
+                        critical = self.config.convertToFahrenheit(critical)
 
                     self.model = sensors[sensor][0].label
-                    self.updateTemp(sensors[sensor][0].current)
                     self.message.append({
                         'device': '/dev/{}'.format(devices[0]),
                         'model': '{}'.format(devices[0]),
-                        'temp': int(self.temperature['currentValue']),
+                        'temp': current,
                         'scale': self.temperature['scale'],
                         'high': high,
                         'critical': critical,
                     })
 
         return self.message
-
-    def updateTemp(self, temp):
-        if self.temperature['scale'] == 'K':
-            self.temperature['currentValue'] = self.config.convertToKelvin(temp)
-        elif self.temperature['scale'] == 'F':
-            self.temperature['currentValue'] = self.config.convertToFahrenheit(temp)
-        else:
-            self.temperature['currentValue'] = temp
 
     def getHddTemp(self):
         message = list()
@@ -523,18 +539,26 @@ class Smart:
                     forLenght = int(dataLen / 4)
                     newarray = np.array_split(data, forLenght)
                     for na in newarray:
-                        self.updateTemp(float(na[2]))
-                        self.temperature['high'] = self.temperature['currentValue'] + (
-                                self.temperature['currentValue'] * 0.2)
-                        self.temperature['critical'] = self.temperature['currentValue'] + (
-                                self.temperature['currentValue'] * 0.4)
+                        current = float(na[2])
+                        high = current + (current * 0.3)
+                        critical = current + (current * 0.4)
+                        if self.temperature['scale'] == 'K':
+                            current = self.config.convertToKelvin(current)
+                            high = self.config.convertToKelvin(high)
+                            critical = self.config.convertToKelvin(critical)
+
+                        if self.temperature['scale'] == 'F':
+                            current = self.config.convertToFahrenheit(current)
+                            high = self.config.convertToFahrenheit(high)
+                            critical = self.config.convertToFahrenheit(critical)
+
                         message.append({
                             'device': na[0],
                             'model': na[1],
-                            'temp': int(self.temperature['currentValue']),
+                            'temp': current,
                             'scale': self.temperature['scale'],
-                            'high': self.temperature['high'],
-                            'critical': self.temperature['critical'],
+                            'high': high,
+                            'critical': critical,
                         })
 
             else:
