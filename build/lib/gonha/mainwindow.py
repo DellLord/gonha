@@ -245,11 +245,11 @@ class MainWindow(QtWidgets.QMainWindow):
             tempIcon.setFixedWidth(24)
             mtempHLayout.addWidget(tempIcon)
 
-            tempLabel = QtWidgets.QLabel(f"{gpu['temp']}°C")
+            tempLabel = QtWidgets.QLabel(f"{int(gpu['temp'])}°{gpu['scale']}")
             tempDict['temp'] = tempLabel
             self.setLabel(tempLabel, self.white, self.fontDefault)
             tempLabel.setAlignment(QtCore.Qt.AlignRight)
-            tempLabel.setFixedWidth(70)
+            tempLabel.setFixedWidth(80)
             mtempHLayout.addWidget(tempLabel)
 
             infoVLayout.addLayout(mtempHLayout)
@@ -936,9 +936,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.systemWidgets['ramProgressBar'].setValue(message['ramProgressBar'])
         self.systemWidgets['swapProgressBar'].setValue(message['swapProgressBar'])
         # ----------------------------
-        # update temperature
+        # update  cpu temperature
+        # print(message)
         self.systemWidgets['label'].setText(message['label'])
-        self.systemWidgets['current'].setText(message['current'])
+        self.systemWidgets['current'].setText(f"{int(message['current'])}°{message['scale']}")
 
         self.systemWidgets['cpufreq'].setText(f"{message['cpufreq']}/{message['cpufreqMax']} Mhz")
         self.systemWidgets['ramused'].setText(f"{message['ramused']}/{message['ramTotal']}")
@@ -946,16 +947,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.systemWidgets['boottime'].setText(message['boottime'])
 
-        current = int(''.join(filter(str.isdigit, message['current'])))
-        self.analizeTemp(self.systemWidgets['current'], float(current), 85)
+        self.analizeTemp(self.systemWidgets['current'], message['current'], message['high'], message['critical'])
 
         for i, d in enumerate(message['devices']):
+            # print(d)
             self.diskWidgets[i]['device'].setText(d['device'])
             self.diskWidgets[i]['model'].setText(d['model'])
-            self.diskWidgets[i]['temp'].setText(f"{d['temp']}°C")
-            maxtemp = 73.0
-            self.analizeTemp(self.diskWidgets[i]['device'], float(d['temp']), maxtemp)
-            self.analizeTemp(self.diskWidgets[i]['temp'], float(d['temp']), maxtemp)
+            self.diskWidgets[i]['temp'].setText(f"{int(d['temp'])}°{message['scale']}")
+            self.analizeTemp(self.diskWidgets[i]['temp'], d['temp'], d['high'], d['critical'])
 
     def receiveThreadWeatherFinish(self, message):
         # logger.info(message)
@@ -985,19 +984,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.nvidiaWidgets[idx]['name'].setText(msg['name'])
             self.nvidiaWidgets[idx]['load'].setText(f"{str(msg['load'])}%")
             self.nvidiaWidgets[idx]['usedTotalMemory'].setText(f"{msg['memoryUsed']}MB/{msg['memoryTotal']}MB")
-            self.nvidiaWidgets[idx]['temp'].setText(f"{msg['temp']}°C")
-            maxtemp = 80.0
-            self.analizeTemp(self.nvidiaWidgets[idx]['temp'], float(msg['temp']), maxtemp)
+            self.nvidiaWidgets[idx]['temp'].setText(f"{int(msg['temp'])}°{msg['scale']}")
+            self.analizeTemp(self.nvidiaWidgets[idx]['temp'], msg['temp'], msg['high'], msg['critical'])
 
     @staticmethod
-    def analizeTemp(label, current, maxValue):
+    def analizeTemp(label, current, highValue, criticalValue):
         colorNormal = 'color: rgb(157, 255, 96);'
         colorWarning = 'color: rgb(255, 255, 153);'
         colorAlarm = 'color: rgb(255, 79, 79);'
-        percent30 = maxValue - (maxValue * 0.3)
-        percent10 = maxValue - (maxValue * 0.1)
         label.setStyleSheet(colorNormal)
-        if current >= percent10:
+        if current >= criticalValue:
             label.setStyleSheet(colorAlarm)
-        elif current >= percent30:
+        elif (current < criticalValue) and (current >= highValue):
             label.setStyleSheet(colorWarning)

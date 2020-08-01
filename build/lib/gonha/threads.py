@@ -143,11 +143,12 @@ class ThreadFast(QtCore.QThread):
     signal = QtCore.pyqtSignal(dict, name='ThreadFastFinish')
     message = dict()
     smart = Smart()
+    config = Config()
+    tempType = config.getConfig('temptype')
 
     def __init__(self, parent=None):
         super(ThreadFast, self).__init__(parent)
         self.finished.connect(self.threadFinished)
-        self.config = Config()
 
     def threadFinished(self):
         self.start()
@@ -193,13 +194,40 @@ class ThreadFast(QtCore.QThread):
         # --------------------------------------------------------
         # if inside virtual machine , so bypass sensor
         if not VirtualMachine().getStatus():
-            sensorIndex = int(self.config.getConfig('temp'))
+            tempConfig = self.config.getConfig('cputemp')
+            tempType = self.config.getConfig('temptype')
             sensors = psutil.sensors_temperatures()
-            for i, key in enumerate(sensors):
-                if i == sensorIndex:
-                    self.message['label'] = sensors[key][0].label
-                    self.message['current'] = '{:.0f}°C'.format(float(sensors[key][0].current))
-                    break
+            for i, sensor in enumerate(sensors):
+                if i == tempConfig['index']:
+                    for shwtemp in sensors[sensor]:
+                        if shwtemp.label == tempConfig['label']:
+                            current = shwtemp.current
+                            high = shwtemp.high
+                            critical = shwtemp.critical
+                            scale = 'C'
+                            if high is None:
+                                high = 75.0  # 75 celsius for high temp cpu
+
+                            if critical is None:
+                                critical = 90.0  # 90 celsius for critical temp cpu
+
+                            if tempType == 'Kelvin':
+                                current = self.config.convertToKelvin(shwtemp.current)
+                                high = self.config.convertToKelvin(high)
+                                critical = self.config.convertToKelvin(critical)
+                                scale = 'K'
+                            elif tempType == 'Fahrenheit':
+                                current = self.config.convertToFahrenheit(shwtemp.current)
+                                high = self.config.convertToFahrenheit(high)
+                                critical = self.config.convertToFahrenheit(critical)
+                                scale = 'F'
+
+                            self.message['label'] = shwtemp.label
+                            self.message['current'] = current
+                            self.message['high'] = high
+                            self.message['critical'] = critical
+                            self.message['scale'] = '{}'.format(scale)
+                            break
         else:
             self.message['label'] = 'vmtemp'
             self.message['current'] = '{:.0f}°C'.format(random.uniform(1, 100))
@@ -212,6 +240,8 @@ class ThreadFast(QtCore.QThread):
             tempDict['device'] = d['device']
             tempDict['model'] = d['model']
             tempDict['temp'] = d['temp']
+            tempDict['high'] = d['high']
+            tempDict['critical'] = d['critical']
             self.message['devices'].append(tempDict)
 
         time.sleep(1)
