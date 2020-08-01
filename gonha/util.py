@@ -57,12 +57,7 @@ class Config:
         # ----------------------------------------------------------------
         # update with current version
         self.updateConfig({'version': self.getVersion()})
-        # ----------------------------------------------------------------
-        # create storages config file
-        storages = self.getStorages()
-        # update config with available disk list
-        self.updateConfig({'storages': storages})
-        # ----------------------------------------------------------------
+
         # get Platform especific details
         plat = platform.uname()
         self.updateConfig({
@@ -88,6 +83,35 @@ class Config:
         # ----------------------------------------------------------------
         logger.info('Starting Wizard...')
         logger.info('')
+
+        # ----------------------------------------------------------------
+        # Check if nvmes exists
+        nvmes = self.getNvmes()
+        # -----------------------------------------------------------------------------------------------------
+        nvmesChoices = []
+        # Filesystem sections
+        for nvme in nvmes:
+            nvmesChoices.append(
+                {
+                    'name': 'device: [{}] [/dev/{}]'.format(nvme['id'], nvme['name']),
+                    'value': nvme['name']
+                }
+            )
+
+        nvmesQuestions = [
+            {
+                'type': 'checkbox',
+                'name': 'nvmes',
+                'message': 'You have the following M.2 e NVMe´s, please choose the device you want monitoring:',
+                'choices': nvmesChoices,
+            }
+        ]
+        nvmesResponse = prompt(nvmesQuestions)
+        logger.info(nvmesResponse)
+        # ----------------------------------------------------------------
+        # update config with available nvme list
+        self.updateConfig({'nvmes': nvmesResponse})
+        # ----------------------------------------------------------------
 
         # GPuDialog
         gpus = GPUtil.getGPUs()
@@ -288,18 +312,19 @@ class Config:
 
         return self.outJson
 
+    # Check for nvmes
     @staticmethod
-    def getStorages():
-        storageJson = json.loads(subprocess.getoutput('lsblk --json'))
-        storageRet = list()
-        for i, storage in enumerate(storageJson['blockdevices']):
-            if not ('loop' in storage['name']):
+    def getNvmes():
+        nvmesJson = json.loads(subprocess.getoutput('lsblk --json'))
+        nvmesRet = list()
+        for i, nvme in enumerate(nvmesJson['blockdevices']):
+            if 'nvme' in nvme['name']:
                 tempDict = dict()
                 tempDict['id'] = i
-                tempDict['name'] = storage['name']
-                storageRet.append(tempDict)
+                tempDict['name'] = nvme['name']
+                nvmesRet.append(tempDict)
 
-        return storageRet
+        return nvmesRet
 
     @staticmethod
     def isOnline():
