@@ -31,89 +31,6 @@ class VirtualMachine:
             return True
 
 
-class Smart:
-    vm = VirtualMachine()
-    model = str()
-    temp = 0
-    message = list()
-    storageType = 'sata'
-
-    def getDevicesHealth(self):
-        self.message.clear()
-        sataPattern = "(sd[a-z])"
-        if not self.vm.getStatus():
-            storages = self.getStorages()
-            for storage in storages:
-                # test if storage is nvme
-                if 'nvme' in storage['name']:
-                    # fetch nvme model
-                    printawk = "awk '{ print $3 }'"
-                    self.model = subprocess.getoutput(f"sudo nvme list | grep '{storage['name']}' | {printawk}")
-                    # fetch nvme temp
-                    printawk = "awk '{print $3}'"
-                    self.temp = subprocess.getoutput(
-                        f"sudo nvme smart-log '/dev/{storage['name']}' | grep 'temperature' | {printawk}")
-                    self.storageType = 'nvme'
-
-                if re.search(sataPattern, storage['name']):
-                    # fetch the sata
-                    self.model = subprocess.getoutput(
-                        f"sudo smartctl -a /dev/sda | grep 'Device Model' |cut -d ':' -f 2")
-                    # remove tabs from start of string
-                    self.model = self.model.lstrip()
-                    printawk = "awk '{print $4}'"
-                    self.temp = subprocess.getoutput(
-                        f"sudo smartctl -a /dev/{storage['name']} | grep 'Temperature_Celsius' | {printawk}")
-                    self.temp = int(self.temp)
-                    self.storageType = 'sata'
-
-                self.message.append(
-                    {
-                        'device': '/dev/{}'.format(storage['name']),
-                        'type': self.storageType,
-                        'model': self.model,
-                        'temp': str(self.temp),
-                        'scale': 'C'
-                    }
-                )
-        else:
-            # Append fake data to virtual machine
-            self.message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
-
-        return self.message
-
-    @staticmethod
-    def checkNvmeCliStatus():
-        retNvmeStatus = False
-        out = subprocess.getstatusoutput('sudo nvme')
-        if out[0] == 0:
-            retNvmeStatus = True
-
-        return retNvmeStatus
-
-    @staticmethod
-    def checkSmartCtlStatus():
-        retSmartCtlStatus = False
-        out = subprocess.getstatusoutput('sudo smartctl')
-        if not ('sudo: a terminal is required to read the password' in out[1]):
-            retSmartCtlStatus = True
-
-        return retSmartCtlStatus
-
-    @staticmethod
-    def getStorages():
-        storageJson = json.loads(subprocess.getoutput('lsblk --json'))
-        storageRet = list()
-        for i, storage in enumerate(storageJson['blockdevices']):
-            if not ('loop' in storage['name']):
-                tempDict = dict()
-                tempDict['id'] = i
-                tempDict['name'] = storage['name']
-                storageRet.append(tempDict)
-
-        return storageRet
-
-
 class Config:
     resource_path = os.path.dirname(__file__)
     distrosDir = f'{resource_path}/images/distros'
@@ -123,7 +40,6 @@ class Config:
     url = 'https://ip-geolocation.whoisxmlapi.com/api/v1'
     myExtIp = subprocess.getoutput('curl -s ifconfig.me')
     outJson = {'city': None, 'region': None, 'country': None}
-    smart = Smart()
 
     def __init__(self):
         self.version = self.getVersion()
@@ -142,7 +58,7 @@ class Config:
         self.updateConfig({'version': self.getVersion()})
         # ----------------------------------------------------------------
         # create storages config file
-        storages = self.smart.getStorages()
+        storages = self.getStorages()
         # update config with available disk list
         self.updateConfig({'storages': storages})
         # ----------------------------------------------------------------
@@ -339,7 +255,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.5.7'
+        return '1.5.8'
 
     def getExtIp(self):
         return self.myExtIp
@@ -370,6 +286,19 @@ class Config:
             )
 
         return self.outJson
+
+    @staticmethod
+    def getStorages():
+        storageJson = json.loads(subprocess.getoutput('lsblk --json'))
+        storageRet = list()
+        for i, storage in enumerate(storageJson['blockdevices']):
+            if not ('loop' in storage['name']):
+                tempDict = dict()
+                tempDict['id'] = i
+                tempDict['name'] = storage['name']
+                storageRet.append(tempDict)
+
+        return storageRet
 
     @staticmethod
     def isOnline():
@@ -438,3 +367,74 @@ class Nvidia:
                     message.append(tempDict)
 
         return message
+
+
+class Smart:
+    vm = VirtualMachine()
+    model = str()
+    temp = 0
+    message = list()
+    storageType = 'sata'
+    config = Config()
+
+    def getDevicesHealth(self):
+        self.message.clear()
+        sataPattern = "(sd[a-z])"
+        if not self.vm.getStatus():
+            storages = self.config.getConfig('storages')
+            for storage in storages:
+                # test if storage is nvme
+                if 'nvme' in storage['name']:
+                    # fetch nvme model
+                    printawk = "awk '{ print $3 }'"
+                    self.model = subprocess.getoutput(f"sudo nvme list | grep '{storage['name']}' | {printawk}")
+                    # fetch nvme temp
+                    printawk = "awk '{print $3}'"
+                    self.temp = subprocess.getoutput(
+                        f"sudo nvme smart-log '/dev/{storage['name']}' | grep 'temperature' | {printawk}")
+                    self.storageType = 'nvme'
+
+                if re.search(sataPattern, storage['name']):
+                    # fetch the sata
+                    self.model = subprocess.getoutput(
+                        f"sudo smartctl -a /dev/sda | grep 'Device Model' |cut -d ':' -f 2")
+                    # remove tabs from start of string
+                    self.model = self.model.lstrip()
+                    printawk = "awk '{print $4}'"
+                    self.temp = subprocess.getoutput(
+                        f"sudo smartctl -a /dev/{storage['name']} | grep 'Temperature_Celsius' | {printawk}")
+                    self.temp = int(self.temp)
+                    self.storageType = 'sata'
+
+                self.message.append(
+                    {
+                        'device': '/dev/{}'.format(storage['name']),
+                        'type': self.storageType,
+                        'model': self.model,
+                        'temp': str(self.temp),
+                        'scale': 'C'
+                    }
+                )
+        else:
+            # Append fake data to virtual machine
+            self.message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+
+        return self.message
+
+    @staticmethod
+    def checkNvmeCliStatus():
+        retNvmeStatus = False
+        out = subprocess.getstatusoutput('sudo nvme')
+        if out[0] == 0:
+            retNvmeStatus = True
+
+        return retNvmeStatus
+
+    @staticmethod
+    def checkSmartCtlStatus():
+        retSmartCtlStatus = False
+        out = subprocess.getstatusoutput('sudo smartctl')
+        if not ('sudo: a terminal is required to read the password' in out[1]):
+            retSmartCtlStatus = True
+
+        return retSmartCtlStatus
