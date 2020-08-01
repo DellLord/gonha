@@ -950,6 +950,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.analizeTemp(self.systemWidgets['current'], float(current), 85)
 
         for i, d in enumerate(message['devices']):
+            # print(d)
             self.diskWidgets[i]['device'].setText(d['device'])
             self.diskWidgets[i]['model'].setText(d['model'])
             self.diskWidgets[i]['temp'].setText(f"{d['temp']}°C")

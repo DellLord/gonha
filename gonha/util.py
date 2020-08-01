@@ -83,38 +83,49 @@ class Config:
         self.updateConfig(dist)
         # ----------------------------------------------------------------
         logger.info('Starting Wizard...')
+        # ----------------------------------------
+        # temperature format Question
+        tempTypeQuestions = [
+            {
+                'type': 'list',
+                'name': 'temptype',
+                'message': 'Do you want see temperatures in Kelvin, Fahrenheit or Celsius?',
+                'choices': [
+                    'Kelvin',
+                    'Fahrenheit',
+                    'Celsius'
+                ],
+            }
+        ]
+        psutil.sensors_temperatures('kelvin')
+        tempTypeResponse = prompt(tempTypeQuestions)
+        self.updateConfig(tempTypeResponse)
+
         # ----------------------------------------------------------------
         # Check if nvmes exists
-        nvmes = self.getNvmes()
-        if len(nvmes) >= 1:
+        nvme = self.getNvmes()
+        if len(nvme) >= 1:
             # -----------------------------------------------------------------------------------------------------
-            nvmesChoices = []
-            # Filesystem sections
-            for nvme in nvmes:
-                nvmesChoices.append(
-                    {
-                        'name': 'device: [{}] [/dev/{}]'.format(nvme['id'], nvme['name']),
-                        'value': nvme['name']
-                    }
-                )
+            nvmeChoices = list()
+            nvmeChoices.append({
+                'name': 'device: [{}] [/dev/{}]'.format(nvme[0]['id'], nvme[0]['name']),
+                'value': nvme[0]['name']
+            })
 
-            nvmesQuestions = [
+            nvmeQuestions = [
                 {
                     'type': 'checkbox',
-                    'name': 'nvmes',
+                    'name': 'nvme',
                     'message': 'You have M.2 NVMe´s, please choose the correct device do you want monitoring:',
-                    'choices': nvmesChoices,
+                    'choices': nvmeChoices,
                 }
             ]
-            nvmesResponse = prompt(nvmesQuestions)
-            logger.info(nvmesResponse)
+            nvmeResponse = prompt(nvmeQuestions)
+            self.updateConfig(nvmeResponse)
         else:
-            nvmesResponse = list()
-        # ----------------------------------------------------------------
-        # update config with available nvme list
-        self.updateConfig({'nvmes': nvmesResponse})
-        # ----------------------------------------------------------------
+            self.updateConfig({'nvme': list()})
 
+        # ---------------------------------------------------------------
         # GPuDialog
         gpus = GPUtil.getGPUs()
         if len(gpus) > 0:
@@ -195,20 +206,19 @@ class Config:
             # Temperature Question
             cpuSensors = psutil.sensors_temperatures()
             tempUserChoices = []
-            for i, key in enumerate(cpuSensors):
-                if not ('nvme' in key):
-                    tempUserChoices.append(
-                        '{} - [{}] current temp: {:.0f}°C'.format(i, key, float(cpuSensors[key][0].current))
-                    )
+            for index, sensor in enumerate(cpuSensors):
+                for shwtemp in cpuSensors[sensor]:
+                    tempUserChoices.append({
+                        'name': '{} - [{}] current temp: {:.0f}°C'.format(index, shwtemp.label, shwtemp.current),
+                        'value': {'index': index, 'label': shwtemp.label}
+                    })
 
-            # Temperature Questions
             tempQuestions = [
                 {
                     'type': 'list',
-                    'name': 'temp',
+                    'name': 'cputemp',
                     'message': 'What is your CPU temperature sensor?',
                     'choices': tempUserChoices,
-                    'filter': lambda val: tempUserChoices.index(val)
                 }
             ]
             tempResponse = prompt(tempQuestions)
@@ -418,6 +428,24 @@ class Smart:
     message = list()
     storageType = 'sata'
     config = Config()
+    temperature = {
+        'format': 'Celsius',
+        'scale': 'C',
+        'currentValue': float(),
+        'high': float(),
+        'critical': float()
+    }
+
+    def __init__(self):
+        self.analizeScale()
+
+    @staticmethod
+    def convertToFahrenheit(temp):
+        return 1.8 * (temp + 32)
+
+    @staticmethod
+    def convertToKelvin(temp):
+        return 273.15 + temp
 
     def hddtempIsOk(self):
         try:
@@ -426,24 +454,43 @@ class Smart:
         except OSError:
             return False
 
+    def analizeScale(self):
+        tempType = self.config.getConfig('temptype')
+        if tempType == 'Kelvin':
+            self.temperature['format'] = 'Kelvin'
+            self.temperature['scale'] = 'K'
+        elif tempType == 'Fahrenheit':
+            self.temperature['format'] = 'Fahrenheit'
+            self.temperature['scale'] = 'F'
+
     def getDevicesHealth(self):
         self.message.clear()
         self.message = self.getHddTemp()
-        devices = self.config.getConfig('nvmes')
+        devices = self.config.getConfig('nvme')
         if len(devices) >= 1:
             sensors = psutil.sensors_temperatures()
             for sensor in sensors:
                 if 'nvme' in sensor:
                     self.model = sensors[sensor][0].label
-                    self.temp = int(sensors[sensor][0].current)
+                    self.updateTemp(sensors[sensor][0].current)
                     self.message.append({
-                        'device': '/dev/{}'.format(devices['nvmes'][0]),
-                        'model': '{}'.format(devices['nvmes'][0]),
-                        'temp': self.temp,
-                        'scale': 'C'
+                        'device': '/dev/{}'.format(devices[0]),
+                        'model': '{}'.format(devices[0]),
+                        'temp': int(self.temperature['currentValue']),
+                        'scale': self.temperature['scale'],
+                        'high': self.temperature['high'],
+                        'critical': self.temperature['critical'],
                     })
 
         return self.message
+
+    def updateTemp(self, temp):
+        if self.temperature['scale'] == 'K':
+            self.temperature['currentValue'] = self.convertToKelvin(temp)
+        elif self.temperature['scale'] == 'F':
+            self.temperature['currentValue'] = self.convertToFahrenheit(temp)
+        else:
+            self.temperature['currentValue'] = temp
 
     def getHddTemp(self):
         message = list()
@@ -466,7 +513,19 @@ class Smart:
                     forLenght = int(dataLen / 4)
                     newarray = np.array_split(data, forLenght)
                     for na in newarray:
-                        message.append({'device': na[0], 'model': na[1], 'temp': na[2], 'scale': na[3]})
+                        self.updateTemp(float(na[2]))
+                        self.temperature['high'] = self.temperature['currentValue'] + (
+                                self.temperature['currentValue'] * 0.2)
+                        self.temperature['critical'] = self.temperature['currentValue'] + (
+                                self.temperature['currentValue'] * 0.4)
+                        message.append({
+                            'device': na[0],
+                            'model': na[1],
+                            'temp': int(self.temperature['currentValue']),
+                            'scale': self.temperature['scale'],
+                            'high': self.temperature['high'],
+                            'critical': self.temperature['critical'],
+                        })
 
             else:
                 # Append fake data to virtual machine

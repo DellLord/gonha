@@ -143,11 +143,12 @@ class ThreadFast(QtCore.QThread):
     signal = QtCore.pyqtSignal(dict, name='ThreadFastFinish')
     message = dict()
     smart = Smart()
+    config = Config()
+    tempType = config.getConfig('temptype')
 
     def __init__(self, parent=None):
         super(ThreadFast, self).__init__(parent)
         self.finished.connect(self.threadFinished)
-        self.config = Config()
 
     def threadFinished(self):
         self.start()
@@ -193,13 +194,16 @@ class ThreadFast(QtCore.QThread):
         # --------------------------------------------------------
         # if inside virtual machine , so bypass sensor
         if not VirtualMachine().getStatus():
-            sensorIndex = int(self.config.getConfig('temp'))
-            sensors = psutil.sensors_temperatures()
-            for i, key in enumerate(sensors):
-                if i == sensorIndex:
-                    self.message['label'] = sensors[key][0].label
-                    self.message['current'] = '{:.0f}°C'.format(float(sensors[key][0].current))
-                    break
+            tempConfig = self.config.getConfig('cputemp')
+            sensors = psutil.sensors_temperatures(self.tempType.lower())
+            for i, sensor in enumerate(sensors):
+                if i == tempConfig['index']:
+                    for shwtemp in sensors[sensor]:
+                        if shwtemp.label == tempConfig['label']:
+                            print(shwtemp)
+                            self.message['label'] = shwtemp.label
+                            self.message['current'] = '{:.0f}°'.format(shwtemp.current)
+                            break
         else:
             self.message['label'] = 'vmtemp'
             self.message['current'] = '{:.0f}°C'.format(random.uniform(1, 100))

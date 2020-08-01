@@ -25,6 +25,7 @@
       <w>configobj</w>
       <w>cpufreq</w>
       <w>cpuinfo</w>
+      <w>cputemp</w>
       <w>crit</w>
       <w>dest</w>
       <w>devel</w>
@@ -39,6 +40,7 @@
       <w>especific</w>
       <w>ewmh</w>
       <w>extip</w>
+      <w>f'index</w>
       <w>fagiani</w>
       <w>fastfinish</w>
       <w>fcaebc</w>
@@ -97,6 +99,7 @@
       <w>recebendo</w>
       <w>rgba</w>
       <w>shutil</w>
+      <w>shwtemp</w>
       <w>simião</w>
       <w>smartctl</w>
       <w>smartmontools</w>
@@ -104,6 +107,7 @@
       <w>swapused</w>
       <w>systemd</w>
       <w>tdie</w>
+      <w>temptype</w>
       <w>teste</w>
       <w>threadfinish</w>
       <w>threadslow</w>
