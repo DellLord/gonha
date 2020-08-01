@@ -34,8 +34,15 @@ Contributors
 3. python3-devel 
 4. Fira Code Font
 5. curl >=7.68 
-6. smartmontools>=7.1
-7. nvme-cli >= 1.9
+6. hddtemp >=0.3 :: you need run hddtemp as daemon on your system. Install ***hddtemp***, edit the file ***/etc/default/hddtemp*** and 
+change the line ***RUN_DAEMON="false"*** to ***RUN_DAEMON="true"***. Gonha will connect with hddtemp default port ***7634***, please ***don´t change*** 
+the default port number config param. 
+7. nvme-cli >= 1.9 :: Add the following line. Remember to substitute **$your_username** by your username, please.
+
+ ```bash
+# Enable smartctl and nvme-cli without sudo
+$your_username ALL = NOPASSWD: /usr/sbin/nvme
+```
 
 ### Installing Fira Code Font
 
@@ -48,20 +55,6 @@ $ fc-cache -v
 ```
 
 ## Install
-
-Enable **smartctl** and **nvme** sudo commands without password.
- 
-```bash
-$ sudo visudo
-```
-
-Add the following line. Remember to substitute **$your_username** by your username, please.
-
- ```bash
-# Enable smartctl and nvme-cli without sudo
-$your_username ALL = NOPASSWD: /usr/sbin/smartctl, /usr/sbin/nvme
-```
-
 
 Now, you can install gonha! :)
 Remember, ***$HOME/.local/bin*** must be in included in your PATH variable!
