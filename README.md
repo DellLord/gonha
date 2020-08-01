@@ -108,7 +108,7 @@ This project exists thanks to all the people who contribute!
 
 1. [Fred Lins](https://github.com/fredcox)
 2. [Carlos Fagiani Junior](https://github.com/fagianijunior)
-3. [Geraldo S. Simião Kutz](email://geraldo.simiao.kutz@gmail.com)
+3. Geraldo S. Simião Kutz
 4. [Mark Wagie](https://github.com/yochananmarqos)
 
 ### About Mark Wagie
