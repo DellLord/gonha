@@ -315,6 +315,26 @@ class Config:
     def convertToKelvin(temp):
         return 273.15 + temp
 
+    def normalizeTemps(self, current, high, critical):
+        tempConfig = self.getConfig('temptype')
+        retCurrent = current
+        retHigh = high
+        retCritical = critical
+        retScale = 'K'
+        retScale = 'C'
+        if tempConfig == 'Kelvin':
+            retCurrent = self.convertToKelvin(current)
+            retHigh = self.convertToKelvin(high)
+            retCritical = self.convertToKelvin(critical)
+            retScale = 'K'
+        elif tempConfig == 'Fahrenheit':
+            retCurrent = self.convertToFahrenheit(current)
+            retHigh = self.convertToFahrenheit(high)
+            retCritical = self.convertToFahrenheit(critical)
+            retScale = 'F'
+
+        return retCurrent, retHigh, retCritical, retScale
+
     def getWeatherData(self):
         response = requests.get(f"{self.url}?apiKey={self.apiKey}&ipAddress={self.myExtIp}")
 
@@ -458,7 +478,10 @@ class Smart:
     config = Config()
     temperature = {
         'format': 'Celsius',
-        'scale': 'C'
+        'scale': 'C',
+        'current': 0.0,
+        'high': 0.0,
+        'critical': 0.0
     }
 
     def __init__(self):
@@ -480,6 +503,20 @@ class Smart:
             self.temperature['format'] = 'Fahrenheit'
             self.temperature['scale'] = 'F'
 
+    def uniFormTempValues(self, current, high, critical):
+        self.temperature['current'] = current
+        self.temperature['high'] = high
+        self.temperature['critical'] = critical
+        if self.temperature['scale'] == 'K':
+            self.temperature['current'] = self.config.convertToKelvin(current)
+            self.temperature['high'] = self.config.convertToKelvin(high)
+            self.temperature['critical'] = self.config.convertToKelvin(critical)
+
+        if self.temperature['scale'] == 'F':
+            self.temperature['current'] = self.config.convertToFahrenheit(current)
+            self.temperature['high'] = self.config.convertToFahrenheit(high)
+            self.temperature['critical'] = self.config.convertToFahrenheit(critical)
+
     def getDevicesHealth(self):
         self.message.clear()
         self.message = self.getHddTemp()
@@ -497,23 +534,16 @@ class Smart:
                     if critical is None:
                         critical = 82.0
 
-                    if self.temperature['scale'] == 'K':
-                        current = self.config.convertToKelvin(current)
-                        high = self.config.convertToKelvin(high)
-                        critical = self.config.convertToKelvin(critical)
-                    elif self.temperature['scale'] == 'F':
-                        current = self.config.convertToFahrenheit(current)
-                        high = self.config.convertToFahrenheit(high)
-                        critical = self.config.convertToFahrenheit(critical)
+                    self.uniFormTempValues(current, high, critical)
 
                     self.model = sensors[sensor][0].label
                     self.message.append({
                         'device': '/dev/{}'.format(devices[0]),
                         'model': '{}'.format(devices[0]),
-                        'temp': current,
+                        'temp': self.temperature['current'],
                         'scale': self.temperature['scale'],
-                        'high': high,
-                        'critical': critical,
+                        'high': self.temperature['high'],
+                        'critical': self.temperature['critical'],
                     })
 
         return self.message
@@ -542,23 +572,16 @@ class Smart:
                         current = float(na[2])
                         high = current + (current * 0.3)
                         critical = current + (current * 0.4)
-                        if self.temperature['scale'] == 'K':
-                            current = self.config.convertToKelvin(current)
-                            high = self.config.convertToKelvin(high)
-                            critical = self.config.convertToKelvin(critical)
 
-                        if self.temperature['scale'] == 'F':
-                            current = self.config.convertToFahrenheit(current)
-                            high = self.config.convertToFahrenheit(high)
-                            critical = self.config.convertToFahrenheit(critical)
+                        self.uniFormTempValues(current, high, critical)
 
                         message.append({
                             'device': na[0],
                             'model': na[1],
-                            'temp': current,
+                            'temp': self.temperature['current'],
                             'scale': self.temperature['scale'],
-                            'high': high,
-                            'critical': critical,
+                            'high': self.temperature['high'],
+                            'critical': self.temperature['critical'],
                         })
 
             else:
@@ -567,7 +590,7 @@ class Smart:
                     {
                         'device': '/dev/vmsda',
                         'model': 'VIRTUAL SSD',
-                        'temp': '38',
+                        'temp': 38.0,
                         'high': 70.0,
                         'critical': 80.0,
                         'scale': 'C'
