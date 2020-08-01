@@ -108,8 +108,15 @@ This project exists thanks to all the people who contribute!
 
 1. [Fred Lins](https://github.com/fredcox)
 2. [Carlos Fagiani Junior](https://github.com/fagianijunior)
-2. [Geraldo S. Simião Kutz](email://geraldo.simiao.kutz@gmail.com)
+3. [Geraldo S. Simião Kutz](email://geraldo.simiao.kutz@gmail.com)
+4. [Mark Wagie](https://github.com/yochananmarqos)
 
+### About Mark Wagie
+
+**Mark Wagie** is Maintainer of the [gonha](https://aur.archlinux.org/packages/gonha) and 
+[gonha-git](https://aur.archlinux.org/packages/gonha-git) (AUR) packages for [Arch Linux](https://www.archlinux.org/) 
+based distributions and has helped a lot with tips and suggestions for the development 
+of this application.
 
 ## License 
 
