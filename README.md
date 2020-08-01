@@ -30,7 +30,7 @@ Contributors
 ## Dependencies
 
 1. FullHD Display 1920 x 1080 pixels.
-2. Linux Kernel 5.5.x >= :: **Linux Kernel Version 5>= and Major Revision 5>=** is **required** to running this application 
+2. Linux Kernel >= 5.5.x :: **Kernel Version >= 5 and Major Revision >= 5** is **required** to running this application 
 3. Pyhton 3.8 or later
 4. python3-devel 
 5. Fira Code Font
