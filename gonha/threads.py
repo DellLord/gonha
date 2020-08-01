@@ -50,7 +50,6 @@ class ThreadWeather(QtCore.QThread):
                     temp = self.config.convertToKelvin(temp)
                     scale = 'K'
                 elif tempType == 'Fahrenheit':
-                    print('Fahrenheit')
                     temp = self.config.convertToFahrenheit(temp)
                     scale = 'F'
 
