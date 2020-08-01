@@ -436,14 +436,14 @@ class MainWindow(QtWidgets.QMainWindow):
         dayLabel.setFixedHeight(dateHeight)
 
         monthLabel = QtWidgets.QLabel('June')
-        self.setLabel(monthLabel, self.white, monthFont)
+        self.setLabel(monthLabel, self.orange, monthFont)
         monthLabel.setFixedHeight(dateHeight)
         monthLabel.setAlignment(QtCore.Qt.AlignBottom)
 
         yearLabel = QtWidgets.QLabel('2020')
         yearLabel.setFont(yearFont)
         yearLabel.setStyleSheet(self.white)
-        self.setLabel(yearLabel, self.white, yearFont)
+        self.setLabel(yearLabel, self.orange, yearFont)
         yearLabel.setFixedHeight(dateHeight)
         yearLabel.setAlignment(QtCore.Qt.AlignBottom)
 
@@ -459,7 +459,7 @@ class MainWindow(QtWidgets.QMainWindow):
         weekdayHBLayout = QtWidgets.QHBoxLayout()
 
         weekdayLabel = QtWidgets.QLabel('Saturday')
-        self.setLabel(weekdayLabel, self.white, weekdayFont)
+        self.setLabel(weekdayLabel, self.orange, weekdayFont)
         weekdayLabel.setFixedHeight(20)
 
         weekdayHBLayout.addWidget(weekdayLabel)
@@ -496,10 +496,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         cityRegionLabel = QtWidgets.QLabel(
             f"{self.config.getConfig('location')['city']}")
-        self.setLabel(cityRegionLabel, self.white, self.fontDefault)
+        self.setLabel(cityRegionLabel, self.orange, self.fontDefault)
 
         countryLabel = QtWidgets.QLabel(countries[self.config.getConfig('location')['country']])
-        self.setLabel(countryLabel, self.white, self.fontDefault)
+        self.setLabel(countryLabel, self.orange, self.fontDefault)
 
         weatherVBLayout.addWidget(cityRegionLabel)
         weatherVBLayout.addWidget(countryLabel)
