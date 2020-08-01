@@ -6,7 +6,6 @@ import humanfriendly
 from gonha.util import VirtualMachine
 from gonha.util import Nvidia
 from datetime import datetime
-import random
 from gonha.util import Weather
 from gonha.util import Smart
 from unit_convert import UnitConvert
@@ -195,7 +194,6 @@ class ThreadFast(QtCore.QThread):
         # if inside virtual machine , so bypass sensor
         if not VirtualMachine().getStatus():
             tempConfig = self.config.getConfig('cputemp')
-            tempType = self.config.getConfig('temptype')
             sensors = psutil.sensors_temperatures()
             for i, sensor in enumerate(sensors):
                 if i == tempConfig['index']:
@@ -204,23 +202,13 @@ class ThreadFast(QtCore.QThread):
                             current = shwtemp.current
                             high = shwtemp.high
                             critical = shwtemp.critical
-                            scale = 'C'
                             if high is None:
                                 high = 75.0  # 75 celsius for high temp cpu
 
                             if critical is None:
                                 critical = 90.0  # 90 celsius for critical temp cpu
 
-                            if tempType == 'Kelvin':
-                                current = self.config.convertToKelvin(shwtemp.current)
-                                high = self.config.convertToKelvin(high)
-                                critical = self.config.convertToKelvin(critical)
-                                scale = 'K'
-                            elif tempType == 'Fahrenheit':
-                                current = self.config.convertToFahrenheit(shwtemp.current)
-                                high = self.config.convertToFahrenheit(high)
-                                critical = self.config.convertToFahrenheit(critical)
-                                scale = 'F'
+                            current, high, critical, scale = self.config.normalizeTemps(current, high, critical)
 
                             self.message['label'] = shwtemp.label
                             self.message['current'] = current
@@ -229,8 +217,10 @@ class ThreadFast(QtCore.QThread):
                             self.message['scale'] = '{}'.format(scale)
                             break
         else:
-            self.message['label'] = 'vmtemp'
-            self.message['current'] = '{:.0f}°C'.format(random.uniform(1, 100))
+            self.message['current'] = 50.0
+            self.message['high'] = 70.0
+            self.message['critical'] = 90.0
+            self.message['scale'] = 'C'
 
         # Storages
         devices = self.smart.getDevicesHealth()
