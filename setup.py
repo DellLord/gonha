@@ -59,7 +59,8 @@ setuptools.setup(
         'portolan',
         'unit-convert',
         'gputil',
-        'coloredlogs'
+        'coloredlogs',
+        'numpy'
     ],
     include_package_data=True,
     zip_safe=False,

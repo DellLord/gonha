@@ -16,6 +16,9 @@ import GPUtil
 import coloredlogs
 import logging
 import re
+from telnetlib import Telnet
+import numpy as np
+import socket
 
 logger = logging.getLogger(__name__)
 coloredlogs.install()
@@ -370,6 +373,8 @@ class Nvidia:
 
 
 class Smart:
+    host = '127.0.0.1'
+    port = 7634
     vm = VirtualMachine()
     model = str()
     temp = 0
@@ -377,47 +382,55 @@ class Smart:
     storageType = 'sata'
     config = Config()
 
+    def hddtempIsOk(self):
+        try:
+            socket.create_connection((self.host, self.port))
+            return True
+        except OSError:
+            return False
+
     def getDevicesHealth(self):
         self.message.clear()
-        sataPattern = "(sd[a-z])"
-        if not self.vm.getStatus():
-            storages = self.config.getConfig('storages')
-            for storage in storages:
-                # test if storage is nvme
-                if 'nvme' in storage['name']:
-                    # fetch nvme model
-                    printawk = "awk '{ print $3 }'"
-                    self.model = subprocess.getoutput(f"sudo nvme list | grep '{storage['name']}' | {printawk}")
-                    # fetch nvme temp
-                    printawk = "awk '{print $3}'"
-                    self.temp = subprocess.getoutput(
-                        f"sudo nvme smart-log '/dev/{storage['name']}' | grep 'temperature' | {printawk}")
-                    self.storageType = 'nvme'
+        self.message = self.getHddTemp()
 
-                if re.search(sataPattern, storage['name']):
-                    # fetch the sata
-                    self.model = subprocess.getoutput(
-                        f"sudo smartctl -a /dev/sda | grep 'Device Model' |cut -d ':' -f 2")
-                    # remove tabs from start of string
-                    self.model = self.model.lstrip()
-                    printawk = "awk '{print $4}'"
-                    self.temp = subprocess.getoutput(
-                        f"sudo smartctl -a /dev/{storage['name']} | grep 'Temperature_Celsius' | {printawk}")
-                    self.temp = int(self.temp)
-                    self.storageType = 'sata'
-
-                self.message.append(
-                    {
-                        'device': '/dev/{}'.format(storage['name']),
-                        'type': self.storageType,
-                        'model': self.model,
-                        'temp': str(self.temp),
-                        'scale': 'C'
-                    }
-                )
-        else:
-            # Append fake data to virtual machine
-            self.message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+        # if not self.vm.getStatus():
+        #     storages = self.config.getConfig('storages')
+        #     for storage in storages:
+        #         # test if storage is nvme
+        #         if 'nvme' in storage['name']:
+        #             # fetch nvme model
+        #             printawk = "awk '{ print $3 }'"
+        #             self.model = subprocess.getoutput(f"sudo nvme list | grep '{storage['name']}' | {printawk}")
+        #             # fetch nvme temp
+        #             printawk = "awk '{print $3}'"
+        #             self.temp = subprocess.getoutput(
+        #                 f"sudo nvme smart-log '/dev/{storage['name']}' | grep 'temperature' | {printawk}")
+        #             self.storageType = 'nvme'
+        #
+        #         if re.search(sataPattern, storage['name']):
+        #             # fetch the sata
+        #             self.model = subprocess.getoutput(
+        #                 f"sudo smartctl -a /dev/sda | grep 'Device Model' |cut -d ':' -f 2")
+        #             # remove tabs from start of string
+        #             self.model = self.model.lstrip()
+        #             printawk = "awk '{print $4}'"
+        #             self.temp = subprocess.getoutput(
+        #                 f"sudo smartctl -a /dev/{storage['name']} | grep 'Temperature_Celsius' | {printawk}")
+        #             self.temp = int(self.temp)
+        #             self.storageType = 'sata'
+        #
+        #         self.message.append(
+        #             {
+        #                 'device': '/dev/{}'.format(storage['name']),
+        #                 'type': self.storageType,
+        #                 'model': self.model,
+        #                 'temp': str(self.temp),
+        #                 'scale': 'C'
+        #             }
+        #         )
+        # else:
+        #     # Append fake data to virtual machine
+        #     self.message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
 
         return self.message
 
@@ -438,3 +451,33 @@ class Smart:
             retSmartCtlStatus = True
 
         return retSmartCtlStatus
+
+    def getHddTemp(self):
+        lines = ''
+        message = list()
+        if self.hddtempIsOk():
+            if not self.vm.getStatus():
+                with Telnet(self.host, self.port) as tn:
+                    lines = tn.read_all().decode('utf-8')
+
+                if lines != '':
+                    data = lines
+                    # remove first char
+                    data = data[1:]
+                    # remove the last char
+                    data = ''.join([data[i] for i in range(len(data)) if i != len(data) - 1])
+                    # replace double || by one |
+                    data = data.replace('||', '|')
+                    # convert to array
+                    data = data.split('|')
+                    dataLen = len(data)
+                    forLenght = int(dataLen / 4)
+                    newarray = np.array_split(data, forLenght)
+                    for na in newarray:
+                        message.append({'device': na[0], 'model': na[1], 'temp': na[2], 'scale': na[3]})
+
+            else:
+                # Append fake data to virtual machine
+                message.append({'device': '/dev/vmsda', 'model': 'VIRTUAL SSD', 'temp': '38', 'scale': 'C'})
+
+            return message
