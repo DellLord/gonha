@@ -955,7 +955,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def receiveThreadWeatherFinish(self, message):
         # logger.info(message)
-        self.dtwWidgets['temp'].setText(message['temp'])
+        self.dtwWidgets['temp'].setText(f"{int(message['temp'])}°{message['scale']}")
         self.dtwWidgets['humidity'].setText(message['humidity'])
         self.dtwWidgets['pressure'].setText(message['pressure'])
         self.dtwWidgets['visibility'].setText(message['visibility'])

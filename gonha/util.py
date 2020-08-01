@@ -347,6 +347,7 @@ class Config:
                     'country': tempJson['location']['country'],
                     'lat': tempJson['location']['lat'],
                     'lng': tempJson['location']['lng']
+
                 }
             )
 
