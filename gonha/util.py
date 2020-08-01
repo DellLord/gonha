@@ -432,12 +432,11 @@ class Smart:
         devices = self.config.getConfig('nvmes')
         if len(devices) >= 1:
             sensors = psutil.sensors_temperatures()
-            for device in devices['nvmes']:
-                for i, key in enumerate(sensors):
-                    if 'nvme' in key:
-                        self.model = sensors[key][0].label
-                        self.temp = sensors[key][0].current
-                        self.message.append({'device': device, 'model': self.model, 'temp': self.temp, 'scale': 'C'})
+            for sensor in sensors:
+                if 'nvme' in sensor:
+                    self.model = sensors[sensor][0].label
+                    self.temp = sensors[sensor][0].current
+                    self.message.append({'device': devices['nvmes'][0], 'model': self.model, 'temp': self.temp, 'scale': 'C'})
 
         return self.message
 
