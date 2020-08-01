@@ -6,7 +6,6 @@ import json
 import sys
 from cpuinfo import get_cpu_info
 import distro
-import platform
 import requests
 import subprocess
 import netifaces
@@ -17,6 +16,8 @@ import logging
 from telnetlib import Telnet
 import numpy as np
 import socket
+import platform
+import re
 
 logger = logging.getLogger(__name__)
 coloredlogs.install()
@@ -334,6 +335,16 @@ class Config:
             return True
         except OSError:
             return False
+
+    @staticmethod
+    def getKernelInfo():
+        kernelPattern = "([0-9].[0-9].[0-9]+)"
+        kernelString = platform.platform()
+        kernelString = re.search(kernelPattern, kernelString).group(0)
+        kernelList = kernelString.split('.')
+        kernelDict = dict()
+        kernelDict.update({'kernelVersion': int(kernelList[0]), 'majorRevision': int(kernelList[1]), 'minorRevision': int(kernelList[2])})
+        return kernelDict
 
 
 class Weather:

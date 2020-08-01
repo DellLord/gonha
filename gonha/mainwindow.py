@@ -179,6 +179,14 @@ class MainWindow(QtWidgets.QMainWindow):
             dialog.exec_()
             sys.exit()
 
+        # Check Kernel dependencies only run in kernel >=5.5
+        kernel = self.config.getKernelInfo()
+        if not ((kernel['kernelVersion'] >= 5) and (kernel['majorRevision'] >= 5)):
+            dialog = Alert(
+                'You are running kernel version unsupported. Please, upgrade your kernel to version 5.5.x or latest')
+            dialog.exec_()
+            sys.exit()
+
     def getDefaultGb(self, title):
         defaultGb = QtWidgets.QGroupBox(title)
         defaultGb.setFont(self.fontGroupBox)
