@@ -307,6 +307,14 @@ class Config:
         gws = netifaces.gateways()
         return gws['default'][netifaces.AF_INET][0]
 
+    @staticmethod
+    def convertToFahrenheit(temp):
+        return 1.8 * (temp + 32)
+
+    @staticmethod
+    def convertToKelvin(temp):
+        return 273.15 + temp
+
     def getWeatherData(self):
         response = requests.get(f"{self.url}?apiKey={self.apiKey}&ipAddress={self.myExtIp}")
 
@@ -439,14 +447,6 @@ class Smart:
     def __init__(self):
         self.analizeScale()
 
-    @staticmethod
-    def convertToFahrenheit(temp):
-        return 1.8 * (temp + 32)
-
-    @staticmethod
-    def convertToKelvin(temp):
-        return 273.15 + temp
-
     def hddtempIsOk(self):
         try:
             socket.create_connection((self.host, self.port))
@@ -486,9 +486,9 @@ class Smart:
 
     def updateTemp(self, temp):
         if self.temperature['scale'] == 'K':
-            self.temperature['currentValue'] = self.convertToKelvin(temp)
+            self.temperature['currentValue'] = self.config.convertToKelvin(temp)
         elif self.temperature['scale'] == 'F':
-            self.temperature['currentValue'] = self.convertToFahrenheit(temp)
+            self.temperature['currentValue'] = self.config.convertToFahrenheit(temp)
         else:
             self.temperature['currentValue'] = temp
 

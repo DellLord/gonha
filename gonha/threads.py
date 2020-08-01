@@ -195,14 +195,30 @@ class ThreadFast(QtCore.QThread):
         # if inside virtual machine , so bypass sensor
         if not VirtualMachine().getStatus():
             tempConfig = self.config.getConfig('cputemp')
-            sensors = psutil.sensors_temperatures(self.tempType.lower())
+            tempType = self.config.getConfig('temptype')
+            sensors = psutil.sensors_temperatures()
             for i, sensor in enumerate(sensors):
                 if i == tempConfig['index']:
                     for shwtemp in sensors[sensor]:
                         if shwtemp.label == tempConfig['label']:
-                            print(shwtemp)
+                            current = shwtemp.current
+                            high = shwtemp.high
+                            critical = shwtemp.critical
+                            if high is None:
+                                high = 75.0  # 75 celsius for high temp cpu
+
+                            if critical is None:
+                                critical = 90.0  # 90 celsius for critical temp cpu
+
+                            if tempType == 'Kelvin':
+                                current = self.config.convertToKelvin(shwtemp.current)
+                            elif tempType == 'Fahrenheit':
+                                current = self.config.convertToFahrenheit(shwtemp.current)
+
                             self.message['label'] = shwtemp.label
-                            self.message['current'] = '{:.0f}°'.format(shwtemp.current)
+                            self.message['current'] = '{:.0f}°'.format(current)
+                            self.message['high'] = '{:.0f}°'.format(high)
+                            self.message['critical'] = '{:.0f}°'.format(critical)
                             break
         else:
             self.message['label'] = 'vmtemp'
