@@ -166,16 +166,18 @@ class MainWindow(QtWidgets.QMainWindow):
             dialog.exec_()
             sys.exit()
         # ------------------------------------------------------------------------
-        # Check if user have privileged sudo without password
-        if not self.smart.checkNvmeCliStatus():
-            dialog = Alert(
-                'You need enable nvme-cli to run without sudo. Please read the README.md (install instructions)')
-            dialog.exec_()
-            sys.exit()
-
+        # check for hddtemp
         if not self.smart.hddtempIsOk():
             dialog = Alert(
                 'You need run hddtemp as daemon. Please read the README.md (install instructions)')
+            dialog.exec_()
+            sys.exit()
+
+        # Check Kernel dependencies only run in kernel >=5.5
+        kernel = self.config.getKernelInfo()
+        if not ((kernel['kernelVersion'] >= 5) and (kernel['majorRevision'] >= 5)):
+            dialog = Alert(
+                'You are running kernel version unsupported. Please, upgrade your kernel to version 5.5.x or latest')
             dialog.exec_()
             sys.exit()
 
