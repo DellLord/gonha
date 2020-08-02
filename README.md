@@ -6,7 +6,7 @@
 [![GitHub license](https://img.shields.io/github/license/fredcox/gonha)](https://github.com/fredcox/gonha/blob/master/LICENSE)
 
 
-# Gonha :art: 
+# Gonha :rocket: 
 
 ![Gonha - Logo](https://raw.githubusercontent.com/fredcox/gonha/master/gonha/images/logo.png)
 
