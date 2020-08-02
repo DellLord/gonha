@@ -163,14 +163,8 @@ class ThreadFast(QtCore.QThread):
     def threadFinished(self):
         self.start()
 
-    @staticmethod
-    def getUpTime():
-        timedelta = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
-        timedeltaInSeconds = timedelta.days * 24 * 3600 + timedelta.seconds
-        minutes, seconds = divmod(timedeltaInSeconds, 60)
-        hours, minutes = divmod(minutes, 60)
-        days, hours = divmod(hours, 24)
-        return f'{days} days, {hours} hrs {minutes} min and {seconds} sec'
+    def getUpTime(self):
+        return self.config.getUptime()
 
     def run(self):
         now = datetime.now()
