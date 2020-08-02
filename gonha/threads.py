@@ -13,17 +13,48 @@ import portolan
 
 
 class ThreadNvidia(QtCore.QThread):
+    config = Config()
+    tempType = config.getConfig('temptype')
     nvidia = Nvidia()
     signal = QtCore.pyqtSignal(list, name='ThreadNvidiaFinish')
+    message = []
 
     def __init__(self, parent=None):
         super(ThreadNvidia, self).__init__(parent)
         self.finished.connect(self.updateNvidia)
 
     def updateNvidia(self):
-        gpuMessage = self.nvidia.getDeviceHealth()
-        self.signal.emit(gpuMessage)
+        self.message = self.nvidia.getGPUsInfo()
+        self.updateTempWithUnit(self.config.getConfig('temptype'))
+        self.signal.emit(self.message)
         self.start()
+
+    def updateTempWithUnit(self, unit):
+        if unit == 'Kelvin':
+            for i, gpu in enumerate(self.message):
+                self.message[i]['temperature_gpu'] = self.config.convertToKelvin(
+                    gpu['temperature_gpu']
+                                                                              )
+                self.message[i]['temperature_gpu_high'] = self.config.convertToKelvin(
+                    gpu['temperature_gpu_high']
+                )
+                self.message[i]['temperature_gpu_critical'] = self.config.convertToKelvin(
+                    gpu['temperature_gpu_critical']
+                )
+                self.message[i]['temperature_scale'] = 'K'
+
+        if unit == 'Fahrenheit':
+            for i, gpu in enumerate(self.message):
+                self.message[i]['temperature_gpu'] = self.config.convertToFahrenheit(
+                    gpu['temperature_gpu']
+                                                                              )
+                self.message[i]['temperature_gpu_high'] = self.config.convertToFahrenheit(
+                    gpu['temperature_gpu_high']
+                )
+                self.message[i]['temperature_gpu_critical'] = self.config.convertToFahrenheit(
+                    gpu['temperature_gpu_critical']
+                )
+                self.message[i]['temperature_scale'] = 'F'
 
     def run(self):
         self.sleep(2)  # sleep for 2 sec

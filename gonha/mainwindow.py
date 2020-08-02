@@ -189,8 +189,6 @@ class MainWindow(QtWidgets.QMainWindow):
         return defaultGb
 
     def displayNvidia(self):
-        gpuMessage = self.nvidia.getDeviceHealth()
-
         nvidiaGroupBox = self.getDefaultGb('nvidia')
         verticalLayout = QtWidgets.QVBoxLayout()
         # ---------------------------------------------------
@@ -205,11 +203,11 @@ class MainWindow(QtWidgets.QMainWindow):
         infoVLayout = QtWidgets.QVBoxLayout()
         infoVLayout.setSpacing(0)
         infoVLayout.setAlignment(QtCore.Qt.AlignVCenter)
-        for gpu in gpuMessage:
+        for gpu in self.nvidia.nvidiaEntity['gpus']:
             tempDict = dict()
             infoHLayout = QtWidgets.QHBoxLayout()
 
-            nameLabel = QtWidgets.QLabel(gpu['name'])
+            nameLabel = QtWidgets.QLabel('')
             tempDict['name'] = nameLabel
             nameLabel.setFixedWidth(240)
             nameLabel.setAlignment(QtCore.Qt.AlignLeft)
@@ -221,7 +219,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setLabel(loadLabel, self.orange, self.fontDefault)
             infoHLayout.addWidget(loadLabel)
 
-            loadValueLabel = QtWidgets.QLabel(f"{gpu['load']}%")
+            loadValueLabel = QtWidgets.QLabel('')
             tempDict['load'] = loadValueLabel
             loadValueLabel.setAlignment(QtCore.Qt.AlignRight)
             self.setLabel(loadValueLabel, self.white, self.fontDefault)
@@ -237,7 +235,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setLabel(memoryLabel, self.orange, self.fontDefault)
             mtempHLayout.addWidget(memoryLabel)
 
-            usedTotalMemLabel = QtWidgets.QLabel(f"{gpu['memoryUsed']}MB/{gpu['memoryTotal']}MB")
+            usedTotalMemLabel = QtWidgets.QLabel('')
             tempDict['usedTotalMemory'] = usedTotalMemLabel
             self.setLabel(usedTotalMemLabel, self.white, self.fontDefault)
             mtempHLayout.addWidget(usedTotalMemLabel)
@@ -249,7 +247,7 @@ class MainWindow(QtWidgets.QMainWindow):
             tempIcon.setFixedWidth(24)
             mtempHLayout.addWidget(tempIcon)
 
-            tempLabel = QtWidgets.QLabel(f"{int(gpu['temp'])}°{gpu['scale']}")
+            tempLabel = QtWidgets.QLabel('')
             tempDict['temp'] = tempLabel
             self.setLabel(tempLabel, self.white, self.fontDefault)
             tempLabel.setAlignment(QtCore.Qt.AlignRight)
@@ -976,14 +974,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesSent']))
 
     def receiveThreadNvidia(self, message):
-        for msg in message:
-            # get the id
-            idx = int(msg['id'])
-            self.nvidiaWidgets[idx]['name'].setText(msg['name'])
-            self.nvidiaWidgets[idx]['load'].setText(f"{str(msg['load'])}%")
-            self.nvidiaWidgets[idx]['usedTotalMemory'].setText(f"{msg['memoryUsed']}MB/{msg['memoryTotal']}MB")
-            self.nvidiaWidgets[idx]['temp'].setText(f"{int(msg['temp'])}°{msg['scale']}")
-            self.analizeTemp(self.nvidiaWidgets[idx]['temp'], msg['temp'], msg['high'], msg['critical'])
+        print(message)
+        for i, msg in enumerate(message):
+            self.nvidiaWidgets[i]['name'].setText(msg['gpu_name'])
+            self.nvidiaWidgets[i]['load'].setText(f"{str(msg['utilization_gpu'])}")
+            self.nvidiaWidgets[i]['usedTotalMemory'].setText(f"{msg['memory_used']}/{msg['memory_total']}")
+            self.nvidiaWidgets[i]['temp'].setText(f"{int(msg['temperature_gpu'])}°{msg['temperature_scale']}")
+            self.analizeTemp(self.nvidiaWidgets[i]['temp'], msg['temperature_gpu'], msg['temperature_gpu_high'], msg['temperature_gpu_critical'])
 
     @staticmethod
     def analizeTemp(label, current, highValue, criticalValue):

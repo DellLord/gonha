@@ -58,7 +58,6 @@ setuptools.setup(
         'country_list',
         'portolan',
         'unit-convert',
-        'gputil',
         'coloredlogs',
         'numpy'
     ],

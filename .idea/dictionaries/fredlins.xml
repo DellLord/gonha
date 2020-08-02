@@ -49,6 +49,7 @@
       <w>geoipify</w>
       <w>geolocalization</w>
       <w>gonha</w>
+      <w>gpuname</w>
       <w>gputil</w>
       <w>hbox</w>
       <w>hddtemp</w>
@@ -56,6 +57,7 @@
       <w>hellcife</w>
       <w>hpvw</w>
       <w>humanfriendly</w>
+      <w>hummm</w>
       <w>iconfile</w>
       <w>iconpixmap</w>
       <w>idxs</w>
@@ -123,6 +125,7 @@
       <w>unamehbox</w>
       <w>unamevbox</w>
       <w>uptime</w>
+      <w>utilizationgpu</w>
       <w>vbios</w>
       <w>vbox</w>
       <w>virt</w>
