@@ -79,7 +79,7 @@ class Nvidia:
         return message
 
     def getOutputCommand(self, queryList):
-        return subprocess.getoutput(f"{self.smiCommand} --query-gpu={queryList} {self.smiSuffixCommand}").split(',')
+        return subprocess.getoutput(f"{self.smiCommand} --id=0 --query-gpu={queryList} {self.smiSuffixCommand}").split(',')
 
     def getSmiStatus(self):
         if self.smiStatus == 0:

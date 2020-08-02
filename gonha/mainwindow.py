@@ -974,7 +974,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.upDownRateWidgets[4].setText(humanfriendly.format_size(message['bytesSent']))
 
     def receiveThreadNvidia(self, message):
-        print(message)
         for i, msg in enumerate(message):
             self.nvidiaWidgets[i]['name'].setText(msg['gpu_name'])
             self.nvidiaWidgets[i]['load'].setText(f"{str(msg['utilization_gpu'])}")
