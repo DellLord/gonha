@@ -12,7 +12,6 @@ if __name__ == '__main__':
     coloredlogs.install()
     config = Config()
     logger.info(f':: Gonha - {config.getVersion()} ::')
-    logger.info(config.getUptime())
     if len(sys.argv) > 1:
         if sys.argv[1] == '--config':
             logger.info('Entering config mode...')

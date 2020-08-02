@@ -61,6 +61,7 @@
       <w>idxs</w>
       <w>iface</w>
       <w>inpint</w>
+      <w>instalado</w>
       <w>intint</w>
       <w>intip</w>
       <w>ipaddrs</w>
@@ -85,6 +86,9 @@
       <w>newarr</w>
       <w>newarray</w>
       <w>niface</w>
+      <w>noheader</w>
+      <w>nounits</w>
+      <w>nvdia</w>
       <w>nvid</w>
       <w>nvmes</w>
       <w>pathlib</w>
@@ -92,6 +96,8 @@
       <w>portolan</w>
       <w>printawk</w>
       <w>proc</w>
+      <w>proprietário</w>
+      <w>pstate</w>
       <w>psutil</w>
       <w>pyhton</w>
       <w>ramused</w>
@@ -117,6 +123,7 @@
       <w>unamehbox</w>
       <w>unamevbox</w>
       <w>uptime</w>
+      <w>vbios</w>
       <w>vbox</w>
       <w>virt</w>
       <w>visitibility</w>

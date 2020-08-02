@@ -25,6 +25,122 @@ logger = logging.getLogger(__name__)
 coloredlogs.install()
 
 
+class Nvidia:
+    smiCommand = 'nvidia-smi'
+    # , nounits
+    smiSuffixCommand = '--format=csv,noheader'
+    smiStatus = subprocess.getstatusoutput(smiCommand)[0]
+    nvidiaEntity = dict()
+
+    def __init__(self):
+        if self.getSmiStatus():
+            count, DriverVersion = self.getOutputCommand('count,driver_version')
+            self.nvidiaEntity.update(
+                {
+                    'count': int(count),
+                    'driver_version': DriverVersion,
+                    'gpus': self.getGPUsInfo()
+                }
+            )
+
+    def getGPUsInfo(self):
+        numGPUS = int(self.getOutputCommand('count')[0])
+        message = list()
+        for id in range(numGPUS):
+            tempDict = dict()
+            gpu_uuid, gpu_name, display_mode, vbios_version, fan_speed, pstate, memory_total, memory_used, memory_free, temperature_gpu, power_management, power_draw, clocks_current_graphics, clocks_current_sm, clocks_current_memory, clocks_current_video = self.getOutputCommand(
+                'gpu_uuid,gpu_name,display_mode,vbios_version,fan.speed,pstate,memory.total,memory.used,memory.free,temperature.gpu,power.management,power.draw,clocks.current.graphics,clocks.current.sm,clocks.current.memory,clocks.current.video'
+            )
+
+            tempDict.update({
+                'id': id,
+                'gpu_uuid': gpu_uuid,
+                'gpu_name': gpu_name,
+                'display_mode': display_mode,
+                'vbios_version': vbios_version,
+                'fan_speed': fan_speed,
+                'pstate': pstate,
+                'memory_total': memory_total,
+                'memory_used': memory_used,
+                'memory_free': memory_free,
+                'temperature_gpu': temperature_gpu,
+                'power_management': power_management,
+                'power_draw': power_draw,
+                'clocks_current_graphics': clocks_current_graphics,
+                'clocks_current_sm': clocks_current_sm,
+                'clocks_current_memory': clocks_current_memory,
+                'clocks_current_video': clocks_current_video
+            })
+            message.append(tempDict)
+
+        return message
+
+    def getOutputCommand(self, queryList):
+        return subprocess.getoutput(f"{self.smiCommand} --query-gpu={queryList} {self.smiSuffixCommand}").split(',')
+
+    def getSmiStatus(self):
+        if self.smiStatus == 0:
+            return True
+        else:
+            return False
+
+    def getDeviceHealth(self):
+        # -----------------------------------------------
+        print(self.nvidiaEntity)
+        message = [{
+            'id': 0,
+            'name': 'gonha rtx',
+            'load': int(100),
+            'freeMemory': '12',
+            'memoryUsed': '4545',
+            'memoryTotal': '4545',
+            'temp': 23,
+            'high': 44,
+            'critical': 34,
+            'scale': 'C'
+        }]
+        # -----------------------------------------------
+        # tempConfig = self.config.getConfig('temptype')
+        # gpus = GPUtil.getGPUs()
+        # idxs = self.config.getConfig('nvidia')
+        # message = []
+        # for idx in idxs:
+        #     for gpu in gpus:
+        #         tempDict = dict()
+        #         if idx == gpu.id:
+        #             current = gpu.temperature
+        #             high = gpu.temperature + (gpu.temperature * 0.2)
+        #             critical = gpu.temperature + (gpu.temperature * 0.4)
+        #             scale = 'C'
+        #             if tempConfig == 'Kelvin':
+        #                 current = self.config.convertToKelvin(gpu.temperature)
+        #                 high = self.config.convertToKelvin(high)
+        #                 critical = self.config.convertToKelvin(critical)
+        #                 scale = 'K'
+        #
+        #             if tempConfig == 'Fahrenheit':
+        #                 current = self.config.convertToFahrenheit(gpu.temperature)
+        #                 high = self.config.convertToFahrenheit(high)
+        #                 critical = self.config.convertToFahrenheit(critical)
+        #                 scale = 'F'
+        #
+        #             tempDict.update({
+        #                 'id': gpu.id,
+        #                 'name': gpu.name,
+        #                 'load': int(gpu.load * 100),
+        #                 'freeMemory': gpu.memoryFree,
+        #                 'memoryUsed': gpu.memoryUsed,
+        #                 'memoryTotal': gpu.memoryTotal,
+        #                 'temp': current,
+        #                 'high': high,
+        #                 'critical': critical,
+        #                 'scale': scale
+        #             })
+        #             message.append(tempDict)
+
+        return message
+
+
 class VirtualMachine:
     @staticmethod
     def getStatus():
@@ -44,6 +160,7 @@ class Config:
     url = 'https://ip-geolocation.whoisxmlapi.com/api/v1'
     myExtIp = subprocess.getoutput('curl -s ifconfig.me')
     outJson = {'city': None, 'region': None, 'country': None}
+    nvidia = Nvidia()
 
     def __init__(self):
         self.version = self.getVersion()
@@ -424,61 +541,6 @@ class Weather:
     @staticmethod
     def printException(e):
         logger.info(f'Error! {e}')
-
-
-class Nvidia:
-    config = Config()
-
-    def getStatus(self):
-        try:
-            devices = self.config.getConfig('nvidia')
-            if len(devices) >= 1:
-                return True
-        except Exception as e:
-            logger.info(f'No {e} gpu card found in your system.')
-
-        return False
-
-    def getDeviceHealth(self):
-        tempConfig = self.config.getConfig('temptype')
-        gpus = GPUtil.getGPUs()
-        idxs = self.config.getConfig('nvidia')
-        message = []
-        for idx in idxs:
-            for gpu in gpus:
-                tempDict = dict()
-                if idx == gpu.id:
-                    current = gpu.temperature
-                    high = gpu.temperature + (gpu.temperature * 0.2)
-                    critical = gpu.temperature + (gpu.temperature * 0.4)
-                    scale = 'C'
-                    if tempConfig == 'Kelvin':
-                        current = self.config.convertToKelvin(gpu.temperature)
-                        high = self.config.convertToKelvin(high)
-                        critical = self.config.convertToKelvin(critical)
-                        scale = 'K'
-
-                    if tempConfig == 'Fahrenheit':
-                        current = self.config.convertToFahrenheit(gpu.temperature)
-                        high = self.config.convertToFahrenheit(high)
-                        critical = self.config.convertToFahrenheit(critical)
-                        scale = 'F'
-
-                    tempDict.update({
-                        'id': gpu.id,
-                        'name': gpu.name,
-                        'load': int(gpu.load * 100),
-                        'freeMemory': gpu.memoryFree,
-                        'memoryUsed': gpu.memoryUsed,
-                        'memoryTotal': gpu.memoryTotal,
-                        'temp': current,
-                        'high': high,
-                        'critical': critical,
-                        'scale': scale
-                    })
-                    message.append(tempDict)
-
-        return message
 
 
 class Smart:

@@ -151,8 +151,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadPosition()
         self.displayDTWeather()
         self.displaySystem()
-        if self.nvidia.getStatus():
-            self.displayNvidia()
+        if self.nvidia.getSmiStatus():
+            if self.nvidia.nvidiaEntity['count'] >= 0:
+                self.displayNvidia()
 
         self.displayIface()
         self.displayPartitions()
