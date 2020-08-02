@@ -467,7 +467,7 @@ class Nvidia:
                     tempDict.update({
                         'id': gpu.id,
                         'name': gpu.name,
-                        'load': gpu.load,
+                        'load': int(gpu.load * 100),
                         'freeMemory': gpu.memoryFree,
                         'memoryUsed': gpu.memoryUsed,
                         'memoryTotal': gpu.memoryTotal,
