@@ -18,7 +18,9 @@ import numpy as np
 import socket
 import platform
 import re
+import time
 
+os.environ['QT_LOGGING_RULES'] = "qt5ct.debug=false"
 logger = logging.getLogger(__name__)
 coloredlogs.install()
 
@@ -293,7 +295,7 @@ class Config:
 
     @staticmethod
     def getVersion():
-        return '1.6.9'
+        return '1.6.12'
 
     def getExtIp(self):
         return self.myExtIp
@@ -385,6 +387,18 @@ class Config:
         kernelDict.update({'kernelVersion': int(kernelList[0]), 'majorRevision': int(kernelList[1]),
                            'minorRevision': int(kernelList[2])})
         return kernelDict
+
+    @staticmethod
+    def getUptime():
+        bootTime = time.time() - psutil.boot_time()
+        day = bootTime // (24 * 3600)
+        bootTime = bootTime % (24 * 3600)
+        hour = bootTime // 3600
+        bootTime %= 3600
+        minutes = bootTime // 60
+        bootTime %= 60
+        seconds = bootTime
+        return f'up {int(day)} days, {int(hour)} hours {int(minutes)} minutes and {int(seconds)} seconds'
 
 
 class Weather:
