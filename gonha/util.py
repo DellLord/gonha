@@ -19,6 +19,7 @@ import socket
 import platform
 import re
 
+os.environ['QT_LOGGING_RULES'] = "qt5ct.debug=false"
 logger = logging.getLogger(__name__)
 coloredlogs.install()
 
